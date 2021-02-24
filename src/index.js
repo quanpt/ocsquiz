@@ -2,11 +2,25 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+
+
+function Answer(props) {
+  return (
+    <div>
+      Option {props.index + 1}: {props.answer.title}
+    </div>
+  );
+}
+
 function Question(props) {
   return (
     <div>
-      Question: {props.title}
-      Answer: xxx
+      <p>Question: {props.question.title}</p>
+      <ul>
+        {props.question.answers.map((answer, index) => {
+          return <li key={index}><Answer answer={answer} index={index}/></li>
+        })}
+      </ul>
     </div>
   );
 }
