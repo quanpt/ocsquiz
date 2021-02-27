@@ -1,0 +1,50 @@
+{
+  "title": "Quiz title",
+  "questions": [
+    {
+      "title": "question text 1",
+      "id": "q1",
+      "answers": [
+        {"isCorrect": true, "title": "a11"},
+        {"isCorrect": false, "title": "a21"},
+        {"isCorrect": false, "title": "a31"}
+      ]
+    },
+    {
+      "title": "question text 2",
+      "id": "q2",
+      "answers": [
+        {"isCorrect": false, "title": "a12"},
+        {"isCorrect": true, "title": "a22"},
+        {"isCorrect": false, "title": "a32"}
+      ]
+    },
+    {
+      "title": "question text 3",
+      "id": "q3",
+      "answers": [
+        {"isCorrect": false, "title": "a13"},
+        {"isCorrect": false, "title": "a23"},
+        {"isCorrect": true, "title": "a33"}
+      ]
+    },
+    {
+      "title": "question text 4",
+      "id": "q4",
+      "answers": [
+        {"isCorrect": false, "title": "a14"},
+        {"isCorrect": true, "title": "a24"},
+        {"isCorrect": false, "title": "a34"}
+      ]
+    },
+    {
+      "title": "question text 5",
+      "id": "q5",
+      "answers": [
+        {"isCorrect": true, "title": "a15"},
+        {"isCorrect": false, "title": "a25"},
+        {"isCorrect": false, "title": "a35"}
+      ]
+    }
+  ]
+}
