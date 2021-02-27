@@ -3,15 +3,12 @@ import ReactDOM from 'react-dom';
 import { Formik, Field, Form } from 'formik';
 import './index.css';
 
-const CORRECT_LABEL = "@@@";
-
 
 function Answer(props) {
-  var answer = props.answer;
-  var isSubmitted = props.isSubmitted;
+  var { answer, questionKey, index, isSubmitted } = props;
   return (
       <label>
-        <Field type="Radio" name={props.questionKey} value={("" + props.index)} disabled={isSubmitted}/>
+        <Field type="Radio" name={questionKey} value={("" + index)} disabled={isSubmitted}/>
         <span className={
           "answer " + (
             isSubmitted ? (
@@ -21,7 +18,7 @@ function Answer(props) {
             ) : ""
           )
         }>
-          {String.fromCharCode(65 + props.index)}. {props.answer.title}
+          {String.fromCharCode(65 + index)}. {answer.title}
         </span>
       </label>
   );
@@ -46,32 +43,36 @@ class Quiz extends React.Component {
   constructor(props){
     super(props);
     let state = {
-      title: 'Quiz title',
-      questions: Array(5),
+      error: null,
+      isLoaded: false,
+      title: null,
+      questions: [],
     };
 
-    for (let i = 0; i < state.questions.length; i ++) {
-      state.questions[i] = {
-        title: 'question text ' + (i+1),
-        id: "q" + (i+1),
-        answers: [
-          {
-            title: 'a1' + (i+1), 
-            isCorrect: false,
-          },
-          {
-            title: 'a2' + (i+1), 
-            isCorrect: true,
-          },
-          {
-            title: 'a3' + (i+1), 
-            isCorrect: false,
-          },
-        ],
-      };
-    }
-
     this.state = state;
+  }
+
+  componentDidMount() {
+    fetch(process.env.PUBLIC_URL + "/mock.json")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            isLoaded: true,
+            title: result.title,
+            questions: result.questions,
+          });
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
   }
 
   renderQuestions() {
@@ -85,46 +86,53 @@ class Quiz extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        <h1>Quiz</h1>
-        <Formik
-          initialValues={{}}
-          onSubmit={async (answers) => {
-            
-            if (this.state.isSubmitted)
-              return;
-            
-            await new Promise((r) => setTimeout(r, 0));
-            console.log(JSON.stringify(answers, null, 2));
-            let newQuestions = this.state.questions.slice();
-            let countCorrect = 0;
+    const { error, isLoaded } = this.state;
+    if (error) {
+      return <div>Error: {error.message}</div>;
+    } else if (!isLoaded) {
+      return <div>Loading...</div>;
+    } else {
+      return (
+        <div>
+          <h1>Quiz</h1>
+          <Formik
+            initialValues={{}}
+            onSubmit={async (answers) => {
+              
+              if (this.state.isSubmitted)
+                return;
+              
+              await new Promise((r) => setTimeout(r, 0));
+              console.log(JSON.stringify(answers, null, 2));
+              let newQuestions = this.state.questions.slice();
+              let countCorrect = 0;
 
-            for (let key in newQuestions) {
-              let question = newQuestions[key];
-              console.log(question.id + " " + answers[question.id]);
-              if (answers[question.id]) {
-                question.answers[answers[question.id]].isSelected = true;
-                countCorrect += question.answers[answers[question.id]].isCorrect ? 1 : 0;
+              for (let key in newQuestions) {
+                let question = newQuestions[key];
+                console.log(question.id + " " + answers[question.id]);
+                if (answers[question.id]) {
+                  question.answers[answers[question.id]].isSelected = true;
+                  countCorrect += question.answers[answers[question.id]].isCorrect ? 1 : 0;
+                }
               }
-            }
-            this.setState({
-              isSubmitted: true,
-              questions: newQuestions,
-            });
+              this.setState({
+                isSubmitted: true,
+                questions: newQuestions,
+              });
 
-            alert("Total: " + this.state.questions.length + "\nAttempt: " + Object.keys(answers).length + "\nCorrect: " + countCorrect);
-          }}
-        >
-          {({ answers }) => (
-            <Form>
-              {this.renderQuestions()}
-              {this.state.isSubmitted ? null : <button type="submit">Submit</button>}
-            </Form>
-          )}
-        </Formik>
-      </div>
-    );
+              alert("Total: " + this.state.questions.length + "\nAttempt: " + Object.keys(answers).length + "\nCorrect: " + countCorrect);
+            }}
+          >
+            {({ answers }) => (
+              <Form>
+                {this.renderQuestions()}
+                {this.state.isSubmitted ? null : <button type="submit">Submit</button>}
+              </Form>
+            )}
+          </Formik>
+        </div>
+      );
+    }
   }
 }
 
