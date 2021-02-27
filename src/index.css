@@ -9,6 +9,7 @@
 
 .incorrectAnswer {
   color:red;
+  font-weight: bold;
 }
 
 .correctAnswer {
