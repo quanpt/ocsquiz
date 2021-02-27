@@ -3,30 +3,30 @@ import ReactDOM from 'react-dom';
 import { Formik, Field, Form } from 'formik';
 import './index.css';
 
+const CORRECT_LABEL = "@@@";
 
 
 function Answer(props) {
   return (
-    <p>
       <label>
-        <Field type="radio" name={props.questionKey} value={props.answer.title}/>
-        {props.index}: {props.answer.title}
+        <Field type="Radio" name={props.questionKey} value={props.answer.isCorrect ? CORRECT_LABEL : ("" + props.index)} disabled={props.isSubmitted}/>
+        <span className={"answer " + (props.isSubmitted ? (props.answer.isCorrect ? "correctAnswer" : "incorrectAnswer") : "")}>
+          {String.fromCharCode(65 + props.index)}. {props.answer.title}
+        </span>
       </label>
-    </p>
   );
 }
 
 function Question(props) {
-  let key = "question-" + props.question.id;
+  let key = props.question.id;
   return (
     <div id={key}>
       <p>Question: {props.question.title}</p>
       <div role="group" aria-labelledby={key}>
         {props.question.answers.map((answer, index) => {
-          return <Answer key={key + "_" + index} answer={answer} questionKey={key} index={index + 1}/>
+          return <Answer key={key + "_" + index} answer={answer} questionKey={key} index={index} isSubmitted={props.isSubmitted}/>
         })}
       </div>
-      <div>Selected answer: TODO</div>
       <hr/>
     </div>
   );
@@ -68,7 +68,7 @@ class Quiz extends React.Component {
     return (
       <div>
         {this.state.questions.map((question, index) => {
-          return <div key={"q_"+index}><Question question={question}/></div>
+          return <div key={"q_"+index}><Question question={question} isSubmitted={this.state.isSubmitted}/></div>
         })}
       </div>
     );
@@ -80,15 +80,33 @@ class Quiz extends React.Component {
         <h1>Quiz</h1>
         <Formik
           initialValues={{}}
-          onSubmit={async (values) => {
-            await new Promise((r) => setTimeout(r, 500));
-            alert(JSON.stringify(values, null, 2));
+          onSubmit={async (answers) => {
+            
+            if (this.state.isSubmitted)
+              return;
+            
+            await new Promise((r) => setTimeout(r, 0));
+            // alert(JSON.stringify(answers, null, 2));
+            let newQuestions = this.state.questions.slice();
+            for (let question in newQuestions) {
+              // question.
+            }
+            this.setState({
+              isSubmitted: true,
+              questions: newQuestions,
+            });
+
+            let count = 0;
+            for (let answer in answers) {
+              count += answers[answer] === CORRECT_LABEL ? 1 : 0;
+            }
+            alert("Total: " + this.state.questions.length + "\nAttempt: " + Object.keys(answers).length + "\nCorrect: " + count);
           }}
         >
-          {({ values }) => (
+          {({ answers }) => (
             <Form>
               {this.renderQuestions()}
-              <button type="submit">Submit</button>
+              {this.state.isSubmitted ? null : <button type="submit">Submit</button>}
             </Form>
           )}
         </Formik>
