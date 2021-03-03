@@ -13,24 +13,15 @@ const knex = require('knex')({
   useNullAsDefault: true
 })
 
-// Create a table in the database called "TestQuestion"
+// Create a table in the database called "Questions"
 knex.schema
   // Make sure no table exists
-  // before trying to create new
-  // CREATE TABLE TestQuestion (
-  //     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  //     mmfid INTEGER UNIQUE,
-  //     question TEXT,
-  //     answer TEXT,
-  //     qgroup TEXT,
-  //     mmfgroup TEXT,
-  //     title TEXT
-  // )
-  .hasTable('TestQuestion')
+  // before trying to create new table
+  .hasTable('Questions')
     .then((exists) => {
       if (!exists) {
-        // If no "TestQuestion" table exists
-        return knex.schema.createTable('TestQuestion', (table)  => {
+        // If no "Questions" table exists
+        return knex.schema.createTable('Questions', (table)  => {
           table.increments('id').primary()
           table.integer('mmfid')
           table.string('question')
@@ -41,57 +32,7 @@ knex.schema
         })
         .then(() => {
           // Log success message
-          console.log('Table \'TestQuestion\' created')
-        })
-        .catch((error) => {
-          console.error(`There was an error creating table: ${error}`)
-        })
-      }
-    })
-    .then(() => {
-      // Log success message
-      console.log('done')
-    })
-    .catch((error) => {
-      console.error(`There was an error setting up the database: ${error}`)
-    })
-
-
-// Just for debugging purposes:
-// Log all data in "TestQuestion" table
-knex.select('*').from('TestQuestion').limit(10)
-  .then(data => console.log('data:', data.length))
-  .catch(err => console.log(err))
-
-// Create a table in the database called "TestAnswers"
-knex.schema
-  // Make sure no table exists
-  // before trying to create new
-  // CREATE TABLE TestAnswers (
-  //     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  //     questionId INTEGER UNIQUE,
-  //     question TEXT,
-  //     answer TEXT,
-  //     qgroup TEXT,
-  //     mmfgroup TEXT,
-  //     title TEXT
-  // )
-  .hasTable('TestQuestion')
-    .then((exists) => {
-      if (!exists) {
-        // If no "TestQuestion" table exists
-        return knex.schema.createTable('TestQuestion', (table)  => {
-          table.increments('id').primary()
-          table.integer('mmfid')
-          table.string('question')
-          table.string('answer')
-          table.string('qgroup')
-          table.string('mmfgroup')
-          table.string('title')
-        })
-        .then(() => {
-          // Log success message
-          console.log('Table \'TestQuestion\' created')
+          console.log('Table \'Questions\' created')
         })
         .catch((error) => {
           console.error(`There was an error creating table: ${error}`)
@@ -121,7 +62,7 @@ module.exports = knex
 //   title TEXT
 // )
 
-// CREATE TABLE "Quiz" (
+// CREATE TABLE "Quizes" (
 // 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
 // 	"timestamp"	INTEGER NOT NULL,
 // 	"title"	INTEGER NOT NULL
