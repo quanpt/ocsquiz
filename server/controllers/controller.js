@@ -35,6 +35,24 @@ exports.gradesAll = async (req, res) => {
     })
 }
 
+// Retrieve single grade
+exports.gradeGet = async (req, res) => {
+  // Get all grades from database
+  knex
+    .select('shortTitle')
+    .from('Grade') // from 'grades' table
+    .distinct('shortTitle')
+    .where('grade', req.body.grade) // find correct record based on id
+    .then(titles => {
+      // Send questions extracted from database in response
+      res.json(titles)
+    })
+    .catch(err => {
+      // Send a error message in response
+      res.json({ message: `There was an error retrieving short titles: ${err}` })
+    })
+}
+
 // Create new quiz
 exports.quizesCreate = async (req, res) => {
   // Add new quiz to database

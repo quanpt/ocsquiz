@@ -99,7 +99,7 @@ export const GradeListPage = () => {
   const handleGradeClick = (grade: string) => {
     // Send PUT request to 'grades/get' endpoint
     axios
-      .put('http://localhost:4001/data/grade/get', { grade: grade })
+      .post('http://localhost:4001/data/grades/get', { grade: grade })
       .then(() => {
 
         // Fetch all books to refresh

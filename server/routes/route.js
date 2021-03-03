@@ -8,6 +8,8 @@ const routes = require('../controllers/controller.js')
 const router = express.Router()
 
 router.get('/grades/all', routes.gradesAll)
+router.post('/grades/get', routes.gradeGet)
+
 router.get('/questions/all', routes.questionsAll)
 
 router.post('/quizes/create', routes.quizesCreate)
