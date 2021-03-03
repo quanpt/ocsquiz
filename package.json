@@ -6,19 +6,18 @@
   "main": "src/index.tsx",
   "prox": "http://localhost:4001",
   "dependencies": {
-    "axios": "0.19.2",
-    "body-parser": "1.19.0",
-    "compression": "1.7.4",
-    "cors": "2.8.5",
-    "express": "4.17.1",
-    "helmet": "3.22.0",
-    "knex": "0.20.13",
-
     "@material-ui/core": "^4.11.3",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.7.3",
+    "axios": "0.19.2",
+    "body-parser": "1.19.0",
+    "compression": "1.7.4",
+    "cors": "^2.8.5",
+    "express": "4.17.1",
     "formik": "^2.2.6",
+    "helmet": "^3.22.0",
+    "knex": "^0.20.13",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.3",
@@ -29,8 +28,8 @@
     "concurrently": "5.1.0",
     "nodemon": "2.0.3",
     "react-scripts": "3.4.1",
-    "sqlite3": "4.1.1",
-    "typescript": "3.8.3"
+    "sqlite3": "^4.1.1",
+    "typescript": "^4.2.2"
   },
   "scripts": {
     "build": "node ./buildScript",
