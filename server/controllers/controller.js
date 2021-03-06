@@ -14,60 +14,114 @@ exports.questionsAll = async (req, res) => {
     })
     .catch(err => {
       // Send a error message in response
-      res.json({ message: `There was an error retrieving books: ${err}` })
+      res.json({ message: `There was an error retrieving data: ${err}` })
     })
 }
 
 // Retrieve all grades
+// http://localhost:4001/data/grades/all
 exports.gradesAll = async (req, res) => {
-  // Get all grades from database
   knex
-    .select('grade') // select all records
-    .from('Grade') // from 'grades' table
-    .distinct('grade')
-    .then(grades => {
-      // Send questions extracted from database in response
-      res.json(grades)
+    .select('Year') // select all records
+    .from('TitleCat') // from 'TitleCat' table
+    .distinct('Year')
+    .then(items => {
+      res.json(items)
     })
     .catch(err => {
       // Send a error message in response
-      res.json({ message: `There was an error retrieving books: ${err}` })
+      res.json({ message: `There was an error retrieving data: ${err}` })
     })
 }
 
-// Retrieve single grade
-exports.gradeGet = async (req, res) => {
-  // Get all grades from database
+// Retrieve all subject on a grade
+// curl 'http://localhost:4001/data/subject/get' --data "year=3"
+exports.getSubject = async (req, res) => {
   knex
-    .select('shortTitle')
-    .from('Grade') // from 'grades' table
-    .distinct('shortTitle')
-    .where('grade', req.body.grade) // find correct record based on id
-    .then(titles => {
-      // Send questions extracted from database in response
-      res.json(titles)
+    .select('Subject') // select all records
+    .from('TitleCat') // from 'TitleCat' table
+    .distinct('Subject')
+    .where('Year', req.body.year)
+    .then(items => {
+      res.json(items)
     })
     .catch(err => {
-      // Send a error message in response
-      res.json({ message: `There was an error retrieving short titles: ${err}` })
+      res.json({ message: `There was an error retrieving data: ${err}` })
+    })
+}
+
+// Retrieve all title on a grade, subject
+// curl 'http://localhost:4001/data/title/get' --data "year=3&subject=English" | jq .
+exports.getFullTitle = async (req, res) => {
+  knex
+    .select('FullTitle')
+    .from('TitleCat')
+    .where('Year', req.body.year)
+    .where('Subject', req.body.subject)
+    .then(items => {
+      res.json(items)
+    })
+    .catch(err => {
+      res.json({ message: `There was an error retrieving data: ${err}` })
+    })
+}
+
+// Retrieve all question on a title
+// curl 'http://localhost:4001/data/questions/get' --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20" | jq .
+exports.getQuestions = async (req, res) => {
+  knex
+    .select('*')
+    .from('FullQuestion')
+    .where('title', req.body.title)
+    .then(items => {
+      res.json(items)
+    })
+    .catch(err => {
+      console.error(err);
+      res.json({ message: `There was an error retrieving data: ${err}` })
     })
 }
 
 // Create new quiz
-exports.quizesCreate = async (req, res) => {
-  // Add new quiz to database
-  knex('Quizes')
-    .insert({ // insert new record, a quiz
-      'title': req.body.title,
-      'timestamp': new Date().getTime()
+// curl 'http://localhost:4001/data/quizes/put' -X PUT --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20&questionId=16637&questionId=16639&questionId=16642&questionId=16645"
+exports.quizCreate = async (req, res) => {
+
+  const answers = [];
+  for (var questionId of req.body.questionId) {
+    var answer = {questionId: questionId}
+    answers.push(answer)
+  }
+
+  var quizId
+
+  try {
+    await knex.transaction(async trx => {
+
+      const ids = await trx
+        .insert({ 
+          'title': req.body.title,
+          'timestamp': new Date().getTime()
+        }, 'id')
+        .into('Quizes')
+      quizId = ids[0]
+
+      answers.forEach((answer) => answer.quizId = quizId)
+      await trx('Answers').insert(answers)
     })
-    .then(() => {
-      // Send a success message in response
-      res.json({ message: `Quiz \'${req.body.title}\' at ${new Date().getTime()} created.` })
+  } catch(err) {
+    console.error(err);
+    res.json({ message: `There was an error creating ${req.body.title} quiz: ${err}` })
+  };
+
+  knex.select('id, quizId, questionId'.split(', '))
+    .from('Answers')
+    .where('quizId', quizId)
+    .then(items => {
+      res.json(items)
     })
     .catch(err => {
-      // Send a error message in response
-      res.json({ message: `There was an error creating ${req.body.title} quiz: ${err}` })
+      console.error(err);
+      res.json({ message: `There was an error retrieving data: ${err}` })
     })
 }
 
