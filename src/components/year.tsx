@@ -3,35 +3,33 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 
 // Import components
-import { GradeList } from './grade-list'
+import { YearList } from './year-list'
 
 // Import styles
 // import './../styles/bookshelf.css'
 
 // Create GradeListPage component
-export const GradeListPage = () => {
+export const YearListPage = () => {
   // Prepare states
-  const [grades, setGrades] = useState([])
+  const [grades, setYears] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // Fetch all grades on initial render
   useEffect(() => {
-    fetchGrades()
+    fetchYears()
   }, [])
 
   // Fetch all grades
-  const fetchGrades = async () => {
-    // Send GET request to 'grades/all' endpoint
+  const fetchYears = async () => {
     axios
-      .get('http://localhost:4001/data/grades/all')
+      .get('http://localhost:4001/data/year/get')
       .then(response => {
         // Update the grades state
-        setGrades(response.data)
+        setYears(response.data)
 
         // Update loading state
         setLoading(false)
       })
-      .catch(error => console.error(`There was an error retrieving the grade list: ${error}`))
+      .catch(error => console.error(`There was an error retrieving the year list: ${error}`))
   }
 
 //   // Create new book
@@ -104,7 +102,7 @@ export const GradeListPage = () => {
 
         // Fetch all books to refresh
         // the books on the bookshelf list
-        fetchGrades()
+        fetchYears()
       })
       .catch(error => console.error(`There was an error getting the ${grade} grade: ${error}`))
   }
@@ -143,7 +141,7 @@ export const GradeListPage = () => {
       </div> */}
 
       {/* Render bookshelf list component */}
-      <GradeList grades={grades} loading={loading} handleGradeClick={handleGradeClick} />
+      <YearList years={grades} loading={loading} handleYearClick={handleGradeClick} />
     </div>
   )
 }

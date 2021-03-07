@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Formik, Field, Form } from 'formik';
 import './index.css';
-import { GradeListPage } from './components/grade'
+import { YearListPage } from './components/year'
 
 function Answer(props) {
   var { answer, questionKey, index, isSubmitted } = props;
@@ -157,4 +157,4 @@ class Quiz extends React.Component {
 
 // ReactDOM.render(<Quiz />, document.getElementById('root'));
 
-ReactDOM.render(<GradeListPage />, document.getElementById('root'))
+ReactDOM.render(<YearListPage />, document.getElementById('root'))

@@ -18,13 +18,12 @@ exports.questionsAll = async (req, res) => {
     })
 }
 
-// Retrieve all grades
-// http://localhost:4001/data/grades/all
-exports.gradesAll = async (req, res) => {
+// Retrieve all years
+exports.getYears = async (req, res) => {
   knex
-    .select('Year') // select all records
+    .select('year') // select all records
     .from('TitleCat') // from 'TitleCat' table
-    .distinct('Year')
+    .distinct('year')
     .then(items => {
       res.json(items)
     })
@@ -34,14 +33,14 @@ exports.gradesAll = async (req, res) => {
     })
 }
 
-// Retrieve all subject on a grade
+// Retrieve all subject on a year
 // curl 'http://localhost:4001/data/subject/get' --data "year=3"
 exports.getSubject = async (req, res) => {
   knex
-    .select('Subject') // select all records
+    .select('subject') // select all records
     .from('TitleCat') // from 'TitleCat' table
-    .distinct('Subject')
-    .where('Year', req.body.year)
+    .distinct('subject')
+    .where('year', req.body.year)
     .then(items => {
       res.json(items)
     })
@@ -50,14 +49,14 @@ exports.getSubject = async (req, res) => {
     })
 }
 
-// Retrieve all title on a grade, subject
+// Retrieve all title on a year, subject
 // curl 'http://localhost:4001/data/title/get' --data "year=3&subject=English" | jq .
 exports.getFullTitle = async (req, res) => {
   knex
-    .select('FullTitle')
+    .select('fullTitle')
     .from('TitleCat')
-    .where('Year', req.body.year)
-    .where('Subject', req.body.subject)
+    .where('year', req.body.year)
+    .where('subject', req.body.subject)
     .then(items => {
       res.json(items)
     })
@@ -88,7 +87,7 @@ exports.quizCreate = async (req, res) => {
 
   const answers = [];
   for (var questionId of req.body.questionId) {
-    var answer = {questionId: questionId}
+    var answer = { questionId: questionId }
     answers.push(answer)
   }
 
@@ -98,7 +97,7 @@ exports.quizCreate = async (req, res) => {
     await knex.transaction(async trx => {
 
       const ids = await trx
-        .insert({ 
+        .insert({
           'title': req.body.title,
           'timestamp': new Date().getTime()
         }, 'id')
@@ -108,7 +107,7 @@ exports.quizCreate = async (req, res) => {
       answers.forEach((answer) => answer.quizId = quizId)
       await trx('Answers').insert(answers)
     })
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     res.json({ message: `There was an error creating ${req.body.title} quiz: ${err}` })
   };
@@ -127,36 +126,11 @@ exports.quizCreate = async (req, res) => {
 
 // Create new answer
 exports.answersCreate = async (req, res) => {
-    // Add new quiz to database
-    knex('Answers')
-      .insert({ // insert new record, a quiz
-        'quizId': req.body.quizId,
-        'questionId': req.body.questionId,
-        'answer': req.body.answer,
-        'timestamp': new Date().getTime()
-      })
-      .then(() => {
-        // Send a success message in response
-        res.json({ message: `Answer (\'${req.body.quizId}\', \'${req.body.questionId}\', \'${req.body.answer}\')  at ${new Date().getTime()} created.` })
-      })
-      .catch(err => {
-        // Send a error message in response
-        res.json({ message: `There was an error creating (\'${req.body.quizId}\', \'${req.body.questionId}\', \'${req.body.answer}\') answer: ${err}` })
-      })
-  }
-
-// Remove specific quiz
-exports.quizesDelete = async (req, res) => {
-  // Find specific book in the database and remove it
-  knex('Quizes')
-    .where('id', req.body.id) // find correct record based on id
-    .del() // delete the record
-    .then(() => {
-      // Send a success message in response
-      res.json({ message: `Quiz ${req.body.id} deleted.` })
-    })
-    .catch(err => {
-      // Send a error message in response
-      res.json({ message: `There was an error deleting ${req.body.id} quiz: ${err}` })
-    })
+  try {
+    const returns = await trx('Answers').insert(req.body)
+    res.json(returns)
+  } catch (err) {
+    console.error(err);
+    res.json({ message: `There was an error creating ${req.body.title} quiz: ${err}` })
+  };
 }

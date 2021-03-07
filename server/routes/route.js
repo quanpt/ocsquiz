@@ -7,7 +7,8 @@ const routes = require('../controllers/controller.js')
 // Create router
 const router = express.Router()
 
-router.get('/grades/all', routes.gradesAll)
+router.get('/year/get', routes.getYears)
+
 router.post('/subject/get', routes.getSubject)
 router.post('/title/get', routes.getFullTitle)
 
@@ -16,7 +17,7 @@ router.post('/questions/get', routes.getQuestions)
 
 router.put('/quizes/put', routes.quizCreate)
 
-router.put('/answers/create', routes.answersCreate)
+router.put('/answers/put', routes.answersCreate)
 
 
 // Export router

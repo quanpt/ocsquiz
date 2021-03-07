@@ -2,27 +2,27 @@
 import React from 'react'
 
 // Import components
-import { GradeListRow } from './grade-list-row'
+import { YearListRow } from './year-list-row'
 
 // Import styles
 // import './../styles/Grade-list.css'
 
 // Create interfaces
-interface GradeUI {
+export interface YearUI {
   position: number;
-  grade: string;
+  year: string;
 }
 
-interface GradeListUI {
-  grades: GradeUI[];
+interface YearListUI {
+  years: YearUI[];
   loading: boolean;
-  handleGradeClick: (grade: string) => void;
+  handleYearClick: (year: string) => void;
 }
 
 // Create GradeList component
-export const GradeList = (props: GradeListUI) => {
+export const YearList = (props: YearListUI) => {
   // Show loading message
-  if (props.loading) return <p>GradeList table is loading...</p>
+  if (props.loading) return <p>YearList table is loading...</p>
 
   return (
     <table className="table">
@@ -30,26 +30,26 @@ export const GradeList = (props: GradeListUI) => {
           <tr>
             <th className="table-head-item" />
 
-            <th className="table-head-item">Grade</th>
+            <th className="table-head-item">Year</th>
 
             <th className="table-head-item" />
           </tr>
         </thead>
 
         <tbody className="table-body">
-          {props.grades.length > 0 ? (
-            props.grades.map((grade: GradeUI, idx) => (
-              <GradeListRow
+          {props.years.length > 0 ? (
+            props.years.map((year: YearUI, idx) => (
+              <YearListRow
                 key={idx + 1}
                 position={idx + 1}
-                grade={grade.grade}
-                handleGradeClick={props.handleGradeClick}
+                year={year.year}
+                handleYearClick={props.handleYearClick}
               />
               )
             )
           ) : (
             <tr className="table-row">
-              <td className="table-item" style={{ textAlign: 'center' }} colSpan={6}>There are no grade to show. Create one!</td>
+              <td className="table-item" style={{ textAlign: 'center' }} colSpan={6}>There are no year to show. Create one!</td>
             </tr>
           )
         }
