@@ -1,7 +1,7 @@
 {
   "include": [
     "./src/*"
-  ],
+, "src/components/react-app-env.d.ts"  ],
   "compilerOptions": {
     "lib": [
       "dom",

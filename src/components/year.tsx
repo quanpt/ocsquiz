@@ -5,7 +5,11 @@ import axios from 'axios'
 import { BrowserRouter as Route, Link } from "react-router-dom";
 
 // interfaces
-export interface YearUI {
+export interface Year {
+  year: string;
+}
+
+interface YearUI extends Year {
   position: number;
   year: string;
 }
