@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import {
   BrowserRouter as Router,
@@ -12,6 +12,7 @@ import './index.css';
 
 import { SubjectListPage } from './components/subject'
 import { YearListPage } from './components/year'
+import { QuizListPage } from './components/title'
 
 
 // ========================================
@@ -35,9 +36,12 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-        <Link to="/"><h1>Year</h1></Link>
+        <Link to="/"><h1>Home</h1></Link>
 
           <Switch>
+            <Route path="/year/:year/subject/:subject">
+              <Quizes/>
+            </Route>
             <Route path="/year/:year">
               <Subjects/>
             </Route>
@@ -49,6 +53,12 @@ class App extends React.Component {
       </Router>
     );
   }
+}
+
+function Quizes(props) {
+  let match = useRouteMatch();
+  let { year, subject } = useParams();
+  return <QuizListPage year={year} subject={subject} />
 }
 
 function Subjects(props) {

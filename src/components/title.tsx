@@ -2,40 +2,41 @@
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Route, Link } from "react-router-dom";
 import axios from 'axios'
-import { Year } from './year'
+import { SubjectUI } from './subject'
 
-export interface SubjectUI extends Year {
-  subject: string;
-  year: string;
+interface TitleUI extends SubjectUI {
+  fullTitle: string;
 }
 
-interface SubjectListUI {
-  subjects: SubjectUI[];
+interface TitleListUI {
+  titles: TitleUI[];
   year: string;
+  subject: string;
   loading: boolean;
 }
 
-const SubjectListRow = (props: SubjectUI) => (
+const TitleRow = (props: TitleUI) => (
   <tr className="table-row">
     <td className="table-item">
-      <Link to={"/year/" + props.year + "/subject/" + props.subject}>{props.subject}</Link>
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + props.fullTitle}>{props.fullTitle}</Link>
     </td>
   </tr>
 )
 
-export const SubjectList = (props: SubjectListUI) => {
+export const TitleList = (props: TitleListUI) => {
   // Show loading message
   if (props.loading) return <p>SubjectList table is loading...</p>
 
   return (
     <table className="table">
         <tbody className="table-body">
-          {props.subjects.length > 0 ? (
-            props.subjects.map((item, idx) => (
-              <SubjectListRow
+          {props.titles.length > 0 ? (
+            props.titles.map((item, idx) => (
+              <TitleRow
                 key={idx + 1}
-                subject={item.subject}
+                subject={props.subject}
                 year={props.year}
+                fullTitle={item.fullTitle}
               />
               )
             )
@@ -51,33 +52,34 @@ export const SubjectList = (props: SubjectListUI) => {
 }
 
 // Create SubjectListPage component
-export function SubjectListPage (props: Year) {
+export function QuizListPage (props: SubjectUI) {
   // Prepare states
-  const [subjects, setSubjects] = useState([])
+  const [titles, setTitles] = useState([])
   const [loading, setLoading] = useState(true)
   const [year, setYear] = useState(props.year)
+  const [subject, setSubject] = useState(props.subject)
 
   useEffect(() => {
-    fetchSubjects()
+    fetchTitles()
   }, [])
 
   // Fetch all subject of given year
-  const fetchSubjects = async () => {
+  const fetchTitles = async () => {
     axios
-      .post('http://localhost:4001/data/subject/get', { year: year })
+      .post('http://localhost:4001/data/title/get', { year: year, subject: subject })
       .then((response) => {
-        setSubjects(response.data)
+        setTitles(response.data)
 
         // Update loading state
         setLoading(false)
       })
-      .catch(error => console.error(`There was an error getting subject of the year ${year}: ${error}`))
+      .catch(error => console.error(`There was an error getting title of the year '${year}' and subject '${subject}': ${error}`))
   }
 
   return (
     <div className="quiz-list-wrapper">
-      <h1>Subjects</h1>
-      <SubjectList year={year} subjects={subjects} loading={loading} />
+      <h1>Titles</h1>
+      <TitleList year={year} titles={titles} subject={subject} loading={loading} />
     </div>
   )
 }

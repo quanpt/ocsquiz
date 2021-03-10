@@ -37,7 +37,7 @@ function Question(props) {
   );
 }
 
-class Quiz extends React.Component {
+export class Quiz extends React.Component {
   constructor(props) {
     super(props);
     let state = {
@@ -45,13 +45,17 @@ class Quiz extends React.Component {
       isLoaded: false,
       title: null,
       questions: [],
+      year: props.year,
+      subject: props.subject
     };
-
     this.state = state;
   }
 
   componentDidMount() {
-    fetch(process.env.PUBLIC_URL + "/mock.json")
+    fetch("http://localhost:4001/data/title/get", {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      body: JSON.stringify(this.state)})
       .then(res => res.json())
       .then(
         (result) => {
@@ -92,7 +96,7 @@ class Quiz extends React.Component {
     } else {
       return (
         <div>
-          <h1>Quiz</h1>
+          <h1>Quiz - Year: {this.state.year} - Subject: {this.state.subject}</h1>
           <Formik
             initialValues={{}}
             onSubmit={async (answers) => {
