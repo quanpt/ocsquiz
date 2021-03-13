@@ -1,37 +1,44 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import createDOMPurify from 'dompurify'
+import { JSDOM } from 'jsdom'
+
 import { Formik, Field, Form } from 'formik';
 
-function Answer(props) {
-  var { answer, questionKey, index, isSubmitted } = props;
-  return (
-    <label>
-      <Field type="Radio" name={questionKey} value={("" + index)} disabled={isSubmitted} />
-      <span className={
-        "answer " + (
-          isSubmitted ? (
-            answer.isSelected ? (
-              answer.isCorrect ? "correctAnswer" : "incorrectAnswer"
-            ) : ""
-          ) : ""
-        )
-      }>
-        {String.fromCharCode(65 + index)}. {answer.title}
-      </span>
-    </label>
-  );
-}
-
 function Question(props) {
-  let key = props.question.id;
+  const window = (new JSDOM('')).window
+  const DOMPurify = createDOMPurify(window)
+  let key = props.question.id
+  var rawHtml = props.question.question
+  rawHtml = '<div>#' + props.question.id + ". " + rawHtml.replace(/\r?\n|\r/g,'')
+    .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
+    .replace('<br/> <br/> <br/></div>','</div>')
+  var answer=""
+  if (props.isSubmitted) {
+    answer = <span 
+        className={"answer " + (props.question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")}>
+         {props.question.isAnsweredCorrect ? " Correct" : " INcorrect"}
+      </span>
+  }
   return (
     <div id={key}>
-      <p>Question: {props.question.title}</p>
-      <div role="group" aria-labelledby={key}>
-        {props.question.answers.map((answer, index) => {
-          return <Answer key={key + "_" + index} answer={answer} questionKey={key} index={index} isSubmitted={props.isSubmitted} />
-        })}
+      <div>
+        { <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml) }} /> }
       </div>
+      <label htmlFor={props.question.id}>Answer </label>
+      <Field id={props.question.id} name={props.question.id} 
+        placeholder="A, B, C, D or other text" 
+        disabled={props.isSubmitted} autoComplete="off" />
+      {answer}
+
+
+      {/* <div role="group" aria-labelledby={key}>
+        {'ABCD'.split('').map((answer, index) => {
+          return <Answer key={key + "_" + index} answer={answer} 
+            questionKey={key} index={index} 
+            isSubmitted={props.isSubmitted} isCorrect={props.question.answer === answer}/>
+        })}
+      </div> */}
       <hr />
     </div>
   );
@@ -46,13 +53,14 @@ export class Quiz extends React.Component {
       title: null,
       questions: [],
       year: props.year,
-      subject: props.subject
+      subject: props.subject,
+      title: props.title
     };
     this.state = state;
   }
 
   componentDidMount() {
-    fetch("http://localhost:4001/data/title/get", {
+    fetch("http://localhost:4001/data/questions/get", {
       method: 'POST',
       headers: {'Content-Type': 'application/json; charset=UTF-8'},
       body: JSON.stringify(this.state)})
@@ -61,8 +69,7 @@ export class Quiz extends React.Component {
         (result) => {
           this.setState({
             isLoaded: true,
-            title: result.title,
-            questions: result.questions,
+            questions: result,
           });
         },
         // Note: it's important to handle errors here
@@ -70,8 +77,7 @@ export class Quiz extends React.Component {
         // exceptions from actual bugs in components.
         (error) => {
           this.setState({
-            isLoaded: true,
-            error
+            error: true,
           });
         }
       )
@@ -94,26 +100,31 @@ export class Quiz extends React.Component {
     } else if (!isLoaded) {
       return <div>Loading...</div>;
     } else {
+      let newQuestions = this.state.questions.slice();
+      var dict = newQuestions.reduce(
+        (dict, el, index) => (dict[el.id] = "", dict), {})
       return (
         <div>
-          <h1>Quiz - Year: {this.state.year} - Subject: {this.state.subject}</h1>
+          <h1>Quiz</h1>
+          <h2>{this.state.title}</h2>
           <Formik
-            initialValues={{}}
+            initialValues={dict}
             onSubmit={async (answers) => {
 
               if (this.state.isSubmitted)
                 return;
 
-              console.log(JSON.stringify(answers, null, 2));
-              let newQuestions = this.state.questions.slice();
-              let countCorrect = 0;
+              // console.log(JSON.stringify(answers, null, 2));
+              let countCorrect = 0
+              let countAnswer = 0
 
               for (let key in newQuestions) {
                 let question = newQuestions[key];
-                console.log(question.id + " " + answers[question.id]);
-                if (answers[question.id]) {
-                  question.answers[answers[question.id]].isSelected = true;
-                  countCorrect += question.answers[answers[question.id]].isCorrect ? 1 : 0;
+                if (answers[question.id] !== '') {
+                  question.userAnswer = answers[question.id];
+                  question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.answer;
+                  countCorrect += question.isAnsweredCorrect ? 1 : 0;
+                  countAnswer ++
                 }
               }
               this.setState({
@@ -122,25 +133,25 @@ export class Quiz extends React.Component {
                 datetime: new Date(),
               });
 
-              const response = await fetch(process.env.PUBLIC_URL + "/mock_response.json", {
-                method: 'POST',
-                body: JSON.stringify(this.state, null, 2),
-                headers: { 'Content-Type': 'application/json; charset=UTF-8' }
-              });
+              // const response = await fetch(process.env.PUBLIC_URL + "/mock_response.json", {
+              //   method: 'POST',
+              //   body: JSON.stringify(this.state, null, 2),
+              //   headers: { 'Content-Type': 'application/json; charset=UTF-8' }
+              // });
 
-              if (!response.ok) { /* Handle */ }
+              // if (!response.ok) { /* Handle */ }
 
-              // If you care about a response:
-              if (response.body !== null) {
-                // body is ReadableStream<Uint8Array>
-                // parse as needed, e.g. reading directly, or
-                const asString = new TextDecoder("utf-8").decode(response.body);
-                // and further:
-                const asJSON = JSON.parse(asString);  // implicitly 'any', make sure to verify type on runtime.
-                console.log(asJSON);
-              }
+              // // If you care about a response:
+              // if (response.body !== null) {
+              //   // body is ReadableStream<Uint8Array>
+              //   // parse as needed, e.g. reading directly, or
+              //   const asString = new TextDecoder("utf-8").decode(response.body);
+              //   // and further:
+              //   const asJSON = JSON.parse(asString);  // implicitly 'any', make sure to verify type on runtime.
+              //   console.log(asJSON);
+              // }
 
-              alert("Total: " + this.state.questions.length + "\nAttempt: " + Object.keys(answers).length + "\nCorrect: " + countCorrect);
+              alert("Total: " + this.state.questions.length + "\nAttempt: " + countAnswer + "\nCorrect: " + countCorrect);
             }}
           >
             {({ answers }) => (

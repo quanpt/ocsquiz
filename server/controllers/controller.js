@@ -52,7 +52,6 @@ exports.getSubject = async (req, res) => {
 // Retrieve all title on a year, subject
 // curl 'http://localhost:4001/data/title/get' --data "year=3&subject=English" | jq .
 exports.getFullTitle = async (req, res) => {
-  console.log(req.body);
   knex
     .select('fullTitle')
     .from('TitleCat')
@@ -73,6 +72,7 @@ exports.getQuestions = async (req, res) => {
     .select('*')
     .from('FullQuestion')
     .where('title', req.body.title)
+    .limit(10)
     .then(items => {
       res.json(items)
     })

@@ -12,8 +12,9 @@ import './index.css';
 
 import { SubjectListPage } from './components/subject'
 import { YearListPage } from './components/year'
-import { QuizListPage } from './components/title'
+import { TitleListPage } from './components/title'
 
+import { Quiz } from './components/quiz'
 
 // ========================================
 
@@ -39,8 +40,11 @@ class App extends React.Component {
         <Link to="/"><h1>Home</h1></Link>
 
           <Switch>
-            <Route path="/year/:year/subject/:subject">
+            <Route path="/year/:year/subject/:subject/title/:title">
               <Quizes/>
+            </Route>
+            <Route path="/year/:year/subject/:subject">
+              <Titles/>
             </Route>
             <Route path="/year/:year">
               <Subjects/>
@@ -56,13 +60,16 @@ class App extends React.Component {
 }
 
 function Quizes(props) {
-  let match = useRouteMatch();
+  let { year, subject, title } = useParams();
+  return <Quiz year={year} subject={subject} title={title}/>
+}
+
+function Titles(props) {
   let { year, subject } = useParams();
-  return <QuizListPage year={year} subject={subject} />
+  return <TitleListPage year={year} subject={subject} />
 }
 
 function Subjects(props) {
-  let match = useRouteMatch();
   let { year } = useParams();
   return <SubjectListPage year={year}/>
 }

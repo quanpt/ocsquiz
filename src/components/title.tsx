@@ -52,7 +52,7 @@ export const TitleList = (props: TitleListUI) => {
 }
 
 // Create SubjectListPage component
-export function QuizListPage (props: SubjectUI) {
+export function TitleListPage (props: SubjectUI) {
   // Prepare states
   const [titles, setTitles] = useState([])
   const [loading, setLoading] = useState(true)
