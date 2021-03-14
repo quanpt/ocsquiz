@@ -5,6 +5,13 @@ import { JSDOM } from 'jsdom'
 
 import { Formik, Field, Form } from 'formik';
 
+function onKeyDown(keyEvent) {
+  if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
+    keyEvent.preventDefault();
+  }
+}
+
+
 function Question(props) {
   const window = (new JSDOM('')).window
   const DOMPurify = createDOMPurify(window)
@@ -155,7 +162,7 @@ export class Quiz extends React.Component {
             }}
           >
             {({ answers }) => (
-              <Form>
+              <Form onKeyDown={onKeyDown}>
                 {this.renderQuestions()}
                 {this.state.isSubmitted ? null : <button type="submit">Submit</button>}
               </Form>
