@@ -8,10 +8,17 @@
 }
 
 .incorrectAnswer {
-  color:red;
+  color:darkred;
   font-weight: bold;
 }
 
 .correctAnswer {
   color:blue;
+}
+
+.invisible{
+  color:white;
+  display: inline-block;
+  width: 100px;
+  text-align: center;
 }

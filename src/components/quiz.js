@@ -5,26 +5,37 @@ import { JSDOM } from 'jsdom'
 
 import { Formik, Field, Form } from 'formik';
 
+let reImage1 = new RegExp(/\$image1\$/g);
+
 function onKeyDown(keyEvent) {
   if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
     keyEvent.preventDefault();
   }
 }
 
+function CorrectAnswer(props) {
+  if (props.isAnsweredCorrect)
+    return <span> Correct</span>
+  else
+    return <span> INcorrect, please retry first then double click here: __<span className={"invisible"}>{props.answer}</span>__</span>
+}
 
 function Question(props) {
   const window = (new JSDOM('')).window
   const DOMPurify = createDOMPurify(window)
   let key = props.question.id
   var rawHtml = props.question.question
-  rawHtml = '<div>#' + props.question.id + ". " + rawHtml.replace(/\r?\n|\r/g,'')
+  rawHtml = '<div>#' + key + ". " + rawHtml.replace(/\r?\n|\r/g,'')
     .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
     .replace('<br/> <br/> <br/></div>','</div>')
+    .replace(' src="', ' src="/assets/')
+    .replace(reImage1, '<img src="/assets/figures/'+ props.question.mmfid +'_1.jpg" />')
+
   var answer=""
   if (props.isSubmitted) {
     answer = <span 
         className={"answer " + (props.question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")}>
-         {props.question.isAnsweredCorrect ? " Correct" : " INcorrect"}
+        <CorrectAnswer isAnsweredCorrect={props.question.isAnsweredCorrect} answer={props.question.answer}/>
       </span>
   }
   return (
@@ -94,7 +105,7 @@ export class Quiz extends React.Component {
     return (
       <div>
         {this.state.questions.map((question, index) => {
-          return <Question key={index} question={question} isSubmitted={this.state.isSubmitted} />
+          return <Question key={question.id} question={question} isSubmitted={this.state.isSubmitted} />
         })}
       </div>
     );
@@ -129,7 +140,7 @@ export class Quiz extends React.Component {
                 let question = newQuestions[key];
                 if (answers[question.id] !== '') {
                   question.userAnswer = answers[question.id];
-                  question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.answer;
+                  question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.answer.toUpperCase();
                   countCorrect += question.isAnsweredCorrect ? 1 : 0;
                   countAnswer ++
                 }
