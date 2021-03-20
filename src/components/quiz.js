@@ -36,7 +36,7 @@ function Question(props) {
   if (props.isSubmitted) {
     answer = <span 
         className={"answer " + (props.question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")}>
-        <CorrectAnswer isAnsweredCorrect={props.question.isAnsweredCorrect} answer={props.question.providedAnswer}/>
+        <CorrectAnswer isAnsweredCorrect={props.question.isAnsweredCorrect} answer={props.question.answer}/>
       </span>
   }
   return (
@@ -47,7 +47,8 @@ function Question(props) {
       <label htmlFor={props.question.id}>Answer </label>
       <Field id={props.question.id} name={props.question.id} 
         placeholder="A, B, C, D or other text" 
-        disabled={props.isSubmitted} autoComplete="off" />
+        disabled={props.isSubmitted} autoComplete="off" 
+        onKeyUp={props.answerOnKeyUp}/>
       {answer}
       <hr />
     </div>
@@ -95,10 +96,21 @@ export class Quiz extends React.Component {
     return (
       <div>
         {this.state.questions.map((question, index) => {
-          return <Question key={question.id} question={question} isSubmitted={this.state.isSubmitted} />
+          return <Question key={question.id} 
+            question={question} 
+            isSubmitted={this.state.isSubmitted} 
+            answerOnKeyUp={() => this.answerOnKeyUp(question)}/>
         })}
       </div>
     );
+  }
+
+  answerOnKeyUp(question) {
+    let newQuestions = this.state.questions.slice();
+    newQuestions.filter((element, index, array)=>{return element === question})[0].timestamp = Date.now()
+    this.setState({
+      questions: newQuestions
+    });
   }
 
   render() {
@@ -130,7 +142,7 @@ export class Quiz extends React.Component {
                 let question = newQuestions[key];
                 if (answers[question.id] !== '') {
                   question.userAnswer = answers[question.id];
-                  question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.providedAnswer.toUpperCase();
+                  question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.answer.toUpperCase();
                   countCorrect += question.isAnsweredCorrect ? 1 : 0;
                   countAnswer ++
                 }
@@ -138,8 +150,31 @@ export class Quiz extends React.Component {
               this.setState({
                 isSubmitted: true,
                 questions: newQuestions,
-                datetime: new Date(),
+                timestamp: Date.now()
               });
+              fetch("http://localhost:4001/data/answers/put", {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json; charset=UTF-8'},
+                body: JSON.stringify({
+                  quizId: this.state.quizId, 
+                  questions: newQuestions.map((question)=>{
+                    return {
+                      id: question.id, 
+                      userAnswer: question.userAnswer, 
+                      isAnsweredCorrect: question.isAnsweredCorrect,
+                      timestamp: question.timestamp
+                    }
+                  })
+                })})
+                .then(res => res.json())
+                .then(
+                  (result) => {},
+                  (error) => {
+                    this.setState({
+                      error: true,
+                    });
+                  }
+                )
               alert("Total: " + this.state.questions.length + "\nAttempt: " + countAnswer + "\nCorrect: " + countCorrect);
             }}
           >
