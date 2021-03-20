@@ -48,15 +48,6 @@ function Question(props) {
         placeholder="A, B, C, D or other text" 
         disabled={props.isSubmitted} autoComplete="off" />
       {answer}
-
-
-      {/* <div role="group" aria-labelledby={key}>
-        {'ABCD'.split('').map((answer, index) => {
-          return <Answer key={key + "_" + index} answer={answer} 
-            questionKey={key} index={index} 
-            isSubmitted={props.isSubmitted} isCorrect={props.question.answer === answer}/>
-        })}
-      </div> */}
       <hr />
     </div>
   );
@@ -84,24 +75,11 @@ export class Quiz extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
-
-        }
-      )
-    fetch("http://localhost:4001/data/questions/get", {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json; charset=UTF-8'},
-      body: JSON.stringify(this.state)})
-      .then(res => res.json())
-      .then(
-        (result) => {
           this.setState({
             isLoaded: true,
             questions: result,
           });
         },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
         (error) => {
           this.setState({
             error: true,
@@ -149,7 +127,7 @@ export class Quiz extends React.Component {
                 let question = newQuestions[key];
                 if (answers[question.id] !== '') {
                   question.userAnswer = answers[question.id];
-                  question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.answer.toUpperCase();
+                  question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.providedAnswer.toUpperCase();
                   countCorrect += question.isAnsweredCorrect ? 1 : 0;
                   countAnswer ++
                 }
@@ -159,25 +137,6 @@ export class Quiz extends React.Component {
                 questions: newQuestions,
                 datetime: new Date(),
               });
-
-              // const response = await fetch(process.env.PUBLIC_URL + "/mock_response.json", {
-              //   method: 'POST',
-              //   body: JSON.stringify(this.state, null, 2),
-              //   headers: { 'Content-Type': 'application/json; charset=UTF-8' }
-              // });
-
-              // if (!response.ok) { /* Handle */ }
-
-              // // If you care about a response:
-              // if (response.body !== null) {
-              //   // body is ReadableStream<Uint8Array>
-              //   // parse as needed, e.g. reading directly, or
-              //   const asString = new TextDecoder("utf-8").decode(response.body);
-              //   // and further:
-              //   const asJSON = JSON.parse(asString);  // implicitly 'any', make sure to verify type on runtime.
-              //   console.log(asJSON);
-              // }
-
               alert("Total: " + this.state.questions.length + "\nAttempt: " + countAnswer + "\nCorrect: " + countCorrect);
             }}
           >

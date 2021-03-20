@@ -70,7 +70,7 @@ exports.getFullTitle = async (req, res) => {
 exports.getQuestions = async (req, res) => {
   knex
     .select('*')
-    .from('FullQuestion')
+``    .from('FullQuestions')
     .where('title', req.body.title)
     .orderByRaw('RANDOM()')
     .limit(10)
@@ -91,7 +91,7 @@ exports.quizCreate = async (req, res) => {
 
     const questions = await knex
       .select('*')
-      .from('FullQuestion')
+      .from('FullQuestions')
       .where('title', req.body.title)
       .orderByRaw('RANDOM()')
       .limit(10)
@@ -121,8 +121,8 @@ exports.quizCreate = async (req, res) => {
     res.json({ message: `There was an error creating ${req.body.title} quiz: ${err}` })
   };
 
-  knex.select('id, quizId, questionId'.split(', '))
-    .from('Answers')
+  await knex.select('*')
+    .from('FullAnswers')
     .where('quizId', quizId)
     .then(items => {
       res.json(items)
