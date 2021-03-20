@@ -31,7 +31,7 @@ function Question(props) {
     .replace(' src="', ' src="/assets/')
     .replace(reImage1, '<img src="/assets/figures/'+ props.question.mmfid +'_1.jpg" />')
 
-  var answer=""
+  var answer=<span/>
   if (props.isSubmitted) {
     answer = <span 
         className={"answer " + (props.question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")}>
@@ -68,7 +68,6 @@ export class Quiz extends React.Component {
     let state = {
       error: null,
       isLoaded: false,
-      title: null,
       questions: [],
       year: props.year,
       subject: props.subject,
@@ -78,6 +77,16 @@ export class Quiz extends React.Component {
   }
 
   componentDidMount() {
+    fetch("http://localhost:4001/data/quizes/put", {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      body: JSON.stringify(this.state)})
+      .then(res => res.json())
+      .then(
+        (result) => {
+
+        }
+      )
     fetch("http://localhost:4001/data/questions/get", {
       method: 'POST',
       headers: {'Content-Type': 'application/json; charset=UTF-8'},

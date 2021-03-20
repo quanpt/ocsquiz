@@ -72,6 +72,7 @@ exports.getQuestions = async (req, res) => {
     .select('*')
     .from('FullQuestion')
     .where('title', req.body.title)
+    .orderByRaw('RANDOM()')
     .limit(10)
     .then(items => {
       res.json(items)
@@ -83,18 +84,25 @@ exports.getQuestions = async (req, res) => {
 }
 
 // Create new quiz
-// curl 'http://localhost:4001/data/quizes/put' -X PUT --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20&questionId=16637&questionId=16639&questionId=16642&questionId=16645"
+// curl 'http://localhost:4001/data/quizes/put' -X PUT --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20"
 exports.quizCreate = async (req, res) => {
 
-  const answers = [];
-  for (var questionId of req.body.questionId) {
-    var answer = { questionId: questionId }
-    answers.push(answer)
-  }
-
-  var quizId
-
   try {
+
+    const questions = await knex
+      .select('*')
+      .from('FullQuestion')
+      .where('title', req.body.title)
+      .orderByRaw('RANDOM()')
+      .limit(10)
+  
+    const answers = []
+    for (var question of questions) {
+      var answer = { questionId: question.id }
+      answers.push(answer)
+    }
+  
+    var quizId
     await knex.transaction(async trx => {
 
       const ids = await trx
