@@ -35,7 +35,7 @@ function Question(props) {
   if (props.isSubmitted) {
     answer = <span 
         className={"answer " + (props.question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")}>
-        <CorrectAnswer isAnsweredCorrect={props.question.isAnsweredCorrect} answer={props.question.answer}/>
+        <CorrectAnswer isAnsweredCorrect={props.question.isAnsweredCorrect} answer={props.question.providedAnswer}/>
       </span>
   }
   return (
