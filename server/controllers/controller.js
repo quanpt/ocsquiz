@@ -87,45 +87,22 @@ exports.getQuestions = async (req, res) => {
 // curl 'http://localhost:4001/data/quizes/put' -X PUT --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20"
 exports.quizCreate = async (req, res) => {
 
-  try {
+  const ids = await knex
+    .insert({
+      'title': req.body.title,
+      'timestamp': new Date().getTime()
+    }, 'id')
+    .into('Quizes')
+  var quizId = ids[0]
 
-    const questions = await knex
-      .select('*')
-      .from('FullQuestions')
-      .where('title', req.body.title)
-      .orderByRaw('RANDOM()')
-      .limit(10)
-  
-    const answers = []
-    for (var question of questions) {
-      var answer = { questionId: question.id }
-      answers.push(answer)
-    }
-  
-    var quizId
-    await knex.transaction(async trx => {
-
-      const ids = await trx
-        .insert({
-          'title': req.body.title,
-          'timestamp': new Date().getTime()
-        }, 'id')
-        .into('Quizes')
-      quizId = ids[0]
-
-      answers.forEach((answer) => answer.quizId = quizId)
-      await trx('Answers').insert(answers)
-    })
-  } catch (err) {
-    console.error(err);
-    res.json({ message: `There was an error creating ${req.body.title} quiz: ${err}` })
-  };
-
-  await knex.select('*')
-    .from('FullAnswers')
-    .where('quizId', quizId)
+  knex
+    .select('*')
+    .from('FullQuestions')
+    .where('title', req.body.title)
+    .orderByRaw('RANDOM()')
+    .limit(10)
     .then(items => {
-      res.json(items)
+      res.json({quizId: quizId, questions: items})
     })
     .catch(err => {
       console.error(err);

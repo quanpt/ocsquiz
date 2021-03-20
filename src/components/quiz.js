@@ -8,9 +8,10 @@ import { Formik, Field, Form } from 'formik';
 let reImage1 = new RegExp(/\$image1\$/g);
 
 function onKeyDown(keyEvent) {
-  if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
+  if ((keyEvent.charCode || keyEvent.keyCode) === 13 && keyEvent.target.nodeName === 'INPUT') {
     keyEvent.preventDefault();
   }
+  // allow Enter on BUTTON
 }
 
 function CorrectAnswer(props) {
@@ -60,6 +61,7 @@ export class Quiz extends React.Component {
       error: null,
       isLoaded: false,
       questions: [],
+      quizId: null,
       year: props.year,
       subject: props.subject,
       title: props.title
@@ -77,7 +79,8 @@ export class Quiz extends React.Component {
         (result) => {
           this.setState({
             isLoaded: true,
-            questions: result,
+            questions: result.questions,
+            quizId: result.quizId
           });
         },
         (error) => {
