@@ -156,12 +156,11 @@ export class Quiz extends React.Component {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json; charset=UTF-8'},
                 body: JSON.stringify({
-                  quizId: this.state.quizId, 
-                  questions: newQuestions.map((question)=>{
+                  answers: newQuestions.map((question)=>{
                     return {
-                      id: question.id, 
-                      userAnswer: question.userAnswer, 
-                      isAnsweredCorrect: question.isAnsweredCorrect,
+                      quizId: this.state.quizId,
+                      questionId: question.id, 
+                      answer: question.userAnswer,
                       timestamp: question.timestamp
                     }
                   })

@@ -112,11 +112,13 @@ exports.quizCreate = async (req, res) => {
 
 // Create new answer
 exports.answersCreate = async (req, res) => {
-  try {
-    const returns = await trx('Answers').insert(req.body)
-    res.json(returns)
-  } catch (err) {
-    console.error(err);
-    res.json({ message: `There was an error creating ${req.body.title} quiz: ${err}` })
-  };
+  knex('Answers')
+    .insert(req.body.answers)
+    .then(results => {
+      res.json(results)
+    })
+    .catch(err => {
+      console.error(err);
+      res.json({ message: `There was an error creating answer from request body: ${req.body} error: ${err}` })
+    })
 }
