@@ -26,7 +26,7 @@ function Question(props) {
   const DOMPurify = createDOMPurify(window)
   let key = props.question.id
   var rawHtml = props.question.question
-  rawHtml = '<div>#' + key + ". " + rawHtml.replace(/\r?\n|\r/g,'')
+  rawHtml = rawHtml.replace(/\r?\n|\r/g,'')
     .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
     .replace('<br/> <br/> <br/></div>','</div>')
     .replace(' src="', ' src="/assets/')
@@ -41,6 +41,7 @@ function Question(props) {
   }
   return (
     <div id={key}>
+      <h3>Question #{key}</h3>
       <div>
         { <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml) }} /> }
       </div>

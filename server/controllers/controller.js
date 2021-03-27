@@ -87,6 +87,9 @@ exports.getQuestions = async (req, res) => {
 // curl 'http://localhost:4001/data/quizes/put' -X PUT --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20"
 exports.quizCreate = async (req, res) => {
 
+  const dictQuestionLimit = {'General Ability': 100}
+  const questionLimit = req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 10
+
   const ids = await knex
     .insert({
       'title': req.body.title,
@@ -95,19 +98,44 @@ exports.quizCreate = async (req, res) => {
     .into('Quizes')
   var quizId = ids[0]
 
-  knex
+  const subqueryTriedSuccess = knex("FullAnswers")
+    .select("questionId")
+    .where('title', '=', req.body.title)
+    .andWhereRaw('upper(answer) = upper(providedAnswer)')
+
+  const questions = await knex
     .select('*')
     .from('FullQuestions')
     .where('title', req.body.title)
+    .where('id', 'not in', subqueryTriedSuccess)
     .orderByRaw('RANDOM()')
-    .limit(10)
-    .then(items => {
-      res.json({quizId: quizId, questions: items})
-    })
+    .limit(questionLimit)
     .catch(err => {
       console.error(err);
       res.json({ message: `There was an error retrieving data: ${err}` })
     })
+
+  if (questions.length == questionLimit) {
+    console.log("good up to now")
+    res.json({quizId: quizId, questions: questions})
+  } else {
+    console.log("only got " + questions.length + "questions")
+    const questionsTriedSuccess = await knex
+      .select('q.*')
+      .from({q: 'FullQuestions'})
+      .join({a: 'Answers'}, {'q.id': 'a.questionId'})
+      .where('q.title', '=', req.body.title)
+      .andWhereRaw('upper(a.answer) = upper(q.answer)')
+      .orderByRaw('RANDOM()')
+      .limit(questionLimit - questions.length)
+      .then(items => {
+        res.json({quizId: quizId, questions: [].concat(questions, items)})
+      })
+      .catch(err => {
+        console.error(err);
+        res.json({ message: `There was an error retrieving data: ${err}` })
+      })
+  }
 }
 
 // Create new answer
