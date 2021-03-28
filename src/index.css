@@ -22,3 +22,15 @@
   width: 100px;
   text-align: center;
 }
+
+.table-item{
+  text-align: center;
+}
+
+.table{
+  border: 1px solid black;
+}
+
+.table-item{
+  border: 1px solid gray;
+}

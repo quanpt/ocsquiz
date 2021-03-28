@@ -15,7 +15,7 @@ import { YearListPage } from './components/year'
 import { TitleListPage } from './components/title'
 
 import { Quiz } from './components/quiz'
-import {ResultListPage} from './components/result'
+import { ResultListPage } from './components/result'
 
 // ========================================
 
@@ -38,17 +38,18 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-        <Link to="/"><h1>Home</h1></Link>
-
+          <Link to="/"><h1>Home</h1></Link>
           <Switch>
             <Route path="/year/:year/subject/:subject/title/:title">
-              <Quizes/>
+              <Quizes />
             </Route>
             <Route path="/year/:year/subject/:subject">
-              <Titles/>
+              <Titles />
             </Route>
             <Route path="/year/:year">
-              <Subjects/>
+              <Subjects />
+            </Route><Route path="/results/:id">
+              <QuizView />
             </Route>
             <Route path="/results">
               <ResultListPage />
@@ -63,9 +64,14 @@ class App extends React.Component {
   }
 }
 
+function QuizView(props) {
+  let { id } = useParams();
+  return <Quiz isViewMode={true} id={id} />
+}
+
 function Quizes(props) {
   let { year, subject, title } = useParams();
-  return <Quiz year={year} subject={subject} title={title}/>
+  return <Quiz year={year} subject={subject} title={title} />
 }
 
 function Titles(props) {
@@ -75,7 +81,7 @@ function Titles(props) {
 
 function Subjects(props) {
   let { year } = useParams();
-  return <SubjectListPage year={year}/>
+  return <SubjectListPage year={year} />
 }
 
 ReactDOM.render(<App />, document.getElementById('root'))

@@ -4,9 +4,12 @@ import { BrowserRouter as Route, Link } from "react-router-dom"
 import axios from 'axios'
 
 interface ResultUI {
-  quizId: string
-  quizTitle: string
-  quizTime: Date
+  id: string
+  title: string
+  timestamp: Date
+  questionCount: number
+  answerCount: number
+  correctAnswerCount: number
 }
 
 interface ResultListUI {
@@ -16,9 +19,13 @@ interface ResultListUI {
 
 const ResultRow = (props: ResultUI) => (
   <tr className="table-row">
-    <td className="table-item">
-      <Link to={"/result/" + props.quizId}>{props.quizTitle} ({props.quizTime})</Link>
+    <td className="table-item" style={{textAlign: "left"}}>
+      <Link to={"/results/" + props.id}>{props.title}</Link>
     </td>
+    <td className="table-item">{new Date(props.timestamp).toLocaleString('en-AU')}</td>
+    <td className="table-item">{props.correctAnswerCount}</td>
+    <td className="table-item">{props.answerCount}</td>
+    <td className="table-item">{props.questionCount}</td>
   </tr>
 )
 
@@ -28,6 +35,7 @@ export const ResultList = (props: ResultListUI) => {
 
   return (
     <table className="table">
+        <th>Title</th><th>Date</th><th>Answer</th><th>Correct Answer</th><th>Question</th>
         <tbody className="table-body">
           {props.results.length > 0 ? (
             props.results.map((item, idx) => (
@@ -61,7 +69,7 @@ export function ResultListPage (props: ResultListUI) {
   // Fetch all subject of given year
   const fetchResults = async () => {
     axios
-      .post('http://localhost:4001/data/results/get')
+      .get('http://localhost:4001/data/quizes')
       .then((response) => {
         setResults(response.data)
 
@@ -74,7 +82,7 @@ export function ResultListPage (props: ResultListUI) {
   return (
     <div className="quiz-list-wrapper">
       <h1>Titles</h1>
-      {/* <TitleList year={year} titles={titles} subject={subject} loading={loading} /> */}
+      <ResultList loading={loading} results={results} />
     </div>
   )
 }

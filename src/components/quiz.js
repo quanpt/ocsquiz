@@ -26,30 +26,30 @@ function Question(props) {
   const DOMPurify = createDOMPurify(window)
   let key = props.question.id
   var rawHtml = props.question.question
-  rawHtml = rawHtml.replace(/\r?\n|\r/g,'')
+  rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
     .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
-    .replace('<br/> <br/> <br/></div>','</div>')
+    .replace('<br/> <br/> <br/></div>', '</div>')
     .replace(' src="', ' src="/assets/')
-    .replace(reImage1, '<img src="/assets/figures/'+ props.question.mmfid +'_1.jpg" />')
+    .replace(reImage1, '<img src="/assets/figures/' + props.question.mmfid + '_1.jpg" />')
 
-  var answer=<span/>
+  var answer = <span />
   if (props.isSubmitted) {
-    answer = <span 
-        className={"answer " + (props.question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")}>
-        <CorrectAnswer isAnsweredCorrect={props.question.isAnsweredCorrect} answer={props.question.answer}/>
-      </span>
+    answer = <span
+      className={"answer " + (props.question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")}>
+      <CorrectAnswer isAnsweredCorrect={props.question.isAnsweredCorrect} answer={props.question.answer} />
+    </span>
   }
   return (
     <div id={key}>
       <h3>Question #{key}</h3>
       <div>
-        { <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml) }} /> }
+        {<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml) }} />}
       </div>
       <label htmlFor={props.question.id}>Answer </label>
-      <Field id={props.question.id} name={props.question.id} 
-        placeholder="A, B, C, D or other text" 
-        disabled={props.isSubmitted} autoComplete="off" 
-        onKeyUp={props.answerOnKeyUp}/>
+      <Field id={props.question.id} name={props.question.id}
+        placeholder="A, B, C, D or other text"
+        disabled={props.isSubmitted} autoComplete="off"
+        onKeyUp={props.answerOnKeyUp} />
       {answer}
       <hr />
     </div>
@@ -63,44 +63,59 @@ export class Quiz extends React.Component {
       error: null,
       isLoaded: false,
       questions: [],
-      quizId: null,
+      quizId: props.id ? props.id : null,
       year: props.year,
       subject: props.subject,
-      title: props.title
+      title: props.title,
+      isViewMode: props.isViewMode
     };
     this.state = state;
   }
 
   componentDidMount() {
-    fetch("http://localhost:4001/data/quizes/put", {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json; charset=UTF-8'},
-      body: JSON.stringify(this.state)})
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            isLoaded: true,
-            questions: result.questions,
-            quizId: result.quizId
-          });
+    if (this.state.isViewMode) {
+      fetch("http://localhost:4001/data/quizes/" + this.state.quizId)
+        .then(res => res.json())
+        .then((result) => {
+          this.setState(result)
+          this.setState({ isLoaded: true })
         },
-        (error) => {
-          this.setState({
-            error: true,
+          (error) => {
+            this.setState({
+              error: true,
+            });
           });
-        }
-      )
+    } else
+      fetch("http://localhost:4001/data/quizes/put", {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+        body: JSON.stringify(this.state)
+      })
+        .then(res => res.json())
+        .then(
+          (result) => {
+            this.setState({
+              isLoaded: true,
+              questions: result.questions,
+              quizId: result.quizId
+            });
+          },
+          (error) => {
+            this.setState({
+              error: true,
+            });
+          }
+        )
   }
 
   renderQuestions() {
     return (
       <div>
         {this.state.questions.map((question, index) => {
-          return <Question key={question.id} 
-            question={question} 
-            isSubmitted={this.state.isSubmitted} 
-            answerOnKeyUp={() => this.answerOnKeyUp(question)}/>
+          return <Question key={question.id}
+            question={question}
+            isSubmitted={this.state.isSubmitted}
+            answerOnKeyUp={() => this.answerOnKeyUp(question)} />
         })}
       </div>
     );
@@ -108,7 +123,7 @@ export class Quiz extends React.Component {
 
   answerOnKeyUp(question) {
     let newQuestions = this.state.questions.slice();
-    newQuestions.filter((element, index, array)=>{return element === question})[0].timestamp = Date.now()
+    newQuestions.filter((element, index, array) => { return element === question })[0].timestamp = Date.now()
     this.setState({
       questions: newQuestions
     });
@@ -132,7 +147,7 @@ export class Quiz extends React.Component {
             initialValues={dict}
             onSubmit={async (answers) => {
 
-              if (this.state.isSubmitted)
+              if (this.state.isSubmitted || this.state.isViewMode)
                 return;
 
               // console.log(JSON.stringify(answers, null, 2));
@@ -145,7 +160,7 @@ export class Quiz extends React.Component {
                   question.userAnswer = answers[question.id];
                   question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.answer.toUpperCase();
                   countCorrect += question.isAnsweredCorrect ? 1 : 0;
-                  countAnswer ++
+                  countAnswer++
                 }
               }
               this.setState({
@@ -155,20 +170,21 @@ export class Quiz extends React.Component {
               });
               fetch("http://localhost:4001/data/answers/put", {
                 method: 'PUT',
-                headers: {'Content-Type': 'application/json; charset=UTF-8'},
+                headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                 body: JSON.stringify({
-                  answers: newQuestions.map((question)=>{
+                  answers: newQuestions.map((question) => {
                     return {
                       quizId: this.state.quizId,
-                      questionId: question.id, 
+                      questionId: question.id,
                       answer: question.userAnswer,
                       timestamp: question.timestamp
                     }
                   })
-                })})
+                })
+              })
                 .then(res => res.json())
                 .then(
-                  (result) => {},
+                  (result) => { },
                   (error) => {
                     this.setState({
                       error: true,
