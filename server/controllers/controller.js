@@ -150,3 +150,23 @@ exports.answersCreate = async (req, res) => {
       res.json({ message: `There was an error creating answer from request body: ${req.body} error: ${err}` })
     })
 }
+
+
+
+
+// Retrieve all quizes
+// curl 'http://localhost:4001/data/quizes/get' | jq .
+exports.getQuizes = async (req, res) => {
+  // TODO
+  knex
+    .select('fullTitle')
+    .from('TitleCat')
+    .where('year', req.body.year)
+    .where('subject', req.body.subject)
+    .then(items => {
+      res.json(items)
+    })
+    .catch(err => {
+      res.json({ message: `There was an error retrieving data: ${err}` })
+    })
+}

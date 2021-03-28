@@ -16,6 +16,7 @@ router.get('/questions/all', routes.questionsAll)
 router.post('/questions/get', routes.getQuestions)
 
 router.put('/quizes/put', routes.quizCreate)
+router.put('/quizes/get', routes.getQuizes)
 
 router.put('/answers/put', routes.answersCreate)
 
