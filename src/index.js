@@ -15,6 +15,7 @@ import { YearListPage } from './components/year'
 import { TitleListPage } from './components/title'
 
 import { Quiz } from './components/quiz'
+import {ResultListPage} from './components/result'
 
 // ========================================
 
@@ -48,6 +49,9 @@ class App extends React.Component {
             </Route>
             <Route path="/year/:year">
               <Subjects/>
+            </Route>
+            <Route path="/results">
+              <ResultListPage />
             </Route>
             <Route path="/">
               <YearListPage />
