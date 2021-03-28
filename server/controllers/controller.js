@@ -2,7 +2,7 @@
 const knex = require('./../db')
 
 // Retrieve all questions
-exports.questionsAll = async (req, res) => {
+exports.getQuestionsAll = async (req, res) => {
   // Get all Questions from database
   knex
     .select('*') // select all records
@@ -35,7 +35,7 @@ exports.getYears = async (req, res) => {
 
 // Retrieve all subject on a year
 // curl 'http://localhost:4001/data/subject/get' --data "year=3"
-exports.getSubject = async (req, res) => {
+exports.getSubjects = async (req, res) => {
   knex
     .select('subject') // select all records
     .from('TitleCat') // from 'TitleCat' table
@@ -51,7 +51,7 @@ exports.getSubject = async (req, res) => {
 
 // Retrieve all title on a year, subject
 // curl 'http://localhost:4001/data/title/get' --data "year=3&subject=English" | jq .
-exports.getFullTitle = async (req, res) => {
+exports.getFullTitles = async (req, res) => {
   knex
     .select('fullTitle')
     .from('TitleCat')
@@ -85,7 +85,7 @@ exports.getQuestions = async (req, res) => {
 
 // Create new quiz
 // curl 'http://localhost:4001/data/quizes/put' -X PUT --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20"
-exports.quizCreate = async (req, res) => {
+exports.createQuiz = async (req, res) => {
 
   const dictQuestionLimit = {'General Ability': 100}
   const questionLimit = req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 10
@@ -139,7 +139,7 @@ exports.quizCreate = async (req, res) => {
 }
 
 // Create new answer
-exports.answersCreate = async (req, res) => {
+exports.createAnswers = async (req, res) => {
   knex('Answers')
     .insert(req.body.answers)
     .then(results => {
@@ -150,8 +150,6 @@ exports.answersCreate = async (req, res) => {
       res.json({ message: `There was an error creating answer from request body: ${req.body} error: ${err}` })
     })
 }
-
-
 
 
 // Retrieve all quizes

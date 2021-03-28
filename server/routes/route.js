@@ -9,16 +9,16 @@ const router = express.Router()
 
 router.get('/year/get', routes.getYears)
 
-router.post('/subject/get', routes.getSubject)
-router.post('/title/get', routes.getFullTitle)
+router.post('/subject/get', routes.getSubjects)
+router.post('/title/get', routes.getFullTitles)
 
-router.get('/questions/all', routes.questionsAll)
+router.get('/questions/all', routes.getQuestionsAll)
 router.post('/questions/get', routes.getQuestions)
 
-router.put('/quizes/put', routes.quizCreate)
+router.put('/quizes/put', routes.createQuiz)
 router.put('/quizes/get', routes.getQuizes)
 
-router.put('/answers/put', routes.answersCreate)
+router.put('/answers/put', routes.createAnswers)
 
 
 // Export router
