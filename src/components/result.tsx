@@ -35,8 +35,8 @@ export const ResultList = (props: ResultListUI) => {
 
   return (
     <table className="table">
-        <th>Title</th><th>Date</th><th>Answer</th><th>Correct Answer</th><th>Question</th>
         <tbody className="table-body">
+          <tr><th>Title</th><th>Date</th><th>Answer</th><th>Correct Answer</th><th>Question</th></tr>
           {props.results.length > 0 ? (
             props.results.map((item, idx) => (
               <ResultRow

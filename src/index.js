@@ -58,6 +58,7 @@ class App extends React.Component {
               <YearListPage />
             </Route>
           </Switch>
+          <Link to="/results">Result</Link>
         </div>
       </Router>
     );

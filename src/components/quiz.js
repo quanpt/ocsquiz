@@ -16,16 +16,17 @@ function onKeyDown(keyEvent) {
 
 function CorrectAnswer(props) {
   if (props.isAnsweredCorrect)
-    return <span> Correct</span>
+    return <span> "{props.answer}" is Correct</span>
   else
-    return <span> INcorrect, please retry first then double click here: __<span className={"invisible"}>{props.answer}</span>__</span>
+    return <span> "{props.answer}" is INcorrect, __<span className={"invisible"}>{props.providedAnswer}</span>__</span>
 }
 
 function Question(props) {
   const window = (new JSDOM('')).window
   const DOMPurify = createDOMPurify(window)
-  let key = props.question.id
-  var rawHtml = props.question.question
+  let q = props.question
+  let key = q.id
+  var rawHtml = q.question
   rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
     .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
     .replace('<br/> <br/> <br/></div>', '</div>')
@@ -35,8 +36,10 @@ function Question(props) {
   var answer = <span />
   if (props.isSubmitted) {
     answer = <span
-      className={"answer " + (props.question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")}>
-      <CorrectAnswer isAnsweredCorrect={props.question.isAnsweredCorrect} answer={props.question.answer} />
+      className={"answer " + (q.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")}>
+      <CorrectAnswer isAnsweredCorrect={q.isAnsweredCorrect} 
+        providedAnswer={q.providedAnswer ? q.providedAnswer : q.answer}
+        answer={q.answer}/>
     </span>
   }
   return (
@@ -77,8 +80,27 @@ export class Quiz extends React.Component {
       fetch("http://localhost:4001/data/quizes/" + this.state.quizId)
         .then(res => res.json())
         .then((result) => {
+          let countCorrect = 0
+          let countAnswer = 0
+          let newQuestions = result.questions.slice();
+          var dict = newQuestions.reduce(
+            (dict, el, index) => (dict[el.id] = "", dict), {})
+          for (let key in newQuestions) {
+            let question = newQuestions[key];
+            if (question.answer) {
+              question.isAnsweredCorrect = question.providedAnswer.toUpperCase() === question.answer.toUpperCase();
+              countCorrect += question.isAnsweredCorrect ? 1 : 0;
+              countAnswer++
+            }
+          }
           this.setState(result)
-          this.setState({ isLoaded: true })
+          this.setState({
+            isLoaded: true,
+            isSubmitted: true,
+            questions: newQuestions,
+            countCorrect: countCorrect,
+            countAnswer: countAnswer
+          });
         },
           (error) => {
             this.setState({
@@ -143,6 +165,7 @@ export class Quiz extends React.Component {
         <div>
           <h1>Quiz</h1>
           <h2>{this.state.title}</h2>
+          <div>Total: {this.state.questions.length} - Attempt: {this.state.countAnswer} - Correct: {this.state.countCorrect}</div>
           <Formik
             initialValues={dict}
             onSubmit={async (answers) => {
