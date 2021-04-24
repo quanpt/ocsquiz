@@ -72,8 +72,8 @@ exports.getQuestions = async (req, res) => {
     .select('*')
     ``.from('FullQuestions')
     .where('title', req.body.title)
-    .orderByRaw('RANDOM()')
-    .limit(10)
+    //.orderByRaw('RANDOM()')
+    //.limit(10)
     .then(items => {
       res.json(items)
     })
@@ -108,7 +108,7 @@ exports.createQuiz = async (req, res) => {
     .from('FullQuestions')
     .where('title', req.body.title)
     .where('id', 'not in', subqueryTriedSuccess)
-    .orderByRaw('RANDOM()')
+    //.orderByRaw('RANDOM()')
     .limit(questionLimit)
     .catch(err => {
       console.error(err);
@@ -125,7 +125,7 @@ exports.createQuiz = async (req, res) => {
       .join({ a: 'Answers' }, { 'q.id': 'a.questionId' })
       .where('q.title', '=', req.body.title)
       .andWhereRaw('upper(a.answer) = upper(q.answer)')
-      .orderByRaw('RANDOM()')
+      //.orderByRaw('RANDOM()')
       .limit(questionLimit - questions.length)
       .then(items => {
         res.json({ quizId: quizId, questions: [].concat(questions, items) })

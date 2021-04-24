@@ -32,6 +32,13 @@ function Question(props) {
     .replace('<br/> <br/> <br/></div>', '</div>')
     .replace(' src="', ' src="/assets/')
     .replace(reImage1, '<img src="/assets/figures/' + props.question.mmfid + '_1.jpg" />')
+    .replace('<a href="show_image.html?name=', '<a href="/assets/')
+    .replace('target="ReadingText"', 'target="_blank"')
+  if (q.imageId) {
+    rawHtml = '<img src="/assets/articles/bigfish/' + q.imageId + '.jpg" />' + rawHtml;
+  }
+
+  console.log(rawHtml)
 
   var answer = <span />
   if (props.isSubmitted) {
@@ -46,7 +53,7 @@ function Question(props) {
     <div id={key}>
       <h3>Question #{key}</h3>
       <div>
-        {<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml) }} />}
+        {<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] }) }} />}
       </div>
       <label htmlFor={props.question.id}>Answer </label>
       <Field id={props.question.id} name={props.question.id}
@@ -165,7 +172,7 @@ export class Quiz extends React.Component {
         <div>
           <h1>Quiz</h1>
           <h2>{this.state.title}</h2>
-          <div>Total: {this.state.questions.length} - Attempt: {this.state.countAnswer} - Correct: {this.state.countCorrect}</div>
+          {this.state.isViewMode ? <div>Total: {this.state.questions.length} - Attempt: {this.state.countAnswer} - Correct: {this.state.countCorrect}</div> : ""}
           <Formik
             initialValues={dict}
             onSubmit={async (answers) => {
