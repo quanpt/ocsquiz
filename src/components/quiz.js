@@ -84,7 +84,7 @@ export class Quiz extends React.Component {
 
   componentDidMount() {
     if (this.state.isViewMode) {
-      fetch("http://localhost:4001/data/quizes/" + this.state.quizId)
+      fetch("/data/quizes/" + this.state.quizId)
         .then(res => res.json())
         .then((result) => {
           let countCorrect = 0
@@ -115,7 +115,7 @@ export class Quiz extends React.Component {
             });
           });
     } else
-      fetch("http://localhost:4001/data/quizes/put", {
+      fetch("/data/quizes/put", {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },
         body: JSON.stringify(this.state)
@@ -198,7 +198,7 @@ export class Quiz extends React.Component {
                 questions: newQuestions,
                 timestamp: Date.now()
               });
-              fetch("http://localhost:4001/data/answers/put", {
+              fetch("/data/answers/put", {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                 body: JSON.stringify({

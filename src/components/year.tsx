@@ -65,7 +65,7 @@ export const YearListPage = () => {
 
   const fetchYears = async () => {
     axios
-      .get('http://localhost:4001/data/year/get')
+      .get('/data/year/get')
       .then(response => {
         setYears(response.data)
         setLoading(false)

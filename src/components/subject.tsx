@@ -64,7 +64,7 @@ export function SubjectListPage (props: Year) {
   // Fetch all subject of given year
   const fetchSubjects = async () => {
     axios
-      .post('http://localhost:4001/data/subject/get', { year: year })
+      .post('/data/subject/get', { year: year })
       .then((response) => {
         setSubjects(response.data)
 

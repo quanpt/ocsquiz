@@ -69,7 +69,7 @@ export function ResultListPage (props: ResultListUI) {
   // Fetch all subject of given year
   const fetchResults = async () => {
     axios
-      .get('http://localhost:4001/data/quizes')
+      .get('/data/quizes')
       .then((response) => {
         setResults(response.data)
 

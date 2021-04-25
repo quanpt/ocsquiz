@@ -66,7 +66,7 @@ export function TitleListPage (props: SubjectUI) {
   // Fetch all subject of given year
   const fetchTitles = async () => {
     axios
-      .post('http://localhost:4001/data/title/get', { year: year, subject: subject })
+      .post('/data/title/get', { year: year, subject: subject })
       .then((response) => {
         setTitles(response.data)
 
