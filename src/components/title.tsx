@@ -18,7 +18,7 @@ interface TitleListUI {
 const TitleRow = (props: TitleUI) => (
   <tr className="table-row">
     <td className="table-item">
-      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + props.fullTitle}>{props.fullTitle}</Link>
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle)}>{props.fullTitle}</Link>
     </td>
   </tr>
 )

@@ -76,7 +76,7 @@ export class Quiz extends React.Component {
       quizId: props.id ? props.id : null,
       year: props.year,
       subject: props.subject,
-      title: props.title,
+      title: decodeURIComponent(props.title),
       isViewMode: props.isViewMode
     };
     this.state = state;
