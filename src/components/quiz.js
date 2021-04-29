@@ -38,8 +38,6 @@ function Question(props) {
     rawHtml = '<img src="/assets/articles/bigfish/' + q.imageId + '.jpg" />' + rawHtml;
   }
 
-  console.log(rawHtml)
-
   var answer = <span />
   if (props.isSubmitted) {
     answer = <span

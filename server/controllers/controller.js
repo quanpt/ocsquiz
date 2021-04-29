@@ -87,8 +87,8 @@ exports.getQuestions = async (req, res) => {
 // curl 'http://localhost:4001/data/quizes/put' -X PUT --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20"
 exports.createQuiz = async (req, res) => {
 
-  const dictQuestionLimit = { 'General Ability': 100 }
-  const questionLimit = req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 10
+  const dictQuestionLimit = { 'General Ability': 5 }
+  const questionLimit = req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 5
 
   const ids = await knex
     .insert({
