@@ -171,7 +171,7 @@ export class Quiz extends React.Component {
       return (
         <div>
           <h1>Quiz</h1>
-          <h2>{this.state.title}</h2>
+          <h2>{this.state.title.replace(' result', '')}</h2>
           {this.state.isViewMode ? <div>Total: {this.state.questions.length} - Attempt: {this.state.countAnswer} - Correct: {this.state.countCorrect}</div> : ""}
           <Formik
             initialValues={dict}
@@ -193,6 +193,17 @@ export class Quiz extends React.Component {
                   countAnswer++
                 }
               }
+
+              if (countAnswer < 3*newQuestions.length/4) {
+                alert('Too many empty answers, please keep trying!');
+                return;
+              }
+
+              if (countCorrect * 2 < countAnswer) {
+                alert('Less than half answers are correct, please think and change your answers!');
+                return;
+              }
+
               this.setState({
                 isSubmitted: true,
                 questions: newQuestions,
