@@ -67,7 +67,9 @@ export const YearListPage = () => {
     axios
       .get('/data/year/get')
       .then(response => {
-        setYears(response.data)
+        var resYears = response.data
+        resYears.sort((a: Year, b: Year) => (a.year < b.year ? -1 : 1))
+        setYears(resYears)
         setLoading(false)
       })
       .catch(error => console.error(`There was an error retrieving the year list: ${error}`))
