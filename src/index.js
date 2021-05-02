@@ -37,7 +37,7 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <div>
+        <div className="wrapper bg-white rounded">
           <Link to="/"><h1>Home</h1></Link>
           <Switch>
             <Route path="/year/:year/subject/:subject/title/:title">

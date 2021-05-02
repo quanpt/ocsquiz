@@ -60,6 +60,7 @@ export const YearListPage = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    document.title = "Quiz - Years"
     fetchYears()
   }, [])
 

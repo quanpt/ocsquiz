@@ -20,7 +20,10 @@ interface ResultListUI {
 const ResultRow = (props: ResultUI) => (
   <tr className="table-row">
     <td className="table-item" style={{textAlign: "left"}}>
-      <Link to={"/results/" + props.id}>{props.title}</Link>
+      {props.answerCount > 0 ?
+      (<Link to={"/results/" + props.id}>{props.title}</Link>)
+      : (<div>{props.title}</div>)
+      }
     </td>
     <td className="table-item">{new Date(props.timestamp).toLocaleString('en-AU')}</td>
     <td className="table-item">{props.correctAnswerCount}</td>
@@ -34,9 +37,9 @@ export const ResultList = (props: ResultListUI) => {
   if (props.loading) return <p>ResultList table is loading...</p>
 
   return (
-    <table className="table">
+    <table className="table content">
         <tbody className="table-body">
-          <tr><th>Title</th><th>Date</th><th>Answer</th><th>Correct Answer</th><th>Question</th></tr>
+          <tr><th>Title</th><th>Date</th><th>Attempt</th><th>Correct</th><th>Question</th></tr>
           {props.results.length > 0 ? (
             props.results.map((item, idx) => (
               <ResultRow
@@ -63,6 +66,7 @@ export function ResultListPage (props: ResultListUI) {
   const [results, setResults] = useState([])
 
   useEffect(() => {
+    document.title = "Quiz - Results"
     fetchResults()
   }, [])
 
@@ -81,7 +85,6 @@ export function ResultListPage (props: ResultListUI) {
 
   return (
     <div className="quiz-list-wrapper">
-      <h1>Titles</h1>
       <ResultList loading={loading} results={results} />
     </div>
   )

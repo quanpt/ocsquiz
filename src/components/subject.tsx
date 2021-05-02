@@ -58,6 +58,7 @@ export function SubjectListPage (props: Year) {
   const [year, setYear] = useState(props.year)
 
   useEffect(() => {
+    document.title = "Quiz - Subjects"
     fetchSubjects()
   }, [])
 

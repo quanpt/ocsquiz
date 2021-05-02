@@ -15,10 +15,14 @@ function onKeyDown(keyEvent) {
 }
 
 function CorrectAnswer(props) {
-  if (props.isAnsweredCorrect)
-    return <span> "{props.answer}" is Correct</span>
-  else
-    return <span> "{props.answer}" is INcorrect, __<span className={"invisible"}>{props.providedAnswer}</span>__</span>
+  let secondSpent = Math.floor(props.question.timeSpent / 1000)
+  let timeClassName = secondSpent < 50 ? 'goodTime' : (secondSpent < 65 ? 'okTime' : 'badTime')
+  let className = "answer " + (props.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")
+  return <div>
+      <span className={className}> {props.answer.toUpperCase()}: {props.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
+      <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
+      {props.isAnsweredCorrect ? '' : <span>Solution: __<span className="invisible">{props.providedAnswer}</span>__</span>}
+    </div>
 }
 
 function Question(props) {
@@ -41,10 +45,11 @@ function Question(props) {
   var answer = <span />
   if (props.isSubmitted) {
     answer = <span
-      className={"answer " + (q.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")}>
+      >
       <CorrectAnswer isAnsweredCorrect={q.isAnsweredCorrect} 
         providedAnswer={q.providedAnswer ? q.providedAnswer : q.answer}
-        answer={q.answer}/>
+        answer={q.userAnswer ? q.userAnswer : q.answer}
+        question={q}/>
     </span>
   }
   return (
@@ -58,6 +63,7 @@ function Question(props) {
         placeholder="A, B, C, D or other text"
         disabled={props.isSubmitted} autoComplete="off"
         onKeyUp={props.answerOnKeyUp} />
+      <br/>
       {answer}
       <hr />
     </div>
@@ -89,9 +95,12 @@ export class Quiz extends React.Component {
           let countAnswer = 0
           let newQuestions = result.questions.slice();
           var dict = newQuestions.reduce(
-            (dict, el, index) => (dict[el.id] = "", dict), {})
+            (dict, el, index) => (dict[el.id] = "", dict), {});
+          let prevTimestamp = result.timestamp;
           for (let key in newQuestions) {
             let question = newQuestions[key];
+            question.timeSpent = question.timestamp - prevTimestamp;
+            prevTimestamp = question.timestamp
             if (question.answer) {
               question.isAnsweredCorrect = question.providedAnswer.toUpperCase() === question.answer.toUpperCase();
               countCorrect += question.isAnsweredCorrect ? 1 : 0;

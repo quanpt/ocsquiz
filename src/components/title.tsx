@@ -60,6 +60,7 @@ export function TitleListPage (props: SubjectUI) {
   const [subject, setSubject] = useState(props.subject)
 
   useEffect(() => {
+    document.title = "Quiz - Titles"
     fetchTitles()
   }, [])
 
