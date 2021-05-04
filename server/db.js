@@ -25,7 +25,7 @@ knex.schema
           table.increments('id').primary()
           table.integer('mmfid')
           table.string('question')
-          table.string('answer')
+          table.string('questionAnswer')
           table.string('qgroup')
           table.string('mmfgroup')
           table.string('title')
@@ -49,33 +49,3 @@ knex.schema
 
 // Export the database
 module.exports = knex
-
-// CREATE TABLE sqlite_sequence(name,seq)
-
-// CREATE TABLE "Questions" (
-//   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-//   mmfid INTEGER UNIQUE,
-//   question TEXT,
-//   answer TEXT,
-//   qgroup TEXT,
-//   mmfgroup TEXT,
-//   title TEXT
-// )
-
-// CREATE TABLE "Quizes" (
-// 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-// 	"timestamp"	INTEGER NOT NULL,
-// 	"title"	INTEGER NOT NULL
-// )
-
-// CREATE TABLE "Answers" (
-// 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-// 	"quizId"	INTEGER NOT NULL,
-// 	"questionId"	INTEGER NOT NULL,
-// 	"answer"	TEXT,
-// 	"timestamp"	INTEGER,
-// 	FOREIGN KEY("quizId") REFERENCES "Quiz"("id") ON UPDATE CASCADE,
-// 	FOREIGN KEY("questionId") REFERENCES "Questions"("id") ON UPDATE CASCADE
-// )
-
-// CREATE VIEW "TitleView" AS select "id", "mmfid", "question", "answer", "qgroup", "mmfgroup", replace(replace(ltrim(substr(title, instr(title, ' - ') + 1), ' -'), ' result', ''), ',', '') as title from "Questions"

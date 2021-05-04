@@ -15,13 +15,14 @@ function onKeyDown(keyEvent) {
 }
 
 function CorrectAnswer(props) {
-  let secondSpent = Math.floor(props.question.timeSpent / 1000)
+  let question = props.question
+  let secondSpent = Math.floor(question.timeSpent / 1000)
   let timeClassName = secondSpent < 50 ? 'goodTime' : (secondSpent < 65 ? 'okTime' : 'badTime')
-  let className = "answer " + (props.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")
+  let className = "answer " + (question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")
   return <div>
-      <span className={className}> {props.answer.toUpperCase()}: {props.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
+      <span className={className}> {question.userAnswer.toUpperCase()}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
       <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
-      {props.isAnsweredCorrect ? '' : <span>Solution: __<span className="invisible">{props.providedAnswer}</span>__</span>}
+      {question.isAnsweredCorrect ? '' : <span>Solution: __<span className="invisible">{question.questionAnswer}</span>__</span>}
     </div>
 }
 
@@ -42,16 +43,8 @@ function Question(props) {
     rawHtml = '<img src="/assets/articles/bigfish/' + q.imageId + '.jpg" />' + rawHtml;
   }
 
-  var answer = <span />
-  if (props.isSubmitted) {
-    answer = <span
-      >
-      <CorrectAnswer isAnsweredCorrect={q.isAnsweredCorrect} 
-        providedAnswer={q.providedAnswer ? q.providedAnswer : q.answer}
-        answer={q.userAnswer ? q.userAnswer : q.answer}
-        question={q}/>
-    </span>
-  }
+  var answer = props.isSubmitted ? <CorrectAnswer question={q}/> : <span />
+
   return (
     <div id={key}>
       <h3>Question #{key}</h3>
@@ -101,8 +94,8 @@ export class Quiz extends React.Component {
             let question = newQuestions[key];
             question.timeSpent = question.timestamp - prevTimestamp;
             prevTimestamp = question.timestamp
-            if (question.answer) {
-              question.isAnsweredCorrect = question.providedAnswer.toUpperCase() === question.answer.toUpperCase();
+            if (question.userAnswer) {
+              question.isAnsweredCorrect = question.questionAnswer.toUpperCase() === question.userAnswer.toUpperCase();
               countCorrect += question.isAnsweredCorrect ? 1 : 0;
               countAnswer++
             }
@@ -195,7 +188,7 @@ export class Quiz extends React.Component {
                 let question = newQuestions[key];
                 if (answers[question.id] !== '') {
                   question.userAnswer = answers[question.id];
-                  question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.answer.toUpperCase();
+                  question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.questionAnswer.toUpperCase();
                   countCorrect += question.isAnsweredCorrect ? 1 : 0;
                   countAnswer++
                 }
@@ -224,7 +217,7 @@ export class Quiz extends React.Component {
                     return {
                       quizId: this.state.quizId,
                       questionId: question.id,
-                      answer: question.userAnswer,
+                      userAnswer: question.userAnswer,
                       timestamp: question.timestamp
                     }
                   })

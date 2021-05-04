@@ -87,8 +87,8 @@ exports.getQuestions = async (req, res) => {
 // curl 'http://localhost:4001/data/quizes/put' -X PUT --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20"
 exports.createQuiz = async (req, res) => {
 
-  const dictQuestionLimit = { 'General Ability': 10 }
-  const questionLimit = req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 10
+  const dictQuestionLimit = {} // { 'General Ability': 3 }
+  const questionLimit = req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 3
 
   const ids = await knex
     .insert({
@@ -101,7 +101,7 @@ exports.createQuiz = async (req, res) => {
   const subqueryTriedSuccess = knex("FullAnswers")
     .select("questionId")
     .where('title', '=', req.body.title)
-    .andWhereRaw('upper(answer) = upper(providedAnswer)')
+    .andWhereRaw('upper(userAnswer) = upper(questionAnswer)')
 
   const questions = await knex
     .select('*')
@@ -124,7 +124,7 @@ exports.createQuiz = async (req, res) => {
       .from({ q: 'FullQuestions' })
       .join({ a: 'Answers' }, { 'q.id': 'a.questionId' })
       .where('q.title', '=', req.body.title)
-      .andWhereRaw('upper(a.answer) = upper(q.answer)')
+      .andWhereRaw('upper(a.userAnswer) = upper(q.questionAnswer)')
       //.orderByRaw('RANDOM()')
       .limit(questionLimit - questions.length)
       .then(items => {
