@@ -6,6 +6,7 @@ import { JSDOM } from 'jsdom'
 import { Formik, Field, Form } from 'formik';
 
 let reImage1 = new RegExp(/\$image1\$/g);
+let lastAnsweredTime = 0
 
 function onKeyDown(keyEvent) {
   if ((keyEvent.charCode || keyEvent.keyCode) === 13 && keyEvent.target.nodeName === 'INPUT') {
@@ -128,6 +129,7 @@ export class Quiz extends React.Component {
               questions: result.questions,
               quizId: result.quizId
             });
+            lastAnsweredTime = result.timestamp
           },
           (error) => {
             this.setState({
@@ -152,7 +154,10 @@ export class Quiz extends React.Component {
 
   answerOnKeyUp(question) {
     let newQuestions = this.state.questions.slice();
-    newQuestions.filter((element, index, array) => { return element === question })[0].timestamp = Date.now()
+    let currQuestion = newQuestions.filter((element, index, array) => { return element === question })[0];
+    currQuestion.timestamp = Date.now();
+    currQuestion.timeSpent = currQuestion.timestamp - lastAnsweredTime;
+    lastAnsweredTime = currQuestion.timestamp;
     this.setState({
       questions: newQuestions
     });

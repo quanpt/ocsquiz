@@ -79,6 +79,7 @@ export const YearListPage = () => {
   return (
     <div className="quiz-list-wrapper">
       <YearList years={years} loading={loading} />
+      <Link to="/results"><h2>Result</h2></Link>
     </div>
   )
 }
