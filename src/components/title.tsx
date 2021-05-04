@@ -6,6 +6,8 @@ import { SubjectUI } from './subject'
 
 interface TitleUI extends SubjectUI {
   fullTitle: string;
+  correctAnswerCount: number;
+  questionCount: number;
 }
 
 interface TitleListUI {
@@ -19,6 +21,7 @@ const TitleRow = (props: TitleUI) => (
   <tr className="table-row">
     <td className="table-item">
       <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle)}>{props.fullTitle.replace(' result', '')}</Link>
+      &nbsp;- (<span className={props.correctAnswerCount == props.questionCount ? 'goodTime' : 'warningTime'}>{props.correctAnswerCount} / {props.questionCount}</span>)
     </td>
   </tr>
 )
@@ -37,6 +40,8 @@ export const TitleList = (props: TitleListUI) => {
                 subject={props.subject}
                 year={props.year}
                 fullTitle={item.fullTitle}
+                correctAnswerCount={item.correctAnswerCount}
+                questionCount={item.questionCount}
               />
               )
             )

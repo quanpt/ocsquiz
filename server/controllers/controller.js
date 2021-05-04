@@ -53,8 +53,8 @@ exports.getSubjects = async (req, res) => {
 // curl 'http://localhost:4001/data/title/get' --data "year=3&subject=English" | jq .
 exports.getFullTitles = async (req, res) => {
   knex
-    .select('fullTitle')
-    .from('TitleCat')
+    .select('*')
+    .from('TitleView')
     .where('year', req.body.year)
     .where('subject', req.body.subject)
     .then(items => {

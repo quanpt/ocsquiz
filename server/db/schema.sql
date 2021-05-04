@@ -62,3 +62,14 @@ FROM Quizes q LEFT JOIN FullAnswers a ON a.quizId = q.id
 GROUP BY q.id)
 WHERE AnswerCount = 0
 CREATE VIEW "FullQuestions" AS SELECT q.*, i.id AS imageId FROM Questions q LEFT JOIN TitleCat t ON q.title = t.fullTitle LEFT JOIN Images i ON q.mmfid = i.id
+CREATE VIEW "TitleView" AS SELECT t1.*, t2.questionCount 
+FROM 
+	(SELECT tc.fullTitle, tc.year, tc.subject, count(DISTINCT fa.questionId) AS correctAnswerCount 
+	FROM TitleCat tc LEFT JOIN FullAnswers fa
+	ON tc.fullTitle = fa.title AND upper(fa.userAnswer) = upper(fa.questionAnswer)
+	GROUP BY tc.fullTitle) t1 
+		JOIN
+	(SELECT DISTINCT tc.fullTitle, count(q.id) AS questionCount FROM TitleCat tc LEFT JOIN Questions q
+	ON tc.fullTitle = q.title
+	GROUP BY tc.fullTitle) t2 
+		ON t1.fullTitle = t2.fullTitle
