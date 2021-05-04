@@ -63,7 +63,7 @@ function Question(props) {
 
   return (
     <div id={key}>
-      <h3>Question {props.position}</h3><span className='invisible'>#{key}</span>
+      <h3>Question {props.position} <span className='invisible'>#{key}</span></h3>
       <div>
         {<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] }) }} />}
       </div>

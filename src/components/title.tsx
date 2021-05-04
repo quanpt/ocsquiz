@@ -21,7 +21,12 @@ const TitleRow = (props: TitleUI) => (
   <tr className="table-row">
     <td className="table-item">
       <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle)}>{props.fullTitle.replace(' result', '')}</Link>
-      &nbsp;- (<span className={props.correctAnswerCount == props.questionCount ? 'goodTime' : 'warningTime'}>{props.correctAnswerCount} / {props.questionCount}</span>)
+    </td>
+    <td className="table-item-number">
+      <span className={props.correctAnswerCount == props.questionCount ? 'goodTime' : 'warningTime'}>{props.correctAnswerCount}</span>
+    </td>
+    <td className="table-item-number">
+      <span>{props.questionCount}</span>
     </td>
   </tr>
 )
@@ -33,6 +38,7 @@ export const TitleList = (props: TitleListUI) => {
   return (
     <table className="table">
         <tbody className="table-body">
+          <th>Title</th><th>Answered Question</th><th>Total Question</th>
           {props.titles.length > 0 ? (
             props.titles.map((item, idx) => (
               <TitleRow
@@ -84,7 +90,6 @@ export function TitleListPage (props: SubjectUI) {
 
   return (
     <div className="quiz-list-wrapper">
-      <h1>Titles</h1>
       <TitleList year={year} titles={titles} subject={subject} loading={loading} />
     </div>
   )
