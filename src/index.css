@@ -35,6 +35,12 @@
   color:red
 }
 
+.timer{
+    position: fixed;
+    top: 20px; right: 100px; width: 250px;
+    border: 3px solid #73AD21;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
 * {
@@ -67,7 +73,9 @@ span {
     font-size: 15px;
     font-weight: 600;
     color: rgb(50, 141, 245);
-    padding-bottom: 30px
+    padding-bottom: 5px;
+    padding-top: 5px;
+    padding-left: 2px;
 }
 
 p.text-muted {

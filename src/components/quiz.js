@@ -2,11 +2,26 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import createDOMPurify from 'dompurify'
 import { JSDOM } from 'jsdom'
+import { Timer } from './timer'
 
 import { Formik, Field, Form } from 'formik';
 
 let reImage1 = new RegExp(/\$image1\$/g);
 let lastAnsweredTime = 0
+let timeDict = {OC: {English: 72,
+  Mathematics: 68.5,
+  'Thinking Skills': 60,
+  'Computer Skill': 60,
+  'General Ability': 60,
+  'General Academic Knowledge': 60,
+  'Eng-Maths-GA': 65,
+  'Science and General Problem Solving': 60,
+  'non-verbal/visual reasoning': 60,
+  'Language Convention': 60,
+  Science: 60,
+  'Maths Olympiad': 60,
+  'Non-verbal Reasoning': 60,
+  Other: 60}}
 
 function onKeyDown(keyEvent) {
   if ((keyEvent.charCode || keyEvent.keyCode) === 13 && keyEvent.target.nodeName === 'INPUT') {
@@ -18,7 +33,7 @@ function onKeyDown(keyEvent) {
 function CorrectAnswer(props) {
   let question = props.question
   let secondSpent = Math.floor(question.timeSpent / 1000)
-  let timeClassName = secondSpent < 50 ? 'goodTime' : (secondSpent < 65 ? 'okTime' : 'badTime')
+  let timeClassName = secondSpent <= 60 ? 'goodTime' : (secondSpent <= 65 ? 'okTime' : 'badTime')
   let className = "answer " + (question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")
   return <div>
       <span className={className}> {question.userAnswer.toUpperCase()}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
@@ -48,7 +63,7 @@ function Question(props) {
 
   return (
     <div id={key}>
-      <h3>Question #{key}</h3>
+      <h3>Question {props.position}</h3><span className='invisible'>#{key}</span>
       <div>
         {<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] }) }} />}
       </div>
@@ -124,10 +139,13 @@ export class Quiz extends React.Component {
         .then(res => res.json())
         .then(
           (result) => {
+            let totalTime = (this.state.subject in timeDict.OC ? timeDict.OC[this.state.subject] : 600) * result.questions.length
             this.setState({
               isLoaded: true,
               questions: result.questions,
-              quizId: result.quizId
+              quizId: result.quizId,
+              minutes: Math.floor(totalTime / 60),
+              seconds: totalTime % 60,
             });
             lastAnsweredTime = result.timestamp
           },
@@ -140,12 +158,15 @@ export class Quiz extends React.Component {
   }
 
   renderQuestions() {
+    let state = this.state
     return (
       <div>
-        {this.state.questions.map((question, index) => {
+      <span className='timer'><Timer minutes={state.minutes} seconds={state.seconds}/></span>
+        {state.questions.map((question, index) => {
           return <Question key={question.id}
             question={question}
-            isSubmitted={this.state.isSubmitted}
+            isSubmitted={state.isSubmitted}
+            position={index + 1}
             answerOnKeyUp={() => this.answerOnKeyUp(question)} />
         })}
       </div>
