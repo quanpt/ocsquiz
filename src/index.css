@@ -28,7 +28,11 @@
 }
 
 .okTime{
-  color:orange
+  color:blue
+}
+
+.warningTime{
+    color:orange
 }
 
 .badTime{
@@ -39,6 +43,10 @@
     position: fixed;
     top: 20px; right: 100px; width: 250px;
     border: 3px solid #73AD21;
+}
+
+.table-item-number{
+    text-align: center;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');

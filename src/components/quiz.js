@@ -33,7 +33,7 @@ function onKeyDown(keyEvent) {
 function CorrectAnswer(props) {
   let question = props.question
   let secondSpent = Math.floor(question.timeSpent / 1000)
-  let timeClassName = secondSpent <= 60 ? 'goodTime' : (secondSpent <= 65 ? 'okTime' : 'badTime')
+  let timeClassName = secondSpent <= 60 ? 'goodTime' : (secondSpent <= 65 ? 'okTime' : (secondSpent <= 75 ? 'warningTime' : 'badTime'))
   let className = "answer " + (question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")
   return <div>
       <span className={className}> {question.userAnswer.toUpperCase()}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
@@ -161,7 +161,7 @@ export class Quiz extends React.Component {
     let state = this.state
     return (
       <div>
-      <span className='timer'><Timer minutes={state.minutes} seconds={state.seconds}/></span>
+      {this.state.isViewMode ? '' : <span className='timer'><Timer minutes={state.minutes} seconds={state.seconds}/></span>}
         {state.questions.map((question, index) => {
           return <Question key={question.id}
             question={question}

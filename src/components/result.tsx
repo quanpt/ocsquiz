@@ -26,9 +26,9 @@ const ResultRow = (props: ResultUI) => (
       }
     </td>
     <td className="table-item">{new Date(props.timestamp).toLocaleString('en-AU')}</td>
-    <td className="table-item">{props.correctAnswerCount}</td>
-    <td className="table-item">{props.answerCount}</td>
-    <td className="table-item">{props.questionCount}</td>
+    <td className="table-item-number">{props.correctAnswerCount}</td>
+    <td className="table-item-number">{props.answerCount}</td>
+    <td className="table-item-number">{props.questionCount}</td>
   </tr>
 )
 
@@ -39,7 +39,7 @@ export const ResultList = (props: ResultListUI) => {
   return (
     <table className="table content">
         <tbody className="table-body">
-          <tr><th>Title</th><th>Date</th><th>Attempt</th><th>Correct</th><th>Question</th></tr>
+          <tr><th>Title</th><th>Date Time</th><th>Correct</th><th>Attempt</th><th>Question</th></tr>
           {props.results.length > 0 ? (
             props.results.map((item, idx) => (
               <ResultRow
