@@ -37,27 +37,31 @@ export const TitleList = (props: TitleListUI) => {
 
   return (
     <table className="table">
-        <tbody className="table-body">
+      <thead>
+        <tr>
           <th>Title</th><th>Answered Question</th><th>Total Question</th>
-          {props.titles.length > 0 ? (
-            props.titles.map((item, idx) => (
-              <TitleRow
-                key={idx + 1}
-                subject={props.subject}
-                year={props.year}
-                fullTitle={item.fullTitle}
-                correctAnswerCount={item.correctAnswerCount}
-                questionCount={item.questionCount}
-              />
-              )
+        </tr>
+      </thead>
+      <tbody className="table-body">
+        {props.titles.length > 0 ? (
+          props.titles.map((item, idx) => (
+            <TitleRow
+              key={idx + 1}
+              subject={props.subject}
+              year={props.year}
+              fullTitle={item.fullTitle}
+              correctAnswerCount={item.correctAnswerCount}
+              questionCount={item.questionCount}
+            />
             )
-          ) : (
-            <tr className="table-row">
-              <td className="table-item" style={{ textAlign: 'center' }} colSpan={6}>There are no subject to show. Create one!</td>
-            </tr>
           )
-        }
-        </tbody>
+        ) : (
+          <tr className="table-row">
+            <td className="table-item" style={{ textAlign: 'center' }} colSpan={6}>There are no subject to show. Create one!</td>
+          </tr>
+        )
+      }
+      </tbody>
     </table>
   )
 }

@@ -161,7 +161,7 @@ export class Quiz extends React.Component {
     let state = this.state
     return (
       <div>
-      {this.state.isViewMode ? '' : <span className='timer'><Timer minutes={state.minutes} seconds={state.seconds}/></span>}
+      {this.state.isViewMode ? '' : <span className='timer'><Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted}/></span>}
         {state.questions.map((question, index) => {
           return <Question key={question.id}
             question={question}

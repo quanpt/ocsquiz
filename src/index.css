@@ -49,6 +49,10 @@
     text-align: center;
 }
 
+th{
+    padding: 5px;
+}
+
 hr{
     height: 1px;
     background-color: #ccc;

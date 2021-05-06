@@ -38,8 +38,10 @@ export const ResultList = (props: ResultListUI) => {
 
   return (
     <table className="table content">
-        <tbody className="table-body">
+        <thead>
           <tr><th>Title</th><th>Date Time</th><th>Correct</th><th>Attempt</th><th>Question</th></tr>
+        </thead>
+        <tbody className="table-body">
           {props.results.length > 0 ? (
             props.results.map((item, idx) => (
               <ResultRow

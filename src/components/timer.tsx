@@ -6,6 +6,7 @@ export class Timer extends Component {
     state = {
         minutes: 0,
         seconds: 99,
+        isStopped: () => true,
     }
 
     constructor(props: any) {
@@ -13,12 +14,18 @@ export class Timer extends Component {
         this.state = {
             minutes: props.minutes,
             seconds: props.seconds,
+            isStopped: props.isStopped,
         }
     }
 
     componentDidMount() {
         this.myInterval = setInterval(() => {
-            const { seconds, minutes } = this.state
+            const { seconds, minutes, isStopped } = this.state
+
+            if (isStopped()) {
+                clearInterval(this.myInterval)
+                return
+            }
 
             if (seconds > 0) {
                 this.setState({seconds: seconds - 1})
@@ -42,7 +49,7 @@ export class Timer extends Component {
         return (
             <span>
                 { minutes === 0 && seconds === 0
-                    ? <span className='badTime'>Time is over, but keep working!</span>
+                    ? <span className='warningTime'>Enjoy the extra time!</span>
                     : <span className='goodTime'>Remained Time: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}</span>
                 }
             </span>
