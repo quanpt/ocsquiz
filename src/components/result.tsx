@@ -62,7 +62,7 @@ export const ResultList = (props: ResultListUI) => {
 }
 
 // Create SubjectListPage component
-export function ResultListPage (props: ResultListUI) {
+export function ResultListPage () {
 
   const [loading, setLoading] = useState(true)
   const [results, setResults] = useState([])

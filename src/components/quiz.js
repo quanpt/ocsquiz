@@ -166,7 +166,6 @@ export class Quiz extends React.Component {
       {this.state.isViewMode ? '' : 
         <span className='timer'>
           <Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted}/>
-          <div>{this.state.isSubmitted ? null : <button type="submit">Submit</button>}</div>
         </span>}
         {state.questions.map((question, index) => {
           return <Question key={question.id}
@@ -281,6 +280,7 @@ export class Quiz extends React.Component {
             {({ answers }) => (
               <Form onKeyDown={onKeyDown}>
                 {this.renderQuestions()}
+                {this.state.isSubmitted ? null : <button type="submit">Submit</button>}
               </Form>
             )}
           </Formik>

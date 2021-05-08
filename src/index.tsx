@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link,
-  useRouteMatch,
   useParams
 } from "react-router-dom";
 import './index.css';
@@ -23,7 +22,7 @@ import { ResultListPage } from './components/result'
 // ReactDOM.render(<YearListPage />, document.getElementById('root'))
 
 class App extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.state = {
       year: 0,
@@ -64,23 +63,23 @@ class App extends React.Component {
   }
 }
 
-function QuizView(props) {
-  let { id } = useParams();
+function QuizView() {
+  let { id } = useParams<{ id: string }>();
   return <Quiz isViewMode={true} id={id} />
 }
 
-function Quizes(props) {
-  let { year, subject, title } = useParams();
+function Quizes() {
+  let { year, subject, title } = useParams<{ year: string, subject: string, title: string }>();
   return <Quiz year={year} subject={subject} title={title} />
 }
 
-function Titles(props) {
-  let { year, subject } = useParams();
+function Titles() {
+  let { year, subject } = useParams<{ year: string, subject: string }>();
   return <TitleListPage year={year} subject={subject} />
 }
 
-function Subjects(props) {
-  let { year } = useParams();
+function Subjects() {
+  let { year } = useParams<{ year: string }>();
   return <SubjectListPage year={year} />
 }
 
