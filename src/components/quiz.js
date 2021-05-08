@@ -72,8 +72,7 @@ function Question(props) {
         placeholder="A, B, C, D or other text"
         disabled={props.isSubmitted} autoComplete="off"
         onKeyUp={props.answerOnKeyUp}
-        onFocus={props.answerOnFocus} 
-        onBlur={props.answerOnBlur} />
+        onFocus={props.answerOnFocus} />
       <br/>
       {answer}
       <hr />
@@ -85,6 +84,7 @@ export class Quiz extends React.Component {
   constructor(props) {
     super(props);
     let state = {
+      isSubmitted: false,
       error: null,
       isLoaded: false,
       questions: [],
@@ -163,15 +163,18 @@ export class Quiz extends React.Component {
     let state = this.state
     return (
       <div>
-      {this.state.isViewMode ? '' : <span className='timer'><Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted}/></span>}
+      {this.state.isViewMode ? '' : 
+        <span className='timer'>
+          <Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted}/>
+          <div>{this.state.isSubmitted ? null : <button type="submit">Submit</button>}</div>
+        </span>}
         {state.questions.map((question, index) => {
           return <Question key={question.id}
             question={question}
             isSubmitted={state.isSubmitted}
             position={index + 1}
             answerOnKeyUp={() => this.answerOnKeyUp(question)}
-            answerOnFocus={() => this.answerOnFocus(question, true)}
-            answerOnBlur={() => this.answerOnFocus(question, false)}/>
+            answerOnFocus={() => this.answerOnFocus(question, true)}/>
         })}
       </div>
     );
@@ -239,8 +242,8 @@ export class Quiz extends React.Component {
                 return;
               }
 
-              if (countCorrect * 2 < countAnswer) {
-                alert('Less than half answers are correct, please think and change your answers!');
+              if (countCorrect * 4 < countAnswer) {
+                alert('Less than a quarter answers are correct, please think and change your answers!');
                 return;
               }
 
@@ -278,7 +281,6 @@ export class Quiz extends React.Component {
             {({ answers }) => (
               <Form onKeyDown={onKeyDown}>
                 {this.renderQuestions()}
-                {this.state.isSubmitted ? null : <button type="submit">Submit</button>}
               </Form>
             )}
           </Formik>
