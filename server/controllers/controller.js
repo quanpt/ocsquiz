@@ -88,7 +88,7 @@ exports.getQuestions = async (req, res) => {
 exports.createQuiz = async (req, res) => {
 
   const dictQuestionLimit = {} // { 'General Ability': 3 }
-  const questionLimit = req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 10
+  const questionLimit = req.body.isFull ? 100 : (req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 10)
 
   const ids = await knex
     .insert({

@@ -39,8 +39,8 @@ class App extends React.Component {
         <div className="wrapper bg-white rounded">
           <Link to="/"><h1>Home</h1></Link>
           <Switch>
-            <Route path="/year/:year/subject/:subject/title/:title">
-              <Quizes />
+            <Route path="/year/:year/subject/:subject/title/:title/full/:isFull">
+              <Quizes/>
             </Route>
             <Route path="/year/:year/subject/:subject">
               <Titles />
@@ -69,8 +69,8 @@ function QuizView() {
 }
 
 function Quizes() {
-  let { year, subject, title } = useParams<{ year: string, subject: string, title: string }>();
-  return <Quiz year={year} subject={subject} title={title} />
+  let { year, subject, title, isFull } = useParams<{ year: string, subject: string, title: string, isFull: string }>();
+  return <Quiz year={year} subject={subject} title={title} isFull={isFull=='1'}/>
 }
 
 function Titles() {

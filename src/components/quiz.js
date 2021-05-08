@@ -51,7 +51,7 @@ function Question(props) {
   rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
     .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
     .replace('<br/> <br/> <br/></div>', '</div>')
-    .replace(' src="', ' src="/assets/')
+    .replace(/\ssrc="/g, ' src="/assets/')
     .replace(reImage1, '<img src="/assets/figures/' + props.question.mmfid + '_1.jpg" />')
     .replace('<a href="show_image.html?name=', '<a href="/assets/')
     .replace('target="ReadingText"', 'target="_blank"')
@@ -84,6 +84,7 @@ export class Quiz extends React.Component {
   constructor(props) {
     super(props);
     let state = {
+      isFull: props.isFull,
       isSubmitted: false,
       error: null,
       isLoaded: false,
@@ -150,6 +151,7 @@ export class Quiz extends React.Component {
               seconds: totalTime % 60,
             });
             lastAnsweredTime = new Date().getTime()
+            this.questions = result.questions
           },
           (error) => {
             this.setState({
@@ -172,42 +174,38 @@ export class Quiz extends React.Component {
             question={question}
             isSubmitted={state.isSubmitted}
             position={index + 1}
-            answerOnKeyUp={() => this.answerOnKeyUp(question)}
-            answerOnFocus={() => this.answerOnFocus(question, true)}/>
+            answerOnKeyUp={() => this.answerOnKeyUp(question)}/>
         })}
       </div>
     );
   }
 
   answerOnKeyUp(question) {
-    let newQuestions = this.state.questions.slice();
-    let currQuestion = newQuestions.filter((element, index, array) => { return element === question })[0];
+    // updates that don't require re-render
+    let currQuestion = this.questions.filter((element, index, array) => { return element === question })[0];
     currQuestion.timestamp = Date.now();
     currQuestion.timeSpent = currQuestion.timestamp - lastAnsweredTime;
     lastAnsweredTime = currQuestion.timestamp;
-    this.setState({
-      questions: newQuestions
-    });
   }
 
-  answerOnFocus(question, isFocus) {
-    let newQuestions = this.state.questions.slice();
-    for (let key in newQuestions) {
-        newQuestions[key].isFocus = question === newQuestions[key] ? isFocus : (! isFocus);
-    }
-    this.setState({
-      questions: newQuestions
-    });
-  }
+  // answerOnFocus(question, isFocus) {
+  //   let newQuestions = this.state.questions.slice();
+  //   let currQuestion = newQuestions.filter((element, index, array) => { return element === question })[0];
+  //   currQuestion.isFocus = isFocus
+  //   this.setState({
+  //     questions: newQuestions
+  //   });
+  // }
 
   render() {
     const { error, isLoaded } = this.state;
+    console.log('re-render')
     if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
       return <div>Loading...</div>;
     } else {
-      let newQuestions = this.state.questions.slice();
+      let newQuestions = this.questions.slice();
       var dict = newQuestions.reduce(
         (dict, el, index) => (dict[el.id] = "", dict), {})
       return (

@@ -20,7 +20,10 @@ interface TitleListUI {
 const TitleRow = (props: TitleUI) => (
   <tr className="table-row">
     <td className="table-item">
-      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle)}>{props.fullTitle.replace(' result', '')}</Link>
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/full/0'}>{props.fullTitle.replace(' result', '')}</Link>
+    </td>
+    <td className="table-item">
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/full/1'} className='smallText'>Full Test</Link>
     </td>
     <td className="table-item-number">
       <span className={props.correctAnswerCount == props.questionCount ? 'goodTime' : 'warningTime'}>{props.correctAnswerCount}</span>
@@ -39,7 +42,7 @@ export const TitleList = (props: TitleListUI) => {
     <table className="table">
       <thead>
         <tr>
-          <th>Title</th><th>Answered Question</th><th>Total Question</th>
+          <th>Title</th><th>Full</th><th>Answered Question</th><th>Total Question</th>
         </tr>
       </thead>
       <tbody className="table-body">

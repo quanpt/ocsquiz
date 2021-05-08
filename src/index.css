@@ -65,11 +65,15 @@ hr{
 }
 
 .blurDiv{
-    color:lightgray
+    color:gray
 }
 
 .focusDiv{
     color:black
+}
+
+.smallText{
+    font-size: smaller;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
