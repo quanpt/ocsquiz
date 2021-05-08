@@ -241,13 +241,13 @@ export class Quiz extends React.Component {
                 }
               }
 
-              if (countAnswer < 3*newQuestions.length/4) {
+              if (countAnswer < newQuestions.length * 3/4) {
                 alert('Too many empty answers, please keep trying!');
                 return;
               }
 
-              if (countCorrect * 4 < countAnswer) {
-                alert('Less than a quarter answers are correct, please think and change your answers!');
+              if (countCorrect * 3 < countAnswer) {
+                alert('Less than a third answers are correct, please think and change your answers!');
                 return;
               }
 
