@@ -62,16 +62,18 @@ function Question(props) {
   var answer = props.isSubmitted ? <CorrectAnswer question={q}/> : <span />
 
   return (
-    <div id={key}>
+    <div id={key} className={q.isFocus ? 'focusDiv' : 'blurDiv'} onClick={props.answerOnFocus}>
       <h3>Question {props.position} <span className='invisible'>#{key}</span></h3>
       <div>
-        {<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] }) }} />}
+        {<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] }) }}/>}
       </div>
       <label htmlFor={props.question.id}>Answer </label>
       <Field id={props.question.id} name={props.question.id}
         placeholder="A, B, C, D or other text"
         disabled={props.isSubmitted} autoComplete="off"
-        onKeyUp={props.answerOnKeyUp} />
+        onKeyUp={props.answerOnKeyUp}
+        onFocus={props.answerOnFocus} 
+        onBlur={props.answerOnBlur} />
       <br/>
       {answer}
       <hr />
@@ -147,7 +149,7 @@ export class Quiz extends React.Component {
               minutes: Math.floor(totalTime / 60),
               seconds: totalTime % 60,
             });
-            lastAnsweredTime = result.timestamp
+            lastAnsweredTime = new Date().getTime()
           },
           (error) => {
             this.setState({
@@ -167,7 +169,9 @@ export class Quiz extends React.Component {
             question={question}
             isSubmitted={state.isSubmitted}
             position={index + 1}
-            answerOnKeyUp={() => this.answerOnKeyUp(question)} />
+            answerOnKeyUp={() => this.answerOnKeyUp(question)}
+            answerOnFocus={() => this.answerOnFocus(question, true)}
+            answerOnBlur={() => this.answerOnFocus(question, false)}/>
         })}
       </div>
     );
@@ -179,6 +183,16 @@ export class Quiz extends React.Component {
     currQuestion.timestamp = Date.now();
     currQuestion.timeSpent = currQuestion.timestamp - lastAnsweredTime;
     lastAnsweredTime = currQuestion.timestamp;
+    this.setState({
+      questions: newQuestions
+    });
+  }
+
+  answerOnFocus(question, isFocus) {
+    let newQuestions = this.state.questions.slice();
+    for (let key in newQuestions) {
+        newQuestions[key].isFocus = question === newQuestions[key] ? isFocus : (! isFocus);
+    }
     this.setState({
       questions: newQuestions
     });

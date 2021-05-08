@@ -21,7 +21,7 @@ const ResultRow = (props: ResultUI) => (
   <tr className="table-row">
     <td className="table-item" style={{textAlign: "left"}}>
       {props.answerCount > 0 ?
-      (<Link to={"/results/" + props.id}>{props.title}</Link>)
+      (<Link to={"/results/" + props.id}>{props.title.replace(' result', '')}</Link>)
       : (<div>{props.title}</div>)
       }
     </td>
