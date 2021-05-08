@@ -22,7 +22,7 @@ const ResultRow = (props: ResultUI) => (
     <td className="table-item" style={{textAlign: "left"}}>
       {props.answerCount > 0 ?
       (<Link to={"/results/" + props.id}>{props.title.replace(' result', '')}</Link>)
-      : (<div>{props.title}</div>)
+      : (<div>{props.title.replace(' result', '')}</div>)
       }
     </td>
     <td className="table-item">{new Date(props.timestamp).toLocaleString('en-AU')}</td>
@@ -39,7 +39,7 @@ export const ResultList = (props: ResultListUI) => {
   return (
     <table className="table content">
         <thead>
-          <tr><th>Title</th><th>Date Time</th><th>Correct</th><th>Attempt</th><th>Question</th></tr>
+          <tr><th className='titleTh'>Title</th><th>Date Time</th><th>Correct</th><th>Attempt</th><th>Question</th></tr>
         </thead>
         <tbody className="table-body">
           {props.results.length > 0 ? (

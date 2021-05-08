@@ -53,6 +53,10 @@ th{
     padding: 5px;
 }
 
+.titleTh{
+    width: 450px
+}
+
 hr{
     height: 1px;
     background-color: #ccc;
