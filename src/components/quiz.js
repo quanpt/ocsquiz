@@ -6,6 +6,9 @@ import { Timer } from './timer'
 
 import { Formik, Field, Form } from 'formik';
 
+const window = (new JSDOM('')).window
+const DOMPurify = createDOMPurify(window)
+
 let reImage1 = new RegExp(/\$image1\$/g);
 let lastAnsweredTime = 0
 let timeDict = {OC: {English: 72,
@@ -43,8 +46,6 @@ function CorrectAnswer(props) {
 }
 
 function Question(props) {
-  const window = (new JSDOM('')).window
-  const DOMPurify = createDOMPurify(window)
   let q = props.question
   let key = q.id
   var rawHtml = q.question
@@ -66,6 +67,7 @@ function Question(props) {
       <h3>Question {props.position} <span className='invisible'>#{key}</span></h3>
       <div>
         {<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] }) }}/>}
+        {/* {<div dangerouslySetInnerHTML={{ __html: rawHtml}}/>} */}
       </div>
       <label htmlFor={props.question.id}>Answer </label>
       <Field id={props.question.id} name={props.question.id}
@@ -151,7 +153,6 @@ export class Quiz extends React.Component {
               seconds: totalTime % 60,
             });
             lastAnsweredTime = new Date().getTime()
-            this.questions = result.questions
           },
           (error) => {
             this.setState({
@@ -174,28 +175,34 @@ export class Quiz extends React.Component {
             question={question}
             isSubmitted={state.isSubmitted}
             position={index + 1}
-            answerOnKeyUp={() => this.answerOnKeyUp(question)}/>
+            answerOnKeyUp={() => this.answerOnKeyUp(question)}
+            answerOnFocus={() => this.answerOnFocus(question, true)}/>
         })}
       </div>
     );
   }
 
   answerOnKeyUp(question) {
-    // updates that don't require re-render
-    let currQuestion = this.questions.filter((element, index, array) => { return element === question })[0];
+    // update but no re-render
+    let newQuestions = this.state.questions.slice();
+    let currQuestion = newQuestions.filter((element, index, array) => { return element === question })[0];
     currQuestion.timestamp = Date.now();
     currQuestion.timeSpent = currQuestion.timestamp - lastAnsweredTime;
     lastAnsweredTime = currQuestion.timestamp;
+    this.setState({
+      questions: newQuestions
+    });
   }
 
-  // answerOnFocus(question, isFocus) {
-  //   let newQuestions = this.state.questions.slice();
-  //   let currQuestion = newQuestions.filter((element, index, array) => { return element === question })[0];
-  //   currQuestion.isFocus = isFocus
-  //   this.setState({
-  //     questions: newQuestions
-  //   });
-  // }
+  answerOnFocus(question, isFocus) {
+    let newQuestions = this.state.questions.slice();
+    for (let key in newQuestions) {
+        newQuestions[key].isFocus = question === newQuestions[key] ? isFocus : (! isFocus);
+    }
+    this.setState({
+      questions: newQuestions
+    });
+  }
 
   render() {
     const { error, isLoaded } = this.state;
@@ -205,7 +212,7 @@ export class Quiz extends React.Component {
     } else if (!isLoaded) {
       return <div>Loading...</div>;
     } else {
-      let newQuestions = this.questions.slice();
+      let newQuestions = this.state.questions.slice();
       var dict = newQuestions.reduce(
         (dict, el, index) => (dict[el.id] = "", dict), {})
       return (
