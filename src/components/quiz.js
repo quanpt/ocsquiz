@@ -33,6 +33,30 @@ function onKeyDown(keyEvent) {
   // allow Enter on BUTTON
 }
 
+class Solution extends React.Component{
+
+  constructor(props) {
+    super(props);
+    let state = {
+      showMessage: false,
+      questionAnswer: props.questionAnswer
+    }
+    this.state = state;
+  }
+
+  onButtonClickHandler = () => {
+   this.setState({ showMessage: !this.state.showMessage });
+  };
+
+  render(){ 
+    return(<span>Solution: 
+      <span className="questionAnswer">&nbsp;{this.state.showMessage && this.state.questionAnswer}&nbsp;</span>
+      <button className="smallButon" onClick={this.onButtonClickHandler}>{this.state.showMessage ? 'Hide' : 'Show'}</button>
+    </span>);
+
+  }
+}
+
 function CorrectAnswer(props) {
   let question = props.question
   let secondSpent = Math.floor(question.timeSpent / 1000)
@@ -41,7 +65,7 @@ function CorrectAnswer(props) {
   return <div>
       <span className={className}> {question.userAnswer.toUpperCase()}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
       <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
-      {question.isAnsweredCorrect ? '' : <span>Solution: __<span className="invisible">{question.questionAnswer}</span>__</span>}
+      {!question.isAnsweredCorrect && <Solution questionAnswer={question.questionAnswer}/>}
     </div>
 }
 
@@ -285,7 +309,7 @@ export class Quiz extends React.Component {
             {({ answers }) => (
               <Form onKeyDown={onKeyDown}>
                 {this.renderQuestions()}
-                {this.state.isSubmitted ? null : <button type="submit">Submit</button>}
+                {this.state.isSubmitted ? null : <button type="submit" className="formSubmit">Submit</button>}
               </Form>
             )}
           </Formik>
