@@ -77,8 +77,9 @@ hr{
 }
 
 .questionAnswer{
-    width: 200px;
-    min-height: 1px;
+    min-width: 100px;
+    display: inline-block;
+    text-align: center
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
@@ -206,7 +207,7 @@ p.my-2 {
 }
 
 .smallButon {
-    width: 80px;
+    width: 50px;
     height: 20px;
     background-color: #73AD21;
     border: none;
