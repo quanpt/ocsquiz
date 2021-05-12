@@ -107,6 +107,8 @@ function Question(props) {
 }
 
 export class Quiz extends React.Component {
+  intervalID;
+
   constructor(props) {
     super(props);
     let state = {
@@ -177,6 +179,7 @@ export class Quiz extends React.Component {
               seconds: totalTime % 60,
             });
             lastAnsweredTime = new Date().getTime()
+            this.pingQuiz()
           },
           (error) => {
             this.setState({
@@ -186,13 +189,17 @@ export class Quiz extends React.Component {
         )
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.intervalID);
+  }
+
   renderQuestions() {
     let state = this.state
     return (
       <div>
       {this.state.isViewMode ? '' : 
         <span className='timer'>
-          <Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted} callback={() => this.pingQuiz()}/>
+          <Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted}/>
         </span>}
         {state.questions.map((question, index) => {
           return <Question key={question.id}
@@ -214,6 +221,7 @@ export class Quiz extends React.Component {
         id: this.state.quizId
       })
     })
+    this.intervalID = setTimeout(this.pingQuiz.bind(this), 10000);
   }
 
   answerOnKeyUp(question) {
