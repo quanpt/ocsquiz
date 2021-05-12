@@ -280,8 +280,8 @@ export class Quiz extends React.Component {
                 questions: newQuestions,
                 timestamp: Date.now()
               });
-              fetch("/data/answers/put", {
-                method: 'PUT',
+              fetch("/data//quizes/update", {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                 body: JSON.stringify({
                   answers: newQuestions.map((question) => {

@@ -89,11 +89,12 @@ exports.createQuiz = async (req, res) => {
 
   const dictQuestionLimit = {} // { 'General Ability': 3 }
   const questionLimit = req.body.isFull ? 100 : (req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 10)
-
+  const currTimestamp = new Date().getTime()
   const ids = await knex
     .insert({
       'title': req.body.title,
-      'timestamp': new Date().getTime()
+      'timestamp': currTimestamp,
+      'lastUpdate': currTimestamp
     }, 'id')
     .into('Quizes')
   var quizId = ids[0]
@@ -135,6 +136,30 @@ exports.createQuiz = async (req, res) => {
         res.json({ message: `There was an error retrieving data: ${err}` })
       })
   }
+}
+
+updateQuizTimestamp = async(trx, id) => {
+  console.log('here: ' + id)
+  trx('Quizes').where({ id: id }).update({lastUpdate: 1000})
+}
+
+// complete quiz
+exports.completeQuiz = async (req, res) => {
+  knex.transaction(function(trx) {
+    trx('Answers').insert(req.body.answers)
+      .then(function(resp) {
+        return trx('Quizes').where({ id: req.body.answers[0].quizId }).update({lastUpdate: new Date().getTime()})
+      })
+      .then(trx.commit)
+      .catch(trx.rollback);
+  })
+  .then(function(resp) {
+    res.json({result: 'ok'})
+  })
+  .catch(function(err) {
+    console.error(err);
+    res.json({ message: `There was an error creating answer from request body: ${req.body} error: ${err}` })
+  });
 }
 
 // Create new answer
