@@ -192,7 +192,7 @@ export class Quiz extends React.Component {
       <div>
       {this.state.isViewMode ? '' : 
         <span className='timer'>
-          <Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted}/>
+          <Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted} callback={() => this.pingQuiz()}/>
         </span>}
         {state.questions.map((question, index) => {
           return <Question key={question.id}
@@ -204,6 +204,16 @@ export class Quiz extends React.Component {
         })}
       </div>
     );
+  }
+
+  pingQuiz() {
+    fetch("/data/quizes/ping", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+      body: JSON.stringify({
+        id: this.state.quizId
+      })
+    })
   }
 
   answerOnKeyUp(question) {

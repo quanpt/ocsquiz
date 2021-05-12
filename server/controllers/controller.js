@@ -138,9 +138,15 @@ exports.createQuiz = async (req, res) => {
   }
 }
 
-updateQuizTimestamp = async(trx, id) => {
-  console.log('here: ' + id)
-  trx('Quizes').where({ id: id }).update({lastUpdate: 1000})
+exports.pingQuiz = async(req, res) => {
+  knex('Quizes').where({ id: req.body.id }).update({lastUpdate: new Date().getTime()})
+  .then(function(resp) {
+    res.json({result: 'ok'})
+  })
+  .catch(function(err) {
+    console.error(err);
+    res.json({ message: `There was an error creating answer from request body: ${req.body} error: ${err}` })
+  });
 }
 
 // complete quiz
@@ -210,7 +216,8 @@ exports.getQuizes = async (req, res) => {
     knex
       .select('*')
       .from('FullQuizes')
-      .where('answerCount', '>', 0)
+      .whereRaw('lastUpdate > timestamp + 30000')
+      .orWhere('answerCount', '>', 0)
       .orderBy('id', 'desc')
       .limit(25)
       .then(items => {

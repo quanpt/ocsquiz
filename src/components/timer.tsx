@@ -4,6 +4,7 @@ export class Timer extends Component {
 
     myInterval : any
     state = {
+        callback: () => {},
         minutes: 0,
         seconds: 99,
         isStopped: () => true,
@@ -12,6 +13,7 @@ export class Timer extends Component {
     constructor(props: any) {
         super(props);
         this.state = {
+            callback: props.callback,
             minutes: props.minutes,
             seconds: props.seconds,
             isStopped: props.isStopped,
@@ -26,6 +28,9 @@ export class Timer extends Component {
                 clearInterval(this.myInterval)
                 return
             }
+
+            if (this.state.seconds % 10 == 0)
+                this.state.callback()
 
             if (seconds > 0) {
                 this.setState({seconds: seconds - 1})
