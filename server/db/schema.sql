@@ -59,14 +59,14 @@ CREATE VIEW "FullAnswers" AS SELECT a.*, q.mmfid, q.question, q.questionAnswer, 
 DROP VIEW IF EXISTS "FullQuestions";
 CREATE VIEW "FullQuestions" AS SELECT q.*, i.id AS imageId FROM Questions q LEFT JOIN TitleCat t ON q.title = t.fullTitle LEFT JOIN Images i ON q.mmfid = i.id;
 DROP VIEW IF EXISTS "FullQuizes";
-CREATE VIEW "FullQuizes" AS SELECT q.id, q.title, q.timestamp,
+CREATE VIEW "FullQuizes" AS SELECT q.id, q.title, q.timestamp, q.lastUpdate,
 COUNT(questionId) AS questionCount,
 SUM(CASE WHEN userAnswer IS NULL THEN 0 ELSE 1 END) AS answerCount, 
 SUM(CASE WHEN UPPER(userAnswer) == UPPER(questionAnswer) THEN 1 ELSE 0 END) AS correctAnswerCount 
 FROM FullAnswers a LEFT JOIN Quizes q ON a.quizId = q.id GROUP BY q.id
 UNION ALL
 SELECT * FROM (
-SELECT q.id, q.title, q.timestamp,
+SELECT q.id, q.title, q.timestamp, q.lastUpdate,
 NULL AS questionCount,
 SUM(CASE WHEN userAnswer IS NULL THEN 0 ELSE 1 END) AS answerCount,
 NULL AS correctAnswerCount 

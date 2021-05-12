@@ -6,7 +6,8 @@ import axios from 'axios'
 interface ResultUI {
   id: string
   title: string
-  timestamp: Date
+  timestamp: number
+  lastUpdate: number
   questionCount: number
   answerCount: number
   correctAnswerCount: number
@@ -26,6 +27,7 @@ const ResultRow = (props: ResultUI) => (
       }
     </td>
     <td className="table-item">{new Date(props.timestamp).toLocaleString('en-AU')}</td>
+    <td className="table-item">{((props.lastUpdate - props.timestamp)/60000).toFixed(2)} minute(s)</td>
     <td className="table-item-number">{props.correctAnswerCount}</td>
     <td className="table-item-number">{props.answerCount}</td>
     <td className="table-item-number">{props.questionCount}</td>
@@ -39,7 +41,7 @@ export const ResultList = (props: ResultListUI) => {
   return (
     <table className="table content">
         <thead>
-          <tr><th className='titleTh'>Title</th><th>Date Time</th><th>Correct</th><th>Attempt</th><th>Question</th></tr>
+          <tr><th className='titleTh'>Title</th><th>Date Time</th><th>Time</th><th>Correct</th><th>Attempt</th><th>Question</th></tr>
         </thead>
         <tbody className="table-body">
           {props.results.length > 0 ? (
