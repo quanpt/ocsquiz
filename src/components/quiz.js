@@ -293,6 +293,8 @@ export class Quiz extends React.Component {
                 return;
               }
 
+              clearTimeout(this.intervalID);
+
               this.setState({
                 isSubmitted: true,
                 questions: newQuestions,
