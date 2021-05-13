@@ -75,12 +75,30 @@ function Quizes() {
 
 function Titles() {
   let { year, subject } = useParams<{ year: string, subject: string }>();
-  return <TitleListPage year={year} subject={subject} />
+  return <div>
+      <Navigator year={year} subject={subject} />  
+      <TitleListPage year={year} subject={subject} />
+    </div>
 }
 
 function Subjects() {
   let { year } = useParams<{ year: string }>();
-  return <SubjectListPage year={year} />
+  return <div>
+      <Navigator year={year} subject="" />
+      <SubjectListPage year={year} />
+    </div>
+}
+
+function Navigator(props: any) {
+  if (props.subject === "") {
+    return <Link to={"/year/" + props.year}><span>{props.year}</span></Link>
+  } else {
+    return <span>
+        <Link to={"/year/" + props.year}><span>{props.year}</span></Link>
+        <Link to={"/year/" + props.year + "/subject/" + props.subject}><span>{props.subject}</span></Link>
+      </span>
+  }
+  
 }
 
 ReactDOM.render(<App />, document.getElementById('root'))
