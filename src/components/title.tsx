@@ -20,10 +20,10 @@ interface TitleListUI {
 const TitleRow = (props: TitleUI) => (
   <tr className="table-row">
     <td className="table-item">
-      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/full/0'}>{props.fullTitle.replace(' result', '')}</Link>
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/state/0'}>{props.fullTitle.replace(' result', '')}</Link>
     </td>
     <td className="table-item">
-      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/full/1'} className='smallText'>Full Test</Link>
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/state/1'} className='smallText'>Full Test</Link>
     </td>
     <td className="table-item-number">
       <span className={props.correctAnswerCount == props.questionCount ? 'goodTime' : 'warningTime'}>{props.correctAnswerCount}</span>
@@ -98,6 +98,7 @@ export function TitleListPage (props: SubjectUI) {
   return (
     <div className="quiz-list-wrapper">
       <TitleList year={year} titles={titles} subject={subject} loading={loading} />
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + props.subject + '/state/2'}>Quiz with remaining questions</Link>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import createDOMPurify from 'dompurify'
+import Cookies from 'js-cookie';
 import { JSDOM } from 'jsdom'
 import { Timer } from './timer'
 
@@ -39,7 +39,9 @@ class Solution extends React.Component{
     super(props);
     let state = {
       showMessage: false,
-      questionAnswer: props.questionAnswer
+      questionAnswer: props.questionAnswer,
+      answerId: props.answerId,
+      isTeacher: Cookies.get('user') == 'admin'
     }
     this.state = state;
   }
@@ -48,10 +50,15 @@ class Solution extends React.Component{
    this.setState({ showMessage: !this.state.showMessage });
   };
 
+  onButtonReviewClickHandler = () => {
+    alert(JSON.stringify(this.state))
+  }
+
   render(){ 
     return(<span>Solution: 
       <span className="questionAnswer">&nbsp;{this.state.showMessage && this.state.questionAnswer}&nbsp;</span>
-      <button className="smallButon" onClick={this.onButtonClickHandler}>{this.state.showMessage ? 'Hide' : 'Show'}</button>
+      <button className="smallButon" onClick={this.onButtonClickHandler}>{this.state.showMessage ? 'Hide' : 'Show'}</button>&nbsp;
+      {this.state.isTeacher && <button className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
     </span>);
 
   }
@@ -65,7 +72,7 @@ function CorrectAnswer(props) {
   return <div>
       <span className={className}> {question.userAnswer.toUpperCase()}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
       <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
-      {!question.isAnsweredCorrect && <Solution questionAnswer={question.questionAnswer}/>}
+      {!question.isAnsweredCorrect && <Solution questionAnswer={question.questionAnswer} answerId={question.answerId}/>}
     </div>
 }
 
@@ -112,7 +119,7 @@ export class Quiz extends React.Component {
   constructor(props) {
     super(props);
     let state = {
-      isFull: props.isFull,
+      isFull: props.questionState == 1,
       isSubmitted: false,
       error: null,
       isLoaded: false,
@@ -121,6 +128,7 @@ export class Quiz extends React.Component {
       year: props.year,
       subject: props.subject,
       title: decodeURIComponent(props.title),
+      isRedoMode: props.questionState == 2,
       isViewMode: props.isViewMode
     };
     this.state = state;
@@ -134,11 +142,11 @@ export class Quiz extends React.Component {
           let countCorrect = 0
           let countAnswer = 0
           let newQuestions = result.questions.slice();
-          var dict = newQuestions.reduce(
-            (dict, el, index) => (dict[el.id] = "", dict), {});
           let prevTimestamp = result.timestamp;
           for (let key in newQuestions) {
             let question = newQuestions[key];
+            question.answerId = question.id
+            question.id = question.questionId
             question.timeSpent = question.timestamp - prevTimestamp;
             prevTimestamp = question.timestamp
             if (question.userAnswer) {

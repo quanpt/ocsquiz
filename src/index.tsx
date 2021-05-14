@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Cookies from 'js-cookie';
 import {
   BrowserRouter as Router,
   Switch,
@@ -39,7 +40,7 @@ class App extends React.Component {
         <div className="wrapper bg-white rounded">
           <Link to="/"><h1>Home</h1></Link>
           <Switch>
-            <Route path="/year/:year/subject/:subject/title/:title/full/:isFull">
+            <Route path="/year/:year/subject/:subject/title/:title/state/:questionState">
               <Quizes/>
             </Route>
             <Route path="/year/:year/subject/:subject">
@@ -52,6 +53,9 @@ class App extends React.Component {
             </Route>
             <Route path="/results">
               <ResultListPage />
+            </Route>
+            <Route path="/user">
+              <UserPage />
             </Route>
             <Route path="/">
               <YearListPage />
@@ -69,8 +73,8 @@ function QuizView() {
 }
 
 function Quizes() {
-  let { year, subject, title, isFull } = useParams<{ year: string, subject: string, title: string, isFull: string }>();
-  return <Quiz year={year} subject={subject} title={title} isFull={isFull=='1'}/>
+  let { year, subject, title, questionState } = useParams<{ year: string, subject: string, title: string, questionState: string }>();
+  return <Quiz year={year} subject={subject} title={title} questionState={questionState}/>
 }
 
 function Titles() {
@@ -87,6 +91,13 @@ function Subjects() {
       <Navigator year={year} subject="" />
       <SubjectListPage year={year} />
     </div>
+}
+
+function UserPage() {
+  return <div>
+    {Cookies.set('user', 'admin')}
+    <span>User set</span>
+  </div>
 }
 
 function Navigator(props: any) {
