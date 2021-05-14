@@ -98,7 +98,7 @@ export function TitleListPage (props: SubjectUI) {
   return (
     <div className="quiz-list-wrapper">
       <TitleList year={year} titles={titles} subject={subject} loading={loading} />
-      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + props.subject + '/state/2'}>Quiz with remaining questions</Link>
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + props.subject + ' L\'s review/state/2'} className='reviewLink'>Quiz with remaining questions</Link>
     </div>
   )
 }

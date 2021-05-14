@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS "Answers" (
 	"questionId"	INTEGER NOT NULL,
 	"userAnswer"	TEXT,
 	"timestamp"	INTEGER,
+	"isReviewed"	INTEGER,
 	FOREIGN KEY("quizId") REFERENCES "Quizes"("id") ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY("questionId") REFERENCES "Questions"("id") ON UPDATE CASCADE,
 	PRIMARY KEY("id" AUTOINCREMENT)
