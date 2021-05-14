@@ -99,42 +99,68 @@ exports.createQuiz = async (req, res) => {
     .into('Quizes')
   var quizId = ids[0]
 
-  const subqueryTriedSuccess = knex("FullAnswers")
-    .select("questionId")
-    .where('title', '=', req.body.title)
-    .andWhereRaw('upper(userAnswer) = upper(questionAnswer)')
+  if (req.body.isRedoMode) {
+    const subquerySubjectTitle = knex("TitleView")
+      .select("fullTitle")
+      .where({year: req.body.year, subject: req.body.subject})
+      .andWhere('correctAnswerCount' ,'>', 0)
+      .andWhere('correctAnswerCount', '<', 'questionCount')
+    
+    const subqueryPassedQuestionId = knex("FullAnswers")
+      .select("questionId")
+      .where('title', 'in', subquerySubjectTitle)
+      .andWhereRaw('upper(userAnswer) = upper(questionAnswer)')
 
-  const questions = await knex
-    .select('*')
-    .from('FullQuestions')
-    .where('title', req.body.title)
-    .where('id', 'not in', subqueryTriedSuccess)
-    //.orderByRaw('RANDOM()')
-    .limit(questionLimit)
-    .catch(err => {
-      console.error(err);
-      res.json({ message: `There was an error retrieving data: ${err}` })
-    })
-
-  if (questions.length == questionLimit) {
-    res.json({ quizId: quizId, questions: questions })
-  } else {
-    console.log("only got " + questions.length + "questions")
-    const questionsTriedSuccess = await knex
-      .select('q.*')
-      .from({ q: 'FullQuestions' })
-      .join({ a: 'Answers' }, { 'q.id': 'a.questionId' })
-      .where('q.title', '=', req.body.title)
-      .andWhereRaw('upper(a.userAnswer) = upper(q.questionAnswer)')
-      //.orderByRaw('RANDOM()')
-      .limit(questionLimit - questions.length)
-      .then(items => {
-        res.json({ quizId: quizId, questions: [].concat(questions, items) })
+    knex("Questions")
+      .select('*')
+      .where('title', 'in', subquerySubjectTitle)
+      .andWhere('id', 'not in', subqueryPassedQuestionId)
+      .limit(questionLimit)
+      .then(questions => {
+        res.json({ quizId: quizId, questions: questions })
       })
+      .catch(err => {
+        res.json({ message: `There was an error retrieving data: ${err}` })
+      })
+  } else {
+
+    const subqueryTriedSuccess = knex("FullAnswers")
+      .select("questionId")
+      .where('title', '=', req.body.title)
+      .andWhereRaw('upper(userAnswer) = upper(questionAnswer)')
+
+    const questions = await knex
+      .select('*')
+      .from('FullQuestions')
+      .where('title', req.body.title)
+      .where('id', 'not in', subqueryTriedSuccess)
+      //.orderByRaw('RANDOM()')
+      .limit(questionLimit)
       .catch(err => {
         console.error(err);
         res.json({ message: `There was an error retrieving data: ${err}` })
       })
+
+    if (questions.length == questionLimit) {
+      res.json({ quizId: quizId, questions: questions })
+    } else {
+      console.log("only got " + questions.length + "questions")
+      const questionsTriedSuccess = await knex
+        .select('q.*')
+        .from({ q: 'FullQuestions' })
+        .join({ a: 'Answers' }, { 'q.id': 'a.questionId' })
+        .where('q.title', '=', req.body.title)
+        .andWhereRaw('upper(a.userAnswer) = upper(q.questionAnswer)')
+        //.orderByRaw('RANDOM()')
+        .limit(questionLimit - questions.length)
+        .then(items => {
+          res.json({ quizId: quizId, questions: [].concat(questions, items) })
+        })
+        .catch(err => {
+          console.error(err);
+          res.json({ message: `There was an error retrieving data: ${err}` })
+        })
+    }
   }
 }
 

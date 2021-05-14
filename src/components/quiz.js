@@ -192,16 +192,23 @@ export class Quiz extends React.Component {
         .then(res => res.json())
         .then(
           (result) => {
-            let totalTime = (this.state.subject in timeDict.OC ? timeDict.OC[this.state.subject] : 600) * result.questions.length
-            this.setState({
-              isLoaded: true,
-              questions: result.questions,
-              quizId: result.quizId,
-              minutes: Math.floor(totalTime / 60),
-              seconds: totalTime % 60,
-            });
-            lastAnsweredTime = new Date().getTime()
-            this.pingQuiz()
+            if (result.questions.length == 0) {
+              this.setState({
+                isLoaded: true,
+                error: {message: "No questions for review, please go back"},
+              });
+            } else {
+              let totalTime = (this.state.subject in timeDict.OC ? timeDict.OC[this.state.subject] : 600) * result.questions.length
+              this.setState({
+                isLoaded: true,
+                questions: result.questions,
+                quizId: result.quizId,
+                minutes: Math.floor(totalTime / 60),
+                seconds: totalTime % 60,
+              });
+              lastAnsweredTime = new Date().getTime()
+              this.pingQuiz()
+            }
           },
           (error) => {
             this.setState({
