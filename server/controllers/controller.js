@@ -181,6 +181,18 @@ exports.createAnswers = async (req, res) => {
     })
 }
 
+// Update one answer
+exports.updateAnswer = async (req, res) => {
+  knex('Answers').where({ id: req.body.answerId }).update({userAnswer: req.body.questionAnswer, isReviewed: 1})
+    .then(results => {
+      res.json(results)
+    })
+    .catch(err => {
+      console.error(err);
+      res.json({ message: `There was an error updating answer from request body: ${req.body} error: ${err}` })
+    })
+}
+
 
 // Retrieve all quizes
 // curl 'http://localhost:4001/data/quizes' | jq .

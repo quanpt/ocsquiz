@@ -41,7 +41,7 @@ class Solution extends React.Component{
       showMessage: false,
       questionAnswer: props.questionAnswer,
       answerId: props.answerId,
-      isTeacher: Cookies.get('user') == 'admin'
+      user: Cookies.get('user')
     }
     this.state = state;
   }
@@ -52,13 +52,27 @@ class Solution extends React.Component{
 
   onButtonReviewClickHandler = () => {
     alert(JSON.stringify(this.state))
+    fetch("/data/answers/update", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+        body: JSON.stringify(this.state)
+      })
+      .then(res => res.json())
+      .then(
+        (result) => { },
+        (error) => {
+          this.setState({
+            error: true,
+          });
+        }
+      )
   }
 
   render(){ 
     return(<span>Solution: 
       <span className="questionAnswer">&nbsp;{this.state.showMessage && this.state.questionAnswer}&nbsp;</span>
       <button className="smallButon" onClick={this.onButtonClickHandler}>{this.state.showMessage ? 'Hide' : 'Show'}</button>&nbsp;
-      {this.state.isTeacher && <button className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
+      {this.state.user == 'admin' && <button type="submit" className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
     </span>);
 
   }

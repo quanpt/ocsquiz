@@ -22,6 +22,7 @@ router.get('/quizes', routes.getQuizes)
 router.get('/quizes/:id', routes.getQuizes)
 
 router.put('/answers/put', routes.createAnswers)
+router.post('/answers/update', routes.updateAnswer)
 
 
 // Export router
