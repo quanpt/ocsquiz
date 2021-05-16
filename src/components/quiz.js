@@ -138,6 +138,7 @@ export class Quiz extends React.Component {
       error: null,
       isLoaded: false,
       questions: [],
+      imageURLs: [],
       quizId: props.id ? props.id : null,
       year: props.year,
       subject: props.subject,
@@ -203,6 +204,7 @@ export class Quiz extends React.Component {
                 isLoaded: true,
                 questions: result.questions,
                 quizId: result.quizId,
+                imageURLs: result.imageURLs,
                 minutes: Math.floor(totalTime / 60),
                 seconds: totalTime % 60,
               });
@@ -220,6 +222,21 @@ export class Quiz extends React.Component {
 
   componentWillUnmount() {
     clearTimeout(this.intervalID);
+  }
+
+  renderImageURLs() {
+    let state = this.state
+    return (
+      <div>
+        {state.imageURLs.length > 0 && 
+          <div>
+            <span>Images the questions refering to:</span>
+            {state.imageURLs.map((item, index) => {
+              return <p><a target='_blank' href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions</p>
+            })}
+          </div>}
+      </div>
+    );
   }
 
   renderQuestions() {
@@ -357,6 +374,7 @@ export class Quiz extends React.Component {
           >
             {({ answers }) => (
               <Form onKeyDown={onKeyDown}>
+                {this.renderImageURLs()}
                 {this.renderQuestions()}
                 {this.state.isSubmitted ? null : <button type="submit" className="formSubmit">Submit</button>}
               </Form>

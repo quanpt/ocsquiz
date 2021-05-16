@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS "Questions" (
 );
 DROP TABLE IF EXISTS "QuizImages";
 CREATE TABLE IF NOT EXISTS "QuizImages" (
-	"fullTitle"	TEXT NOT NULL,
+	"title"	TEXT NOT NULL,
 	"imageURL"	TEXT NOT NULL,
 	"questionCount"	INTEGER
 );
