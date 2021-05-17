@@ -48,7 +48,7 @@ export const TitleList = (props: TitleListUI) => {
       <tbody className="table-body">
         {props.titles.length > 0 ? (
           props.titles
-            .filter(d => props.filter === '' || d.fullTitle.includes(props.filter))
+            .filter(d => props.filter === '' || d.fullTitle.toLowerCase().includes(props.filter.toLowerCase()))
             .map((item, idx) => (
             <TitleRow
               key={idx + 1}

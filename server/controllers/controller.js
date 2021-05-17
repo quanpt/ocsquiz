@@ -55,8 +55,12 @@ exports.getFullTitles = async (req, res) => {
   knex
     .select('*')
     .from('TitleView')
-    .where('year', req.body.year)
-    .where('subject', req.body.subject)
+    .where(function() {
+      this.whereRaw('? = ?', [req.body.year, 'All']).orWhere('year', req.body.year)
+    })
+    .andWhere(function() {
+      this.whereRaw('? = ? or ? = ?', [req.body.subject, 'All', req.body.year, 'All']).orWhere('subject', req.body.subject)
+    })
     .then(items => {
       res.json(items)
     })

@@ -15,7 +15,7 @@ interface SubjectListUI {
   loading: boolean;
 }
 
-const SubjectListRow = (props: SubjectUI) => (
+export const SubjectListRow = (props: SubjectUI) => (
   <tr className="table-row">
     <td className="table-item">
       <Link to={"/year/" + props.year + "/subject/" + props.subject}>{props.subject}</Link>
@@ -37,14 +37,18 @@ export const SubjectList = (props: SubjectListUI) => {
                 subject={item.subject}
                 year={props.year}
               />
-              )
+              ))
+            ) : (
+              <tr className="table-row">
+                <td className="table-item" style={{ textAlign: 'center' }} colSpan={6}>There are no subject to show. Create one!</td>
+              </tr>
             )
-          ) : (
-            <tr className="table-row">
-              <td className="table-item" style={{ textAlign: 'center' }} colSpan={6}>There are no subject to show. Create one!</td>
-            </tr>
-          )
-        }
+          }
+          <SubjectListRow
+            key={props.subjects.length}
+            subject='All'
+            year={props.year}
+          />
         </tbody>
     </table>
   )

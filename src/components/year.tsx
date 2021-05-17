@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 
 import { BrowserRouter as Route, Link } from "react-router-dom";
+import { SubjectListRow } from './subject'
 
 // interfaces
 export interface Year {
@@ -49,6 +50,11 @@ export const YearList = (props: YearListUI) => {
             </tr>
           )
         }
+        <SubjectListRow
+            key={9999}
+            subject='All'
+            year='All'
+          />
         </tbody>
     </table>
   )
