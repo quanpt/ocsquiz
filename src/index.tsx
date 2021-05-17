@@ -38,7 +38,6 @@ class App extends React.Component {
     return (
       <Router>
         <div className="wrapper bg-white rounded">
-          <Link to="/"><h1>Home</h1></Link>
           <Switch>
             <Route path="/year/:year/subject/:subject/title/:title/state/:questionState">
               <Quizes/>
@@ -52,13 +51,13 @@ class App extends React.Component {
               <QuizView />
             </Route>
             <Route path="/results">
-              <ResultListPage />
+              <Results/>
             </Route>
             <Route path="/user">
               <UserPage />
             </Route>
             <Route path="/">
-              <YearListPage />
+              <Years/>
             </Route>
           </Switch>
         </div>
@@ -69,18 +68,24 @@ class App extends React.Component {
 
 function QuizView() {
   let { id } = useParams<{ id: string }>();
-  return <Quiz isViewMode={true} id={id} />
+  return <div>
+      <Navigator year='' subject='' />
+      <Quiz isViewMode={true} id={id} />
+    </div>
 }
 
 function Quizes() {
   let { year, subject, title, questionState } = useParams<{ year: string, subject: string, title: string, questionState: string }>();
-  return <Quiz year={year} subject={subject} title={title} questionState={questionState}/>
+  return <div>
+      <Navigator year={year} subject={subject} />
+      <Quiz year={year} subject={subject} title={title} questionState={questionState}/>
+    </div>
 }
 
 function Titles() {
   let { year, subject } = useParams<{ year: string, subject: string }>();
   return <div>
-      <Navigator year={year} subject={subject} />  
+      <Navigator year={year} subject={subject} />
       <TitleListPage year={year} subject={subject} />
     </div>
 }
@@ -93,6 +98,20 @@ function Subjects() {
     </div>
 }
 
+function Years() {
+  return <div>
+    <Navigator year="" subject="" />
+    <YearListPage />
+  </div>
+}
+
+function Results() {
+  return <div>
+      <Navigator year="" subject="" />
+      <ResultListPage/>
+    </div>
+}
+
 function UserPage() {
   return <div>
     {Cookies.set('user', 'admin')}
@@ -102,10 +121,14 @@ function UserPage() {
 
 function Navigator(props: any) {
   if (props.subject === "") {
-    return <Link to={"/year/" + props.year}><span>{props.year}</span></Link>
+    return <span>
+        <Link to='/'><span>Home</span></Link>&gt;
+        <Link to={"/year/" + props.year}><span>{props.year}</span></Link>
+      </span>
   } else {
     return <span>
-        <Link to={"/year/" + props.year}><span>{props.year}</span></Link>
+        <Link to='/'><span>Home</span></Link>&gt;
+        <Link to={"/year/" + props.year}><span>{props.year}</span></Link>&gt;
         <Link to={"/year/" + props.year + "/subject/" + props.subject}><span>{props.subject}</span></Link>
       </span>
   }
