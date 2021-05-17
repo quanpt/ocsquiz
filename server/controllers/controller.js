@@ -252,31 +252,46 @@ exports.updateAnswer = async (req, res) => {
 // curl 'http://localhost:4001/data/quizes' | jq .
 exports.getQuizes = async (req, res) => {
   if (req.params.id) {
-    new Promise((resolve, reject) => {
-      let data = {};
-
-      Promise.all([
-        knex
-          .select('*')
-          .from('FullAnswers')
-          .where('quizId', '=', req.params.id),
-        knex
-          .select('*')
-          .from('Quizes')
-          .join('TitleCat', { title: 'fullTitle' })
-          .where('id', '=', req.params.id)
-      ]).then((result) => {
-        data = result[1][0];
-        data.questions = result[0];
-        resolve(data);
-      }).catch((err) => {
-        reject(err);
-      })
-    }).then(item => {
-      res.json(item)
-    })
+    
+    const quiz = await knex
+      .select('*')
+      .from('Quizes')
+      .join('TitleCat', { title: 'fullTitle' })
+      .where('id', '=', req.params.id)
+      .first()
       .catch(err => {
+        console.error(err);
         res.json({ message: `There was an error retrieving data: ${err}` })
+        return
+      })
+    console.log(quiz)
+
+    const imageURLs = await knex
+      .select('*')
+      .from('QuizImages')
+      .where('title', quiz.title)
+      .catch(err => {
+        console.error(err);
+        res.json({ message: `There was an error retrieving data: ${err}` })
+        return
+      })
+
+    knex
+      .select('*')
+      .from('FullAnswers')
+      .where('quizId', '=', req.params.id)
+      .then((result) => {
+        res.json(
+          Object.assign({}, quiz, {
+            questions: result,
+            imageURLs: imageURLs
+          })
+        )
+      })
+      .catch(err => {
+        console.error(err);
+        res.json({ message: `There was an error retrieving data: ${err}` })
+        return
       })
   } else
     knex
