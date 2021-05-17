@@ -1,4 +1,3 @@
-// Import deps
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Route, Link } from "react-router-dom";
 import axios from 'axios'
@@ -15,6 +14,7 @@ interface TitleListUI {
   year: string;
   subject: string;
   loading: boolean;
+  filter: string;
 }
 
 const TitleRow = (props: TitleUI) => (
@@ -47,7 +47,9 @@ export const TitleList = (props: TitleListUI) => {
       </thead>
       <tbody className="table-body">
         {props.titles.length > 0 ? (
-          props.titles.map((item, idx) => (
+          props.titles
+            .filter(d => props.filter === '' || d.fullTitle.includes(props.filter))
+            .map((item, idx) => (
             <TitleRow
               key={idx + 1}
               subject={props.subject}
@@ -76,6 +78,7 @@ export function TitleListPage (props: SubjectUI) {
   const [loading, setLoading] = useState(true)
   const [year, setYear] = useState(props.year)
   const [subject, setSubject] = useState(props.subject)
+  const [filter, setFilter] = useState('')
 
   useEffect(() => {
     document.title = "Quiz - Titles"
@@ -95,9 +98,14 @@ export function TitleListPage (props: SubjectUI) {
       .catch(error => console.error(`There was an error getting title of the year '${year}' and subject '${subject}': ${error}`))
   }
 
+  function onChangeHandler(e: any){
+    setFilter(e.target.value)
+  }
+
   return (
     <div className="quiz-list-wrapper">
-      <TitleList year={year} titles={titles} subject={subject} loading={loading} />
+      <input placeholder='filter value' value={filter} type="text" onChange={ onChangeHandler }/>
+      <TitleList year={year} titles={titles} subject={subject} loading={loading} filter={filter}/>
       <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + props.subject + ' L\'s review/state/2'} className='reviewLink'>Quiz with remaining questions</Link>
     </div>
   )
