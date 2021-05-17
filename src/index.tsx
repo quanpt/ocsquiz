@@ -69,7 +69,7 @@ class App extends React.Component {
 function QuizView() {
   let { id } = useParams<{ id: string }>();
   return <div>
-      <Navigator year='' subject='' />
+      <Navigator year='' subject='' link='results' />
       <Quiz isViewMode={true} id={id} />
     </div>
 }
@@ -107,7 +107,7 @@ function Years() {
 
 function Results() {
   return <div>
-      <Navigator year="" subject="" />
+      <Navigator year='' subject='' link='results' />
       <ResultListPage/>
     </div>
 }
@@ -120,19 +120,12 @@ function UserPage() {
 }
 
 function Navigator(props: any) {
-  if (props.subject === "") {
-    return <span>
-        <Link to='/'><span>Home</span></Link>&gt;
-        <Link to={"/year/" + props.year}><span>{props.year}</span></Link>
-      </span>
-  } else {
-    return <span>
-        <Link to='/'><span>Home</span></Link>&gt;
-        <Link to={"/year/" + props.year}><span>{props.year}</span></Link>&gt;
-        <Link to={"/year/" + props.year + "/subject/" + props.subject}><span>{props.subject}</span></Link>
-      </span>
-  }
-  
+  return <span>
+      <span><Link to='/'>Home</Link></span>&gt;
+      {props.year != '' && <span><Link to={"/year/" + props.year}>{props.year}</Link> &gt;</span>}
+      {props.subject != '' && <span><Link to={"/year/" + props.year + "/subject/" + props.subject}>{props.subject}</Link> &gt;</span>}
+      {props.link != '' && <Link to={"/" + props.link}><span>{props.link}</span></Link>}
+    </span>
 }
 
 ReactDOM.render(<App />, document.getElementById('root'))
