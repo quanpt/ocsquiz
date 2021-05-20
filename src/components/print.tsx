@@ -44,11 +44,10 @@ function PrintQuestionSets(props: {questionSets: any}) {
 function PrintQuestionPage(props: {pair: any, index: number}) {
     return <div className="stl_ stl_02" key={"page_" + props.index}>
                 <div className="stl_view">
-                    <span className="HeadSpace">1&nbsp;1</span>
+                    <span className="HeadSpace">&nbsp;</span>
                     {
-                        [1, 2].map((n) => {
-                            console.log(n);
-                            return <PrintQuestion question={props.pair[n-1]} index={props.index} n={n} key={props.index * 2 + n} />
+                        [...new Array(props.pair.length)].map((_,i) => i).map((i) => {
+                            return <PrintQuestion question={props.pair[i]} index={props.index} n={i} key={props.index * 2 + i} />
                         })
                     }
                     <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
@@ -59,36 +58,35 @@ function PrintQuestionPage(props: {pair: any, index: number}) {
 }
 
 function PrintQuestion(props: {question: any, index: number, n: number}) {
+    
     return <div className="stl_05" key={"question_" + props.index + "_" + props.n}>
-            <span className="QuestionNumber">{props.index * 2 + props.n}</span>
+            <span className="QuestionNumber">{props.index * 2 + props.n + 1}</span>
             <span className="QuestionText">
-                {JSON.stringify(props.question)}
+                {JSON.stringify(props.question.qgroup)}
             </span>
-            { props.n == 1 && <span className="AnswerOption">&nbsp; </span> }
+            { props.n === 1 && <span className="AnswerOption">&nbsp; </span> }
         </div>
 }
 
 export function PrintableQuiz(props: QuizI) {
     // Prepare states
-    const [year, setYear] = useState(props.year)
-    const [subject, setSubject] = useState(props.subject)
-    const [title, setTitle] = useState(props.title)
-    const [loading, setLoading] = useState(true)
-    const [questions, setQuestions] = useState([])
+    // const [year, setYear] = useState(props.year)
+    // const [subject, setSubject] = useState(props.subject)
+    const [title] = useState(props.title)
+    // const [loading, setLoading] = useState(true)
     const [questionSets, setQuestionSets] = useState([[]])
-    const [images, setImages] = useState([])
+    // const [images, setImages] = useState([])
 
     useEffect(() => {
         document.title = title
         fetch("/data/questions/get", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify(props)
+            body: JSON.stringify({title: title})
         })
             .then(res => res.json())
             .then(
-                (result) => {
-                    setQuestions(result)
+                (questions) => {
                     var newQuestionSets = [];
                     var size = 2;
                     for (var i = 0; i < questions.length; i += size) {
@@ -109,7 +107,7 @@ export function PrintableQuiz(props: QuizI) {
         //             // console.log(result)
         //         }
         //     )
-    }, [])
+    }, [title])
 
     useScript('/assets/html/includeHTML.js');
 
