@@ -72,7 +72,7 @@ class Solution extends React.Component{
     return(<span>Solution: 
       <span className="questionAnswer">&nbsp;{this.state.showMessage && this.state.questionAnswer}&nbsp;</span>
       <button className="smallButon" onClick={this.onButtonClickHandler}>{this.state.showMessage ? 'Hide' : 'Show'}</button>&nbsp;
-      {this.state.user == 'admin' && <button type="submit" className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
+      {this.state.user === 'admin' && <button type="submit" className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
     </span>);
 
   }
@@ -133,7 +133,7 @@ export class Quiz extends React.Component {
   constructor(props) {
     super(props);
     let state = {
-      isFull: props.questionState == 1,
+      isFull: props.questionState === 1,
       isSubmitted: false,
       error: null,
       isLoaded: false,
@@ -143,7 +143,7 @@ export class Quiz extends React.Component {
       year: props.year,
       subject: props.subject,
       title: decodeURIComponent(props.title),
-      isRedoMode: props.questionState == 2,
+      isRedoMode: props.questionState === 2,
       isViewMode: props.isViewMode
     };
     this.state = state;
@@ -193,7 +193,7 @@ export class Quiz extends React.Component {
         .then(res => res.json())
         .then(
           (result) => {
-            if (result.questions.length == 0) {
+            if (result.questions.length === 0) {
               this.setState({
                 isLoaded: true,
                 error: {message: "No questions for review, please go back"},
@@ -232,7 +232,7 @@ export class Quiz extends React.Component {
           <div>
             <span>Images the questions refering to:</span>
             {state.imageURLs.map((item, index) => {
-              return <p><a target='_blank' href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions</p>
+              return <p><a target='_blank' rel="noreferrer" href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions</p>
             })}
           </div>}
       </div>
@@ -302,7 +302,9 @@ export class Quiz extends React.Component {
     } else {
       let newQuestions = this.state.questions.slice();
       var dict = newQuestions.reduce(
-        (dict, el, index) => (dict[el.id] = "", dict), {})
+        (dict, el) => {
+          dict[el.id] = ""
+          return dict}, {})
       return (
         <div>
           <h1>Quiz</h1>
