@@ -46,6 +46,11 @@
         font-size: 1em;
         transform: scale(1);
     }
+
+    img {
+        max-width: 200 !important;
+        height: auto;
+    }
 }
 
 .stl_grlink {
@@ -1360,4 +1365,9 @@
 
 .Image {
     object-fit: fill;
+}
+
+.questionImage {
+    max-width: 600px;
+    height: auto;
 }
