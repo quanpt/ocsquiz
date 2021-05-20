@@ -49,7 +49,7 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
             <span className="HeadSpace">&nbsp;</span>
             {
                 [...new Array(props.pair.length)].map((_, i) => i).map((i) => {
-                    return <PrintQuestion question={props.pair[i]} index={props.index} n={i} key={props.index * 2 + i} />
+                    return <PrintQuestion question={props.pair[i]} n={i} key={props.pair[i].id} />
                 })
             }
             <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
@@ -63,7 +63,7 @@ let reImage1 = new RegExp(/\$image1\$/g);
 // const window = (new JSDOM('')).window
 // const DOMPurify = createDOMPurify(window)
 
-function PrintQuestion(props: { question: any, index: number, n: number }) {
+function PrintQuestion(props: { question: any, n: number }) {
 
     let q = props.question
     let key = q.id
@@ -79,8 +79,8 @@ function PrintQuestion(props: { question: any, index: number, n: number }) {
         rawHtml = '<img src="/assets/articles/bigfish/' + q.imageId + '.jpg" />' + rawHtml;
     }
 
-    return <div className="stl_05" key={"question_" + props.index + "_" + props.n}>
-        <span className="QuestionNumber">{props.index * 2 + props.n + 1}</span>
+    return <div className="stl_05" key={key}>
+        <span className="QuestionNumber">{props.question.pos + 1}</span>
         <span className="QuestionText" dangerouslySetInnerHTML={{ __html: rawHtml}} />
         {props.n === 1 && <span className="AnswerOption">&nbsp; </span>}
     </div>
@@ -106,10 +106,11 @@ export function PrintableQuiz(props: QuizI) {
             .then(res => res.json())
             .then(
                 (questions) => {
+                    var newQs = questions.map((q: any, i: number) => {q.pos = i; return q})
                     var newQuestionSets = [];
-                    var size = 2;
-                    for (var i = 0; i < questions.length; i += size) {
-                        newQuestionSets.push(questions.slice(i, size + i));
+                    var size = 1;
+                    for (var i = 0; i < newQs.length; i += size) {
+                        newQuestionSets.push(newQs.slice(i, size + i));
                     }
                     setQuestionSets(newQuestionSets)
                 }
