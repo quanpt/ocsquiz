@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { BrowserRouter as Route, Link } from "react-router-dom";
-import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { Link } from "react-router-dom";
 import { SubjectUI } from './subject'
 
 interface TitleUI extends SubjectUI {
@@ -26,7 +25,7 @@ const TitleRow = (props: TitleUI) => (
       <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/state/1'} className='smallText'>Full Test</Link>
     </td>
     <td className="table-item-number">
-      <span className={props.correctAnswerCount == props.questionCount ? 'goodTime' : 'warningTime'}>{props.correctAnswerCount}</span>
+      <span className={props.correctAnswerCount === props.questionCount ? 'goodTime' : 'warningTime'}>{props.correctAnswerCount}</span>
     </td>
     <td className="table-item-number">
       <span>{props.questionCount}</span>
@@ -79,27 +78,26 @@ export function TitleListPage (props: SubjectUI) {
   // Prepare states
   const [titles, setTitles] = useState([])
   const [loading, setLoading] = useState(true)
-  const [year, setYear] = useState(props.year)
-  const [subject, setSubject] = useState(props.subject)
+  const [year] = useState(props.year)
+  const [subject] = useState(props.subject)
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
     document.title = "Quiz - Titles"
-    fetchTitles()
-  }, [])
-
-  // Fetch all subject of given year
-  const fetchTitles = async () => {
-    axios
-      .post('/data/title/get', { year: year, subject: subject })
+    fetch("/data/title/get", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+        body: JSON.stringify({ year: year, subject: subject })
+      })
+      .then(res => res.json())
       .then((response) => {
-        setTitles(response.data)
+        setTitles(response)
 
         // Update loading state
         setLoading(false)
       })
       .catch(error => console.error(`There was an error getting title of the year '${year}' and subject '${subject}': ${error}`))
-  }
+  }, [year, subject])
 
   function onChangeHandler(e: any){
     setFilter(e.target.value)
