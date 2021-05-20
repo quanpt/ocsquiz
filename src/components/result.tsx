@@ -1,6 +1,6 @@
 // Import deps
-import React, { useEffect, useState } from 'react'
-import { BrowserRouter as Route, Link } from "react-router-dom"
+import { useEffect, useState } from 'react'
+import { Link } from "react-router-dom"
 import axios from 'axios'
 
 interface ResultUI {

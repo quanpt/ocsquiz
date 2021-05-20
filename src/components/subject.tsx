@@ -1,7 +1,6 @@
 // Import deps
-import React, { useEffect, useState } from 'react'
-import { BrowserRouter as Route, Link } from "react-router-dom";
-import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { Link } from "react-router-dom";
 import { Year } from './year'
 
 export interface SubjectUI extends Year {
@@ -59,25 +58,24 @@ export function SubjectListPage (props: Year) {
   // Prepare states
   const [subjects, setSubjects] = useState([])
   const [loading, setLoading] = useState(true)
-  const [year, setYear] = useState(props.year)
+  const [year] = useState(props.year)
 
   useEffect(() => {
     document.title = "Quiz - Subjects"
-    fetchSubjects()
-  }, [])
-
-  // Fetch all subject of given year
-  const fetchSubjects = async () => {
-    axios
-      .post('/data/subject/get', { year: year })
+    fetch("/data/subject/get", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+          body: JSON.stringify({ year: year })
+      })
+      .then(res => res.json())
       .then((response) => {
-        setSubjects(response.data)
+        setSubjects(response)
 
         // Update loading state
         setLoading(false)
       })
       .catch(error => console.error(`There was an error getting subject of the year ${year}: ${error}`))
-  }
+  }, [year])
 
   return (
     <div className="quiz-list-wrapper">
