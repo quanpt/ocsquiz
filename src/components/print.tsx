@@ -79,6 +79,7 @@ export function PrintableQuiz(props: QuizI) {
 
     useEffect(() => {
         document.title = title
+        document.body.style.backgroundColor = "white"
         fetch("/data/questions/get", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
