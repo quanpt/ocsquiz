@@ -1,7 +1,8 @@
 {
   "include": [
-    "./src/*"
-, "src/components/react-app-env.d.ts"  ],
+    "./src/*",
+    "src/components/react-app-env.d.ts"
+  ],
   "compilerOptions": {
     "lib": [
       "dom",
@@ -20,6 +21,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "noFallthroughCasesInSwitch": true
-  }
+    "noFallthroughCasesInSwitch": true,
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "typings"
+  ]
 }

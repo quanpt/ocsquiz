@@ -8,7 +8,8 @@ import {
   Link,
   useParams
 } from "react-router-dom";
-import './index.css';
+import './styles/index.css';
+import './styles/oc.css';
 
 import { SubjectListPage } from './components/subject'
 import { YearListPage } from './components/year'
@@ -38,7 +39,6 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <div className="wrapper bg-white rounded">
           <Switch>
             <Route path="/year/:year/subject/:subject/title/:title/state/:questionState">
               <Quizes/>
@@ -64,7 +64,6 @@ class App extends React.Component {
               <Years/>
             </Route>
           </Switch>
-        </div>
       </Router>
     );
   }
@@ -72,7 +71,7 @@ class App extends React.Component {
 
 function QuizView() {
   let { id } = useParams<{ id: string }>();
-  return <div>
+  return <div className="wrapper bg-white rounded">
       <Navigator year='' subject='' link='results' />
       <Quiz isViewMode={true} id={id} />
     </div>
@@ -80,7 +79,7 @@ function QuizView() {
 
 function Quizes() {
   let { year, subject, title, questionState } = useParams<{ year: string, subject: string, title: string, questionState: string }>();
-  return <div>
+  return <div className="wrapper bg-white rounded">
       <Navigator year={year} subject={subject} />
       <Quiz year={year} subject={subject} title={title} questionState={questionState}/>
     </div>
@@ -88,7 +87,7 @@ function Quizes() {
 
 function Titles() {
   let { year, subject } = useParams<{ year: string, subject: string }>();
-  return <div>
+  return <div className="wrapper bg-white rounded">
       <Navigator year={year} subject={subject} />
       <TitleListPage year={year} subject={subject} />
     </div>
@@ -96,21 +95,21 @@ function Titles() {
 
 function Subjects() {
   let { year } = useParams<{ year: string }>();
-  return <div>
+  return <div className="wrapper bg-white rounded">
       <Navigator year={year} subject="" />
       <SubjectListPage year={year} />
     </div>
 }
 
 function Years() {
-  return <div>
+  return <div className="wrapper bg-white rounded">
     <Navigator year="" subject="" />
     <YearListPage />
   </div>
 }
 
 function Results() {
-  return <div>
+  return <div className="wrapper bg-white rounded">
       <Navigator year='' subject='' link='results' />
       <ResultListPage/>
     </div>
@@ -131,10 +130,10 @@ function PrintableQuizes() {
 function Navigator(props: any) {
   return <span>
       <span><Link to='/'>Home</Link></span>&gt;
-      {props.year != '' && <span><Link to={"/year/" + props.year}>{props.year}</Link> &gt;</span>}
-      {props.subject != '' && <span><Link to={"/year/" + props.year + "/subject/" + props.subject}>{props.subject}</Link> &gt;</span>}
-      {props.link != '' && <Link to={"/" + props.link}><span>{props.link}</span></Link>}
+      {props.year !== '' && <span><Link to={"/year/" + props.year}>{props.year}</Link> &gt;</span>}
+      {props.subject !=='' && <span><Link to={"/year/" + props.year + "/subject/" + props.subject}>{props.subject}</Link> &gt;</span>}
+      {props.link !== '' && <Link to={"/" + props.link}><span>{props.link}</span></Link>}
     </span>
 }
 
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App />, document.getElementsByTagName('body')[0])

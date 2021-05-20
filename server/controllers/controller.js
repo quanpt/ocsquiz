@@ -74,7 +74,7 @@ exports.getFullTitles = async (req, res) => {
 exports.getQuestions = async (req, res) => {
   knex
     .select('*')
-    ``.from('FullQuestions')
+    .from('FullQuestions')
     .where('title', req.body.title)
     //.orderByRaw('RANDOM()')
     //.limit(10)
@@ -86,6 +86,21 @@ exports.getQuestions = async (req, res) => {
       res.json({ message: `There was an error retrieving data: ${err}` })
     })
 }
+
+exports.getQuizImages = async (req, res) => {
+  knex
+    .select('*')
+    .from('QuizImages')
+    .where('title', req.body.title)
+    .then(items => {
+      res.json(items)
+    })
+    .catch(err => {
+      console.error(err);
+      res.json({ message: `There was an error retrieving data: ${err}` })
+    })
+}
+
 
 // Create new quiz
 // curl 'http://localhost:4001/data/quizes/put' -X PUT --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20"
