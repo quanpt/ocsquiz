@@ -15,6 +15,7 @@ import { YearListPage } from './components/year'
 import { TitleListPage } from './components/title'
 
 import { Quiz } from './components/quiz'
+import { PrintableQuiz } from './components/print'
 import { ResultListPage } from './components/result'
 
 // ========================================
@@ -41,6 +42,9 @@ class App extends React.Component {
           <Switch>
             <Route path="/year/:year/subject/:subject/title/:title/state/:questionState">
               <Quizes/>
+            </Route>
+            <Route path="/year/:year/subject/:subject/title/:title/print">
+              <PrintableQuizes/>
             </Route>
             <Route path="/year/:year/subject/:subject">
               <Titles />
@@ -117,6 +121,11 @@ function UserPage() {
     {Cookies.set('user', 'admin')}
     <span>User set</span>
   </div>
+}
+
+function PrintableQuizes() {
+  let { year, subject, title } = useParams<{ year: string, subject: string, title: string }>();
+  return <PrintableQuiz year={year} subject={subject} title={title}/>
 }
 
 function Navigator(props: any) {

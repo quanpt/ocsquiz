@@ -31,6 +31,9 @@ const TitleRow = (props: TitleUI) => (
     <td className="table-item-number">
       <span>{props.questionCount}</span>
     </td>
+    <td className="table-item">
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/print'} className='smallText'>Print</Link>
+    </td>
   </tr>
 )
 
@@ -42,7 +45,7 @@ export const TitleList = (props: TitleListUI) => {
     <table className="table">
       <thead>
         <tr>
-          <th>Title</th><th>Full</th><th>Answered Question</th><th>Total Question</th>
+          <th>Title</th><th>Full Test</th><th>Answered Question</th><th>Total Question</th><th>Print</th>
         </tr>
       </thead>
       <tbody className="table-body">
