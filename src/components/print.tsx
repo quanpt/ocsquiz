@@ -71,6 +71,7 @@ function PrintQuestion(props: { question: any, n: number }) {
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
         .replace('<br/> <br/> <br/></div>', '</div>')
+        .replace(/<br\/> <br\/>/g, '<br/>')
         .replace(/\ssrc="/g, '  class="questionImage" src="/assets/')
         .replace(reImage1, '<img src="/assets/figures/' + props.question.mmfid + '_1.jpg" class="questionImage" />')
         .replace('<a href="show_image.html?name=', '<a href="/assets/')
@@ -78,11 +79,14 @@ function PrintQuestion(props: { question: any, n: number }) {
     if (q.imageId) {
         rawHtml = '<img src="/assets/articles/bigfish/' + q.imageId + '.jpg" />' + rawHtml;
     }
+    // rawHtml = rawHtml.slice(0, -6)
+    // console.log(rawHtml.slice(0, -6));
+    
 
     return <div className="stl_05" key={key}>
         <span className="QuestionNumber">{props.question.pos + 1}</span>
         <span className="QuestionText" dangerouslySetInnerHTML={{ __html: rawHtml}} />
-        {props.n === 1 && <span className="AnswerOption">&nbsp; </span>}
+        {props.n === 0 && <span className="AnswerOption">&nbsp; </span>}
     </div>
 }
 
