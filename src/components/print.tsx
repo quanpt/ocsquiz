@@ -113,14 +113,17 @@ export function PrintableQuiz(props: QuizI) {
                     var newQs = questions.map((q: any, i: number) => (q.pos = i, q))
                     var newQuestionSets = [];
                     for (var i = 0; i < newQs.length; i += 1) {
-                        var size = 0;
-                        while (size < 2 && i+size < newQs.length) {
-                            if (newQs[i+size].question.indexOf('<img ') < 0 && newQs[i+size].question.indexOf('$image1$') < 0)
-                                size ++
-                            else
-                                break
+                        var size = 1;
+                        if (i+size < newQs.length) {
+                            var imageCount = 0
+                            "<img ,$image1$".split(',').forEach((pattern) => {
+                                imageCount += newQs[i].question.split(pattern).length - 1
+                                imageCount += newQs[i+1].question.split(pattern).length - 1
+                            })
+                            console.log(imageCount);
+                            
+                            size = imageCount < 2 ? 2 : 1
                         }
-                        size = size === 0 ? 1 : size
                         newQuestionSets.push(newQs.slice(i, size + i));
                         i += size - 1
                     }

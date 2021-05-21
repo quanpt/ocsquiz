@@ -1335,7 +1335,7 @@
 }
 
 span.QuestionText {
-    display: inline-grid;
+    display: inline-table;
     word-wrap: break-word;
     width: 39em;
     font-weight: normal;
