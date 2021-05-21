@@ -71,7 +71,11 @@ function PrintQuestion(props: { question: any, n: number }) {
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
         .replace('<br/> <br/> <br/></div>', '</div>')
-        .replace(/<br\/> <br\/>/g, '<br/>')
+        .replace(/<br\/> <br\/>/g, '@@@BR@@@')
+        .replace(/ @@@BR@@@ A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">A </span> $1 <br/>')
+        .replace(/ <br\/> ([B-F])\.{0,1} (((?!<br\/>).)*) <br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/> ([B-F])\.{0,1} (((?!<br\/>).)*) <br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/@@@BR@@@/g, '<br/>')
         .replace(/\ssrc="/g, '  class="questionImage" src="/assets/')
         .replace(reImage1, '<img src="/assets/figures/' + props.question.mmfid + '_1.jpg" class="questionImage" />')
         .replace('<a href="show_image.html?name=', '<a href="/assets/')
@@ -79,10 +83,7 @@ function PrintQuestion(props: { question: any, n: number }) {
     if (q.imageId) {
         rawHtml = '<img src="/assets/articles/bigfish/' + q.imageId + '.jpg" />' + rawHtml;
     }
-    // rawHtml = rawHtml.slice(0, -6)
-    // console.log(rawHtml.slice(0, -6));
     
-
     return <div className="stl_05" key={key}>
         <span className="QuestionNumber">{props.question.pos + 1}</span>
         <span className="QuestionText" dangerouslySetInnerHTML={{ __html: rawHtml}} />
@@ -120,8 +121,6 @@ export function PrintableQuiz(props: QuizI) {
                                 imageCount += newQs[i].question.split(pattern).length - 1
                                 imageCount += newQs[i+1].question.split(pattern).length - 1
                             })
-                            console.log(imageCount);
-                            
                             size = imageCount < 2 ? 2 : 1
                         }
                         newQuestionSets.push(newQs.slice(i, size + i));
