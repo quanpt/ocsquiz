@@ -133,9 +133,9 @@ function PrintableQuizes() {
 
 function Navigator(props: any) {
   return <span>
-      <span><Link to='/'>Home</Link></span>&gt;
-      {props.year !== '' && <span><Link to={"/year/" + props.year}>{props.year}</Link> &gt;</span>}
-      {props.subject !=='' && <span><Link to={"/year/" + props.year + "/subject/" + props.subject}>{props.subject}</Link> &gt;</span>}
+      <span><Link to='/'>Home</Link></span>&nbsp;&gt;&nbsp;
+      {props.year !== '' && <span><Link to={"/year/" + props.year}>{props.year}</Link>&nbsp;&gt;&nbsp;</span>}
+      {props.subject !=='' && <span><Link to={"/year/" + props.year + "/subject/" + props.subject}>{props.subject}</Link>&nbsp;&gt;&nbsp;</span>}
       {props.link !== '' && <Link to={"/" + props.link}><span>{props.link}</span></Link>}
     </span>
 }

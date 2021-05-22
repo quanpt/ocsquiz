@@ -41,7 +41,7 @@ export const ResultList = (props: ResultListUI) => {
   return (
     <table className="table content">
         <thead>
-          <tr><th className='titleTh'>Title</th><th>Date Time</th><th>Time (m)</th><th>Correct</th><th>Attempt</th><th>Question</th></tr>
+          <tr><th className='titleTh'>Title</th><th style={{width: '200px'}}>Date Time</th><th>Time (m)</th><th>Correct</th><th>Attempt</th><th>Question</th></tr>
         </thead>
         <tbody className="table-body">
           {props.results.length > 0 ? (

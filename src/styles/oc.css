@@ -1356,6 +1356,13 @@ span.QuestionText {
     font-weight: normal;
 }
 
+.QuestionImageLink {
+    display: inline-table;
+    position: sticky;
+    left:6.6539em;
+    font-family: "Arial";
+}
+
 .AnswerOption {
     position: sticky;
     left:6.6539em;
@@ -1395,4 +1402,15 @@ span.QuestionText {
     max-height: 300px;
     width: auto;
     height: auto;
+}
+
+th {
+    background-color: ivory;
+}
+
+.stl_view_online h1 {
+    position: sticky;
+    left: 3.327em;
+    display: unset;
+    line-height: normal;
 }

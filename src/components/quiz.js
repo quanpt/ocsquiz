@@ -215,13 +215,19 @@ export class Quiz extends React.Component {
   renderImageURLs() {
     let state = this.state
     return (
-      <div>
+      <div className="stl_ stl_02_online">
         {state.imageURLs.length > 0 &&
-          <div>
-            <span>Images the questions refering to:</span>
-            {state.imageURLs.map((item, index) => {
-              return <p key={index}><a target='_blank' rel="noreferrer" href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions</p>
-            })}
+          <div className="stl_view_online">
+            <div className="stl_05">
+              <span className="QuestionText">Images the questions refering to:</span>
+              {state.imageURLs.map((item, index) => {
+                return <>
+                  <span key={index} className="QuestionImageLink">
+                    <a target='_blank' rel="noreferrer" href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions
+                  </span><p />
+                </>
+              })}
+            </div>
           </div>}
       </div>
     );
@@ -300,8 +306,9 @@ export class Quiz extends React.Component {
         }, {})
       return (
         <>
-          <h1>Quiz</h1>
-          <h2>{this.state.title.replace(' result', '')}</h2>
+          <div className="stl_ stl_02_online stl_view_online stl_05">
+            <h1>Quiz - {this.state.title.replace(' result', '')}</h1>
+          </div>
           {this.state.isViewMode ? <div>Total: {this.state.questions.length} - Attempt: {this.state.countAnswer} - Correct: {this.state.countCorrect}</div> : ""}
           <Formik
             initialValues={dict}
