@@ -1,31 +1,29 @@
 import React from 'react';
-import createDOMPurify from 'dompurify'
 import Cookies from 'js-cookie';
-import { JSDOM } from 'jsdom'
 import { Timer } from './timer'
-import {PrintQuestion} from './print'
+import { PrintQuestion } from './print'
 
 import { Formik, Field, Form } from 'formik';
 
-const window = (new JSDOM('')).window
-const DOMPurify = createDOMPurify(window)
-
-let reImage1 = new RegExp(/\$image1\$/g);
 let lastAnsweredTime = 0
-let timeDict = {OC: {English: 72,
-  Mathematics: 68.5,
-  'Thinking Skills': 60,
-  'Computer Skill': 60,
-  'General Ability': 60,
-  'General Academic Knowledge': 60,
-  'Eng-Maths-GA': 65,
-  'Science and General Problem Solving': 60,
-  'non-verbal/visual reasoning': 60,
-  'Language Convention': 60,
-  Science: 60,
-  'Maths Olympiad': 60,
-  'Non-verbal Reasoning': 60,
-  Other: 60}}
+let timeDict = {
+  OC: {
+    English: 72,
+    Mathematics: 68.5,
+    'Thinking Skills': 60,
+    'Computer Skill': 60,
+    'General Ability': 60,
+    'General Academic Knowledge': 60,
+    'Eng-Maths-GA': 65,
+    'Science and General Problem Solving': 60,
+    'non-verbal/visual reasoning': 60,
+    'Language Convention': 60,
+    Science: 60,
+    'Maths Olympiad': 60,
+    'Non-verbal Reasoning': 60,
+    Other: 60
+  }
+}
 
 function onKeyDown(keyEvent) {
   if ((keyEvent.charCode || keyEvent.keyCode) === 13 && keyEvent.target.nodeName === 'INPUT') {
@@ -34,7 +32,7 @@ function onKeyDown(keyEvent) {
   // allow Enter on BUTTON
 }
 
-class Solution extends React.Component{
+class Solution extends React.Component {
 
   constructor(props) {
     super(props);
@@ -48,16 +46,16 @@ class Solution extends React.Component{
   }
 
   onButtonClickHandler = () => {
-   this.setState({ showMessage: !this.state.showMessage });
+    this.setState({ showMessage: !this.state.showMessage });
   };
 
   onButtonReviewClickHandler = () => {
     alert(JSON.stringify(this.state))
     fetch("/data/answers/update", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify(this.state)
-      })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+      body: JSON.stringify(this.state)
+    })
       .then(res => res.json())
       .then(
         (result) => { },
@@ -69,8 +67,8 @@ class Solution extends React.Component{
       )
   }
 
-  render(){ 
-    return(<span>Solution: 
+  render() {
+    return (<span>Solution:
       <span className="questionAnswer">&nbsp;{this.state.showMessage && this.state.questionAnswer}&nbsp;</span>
       <button className="smallButon" onClick={this.onButtonClickHandler}>{this.state.showMessage ? 'Hide' : 'Show'}</button>&nbsp;
       {this.state.user === 'admin' && <button type="submit" className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
@@ -85,22 +83,22 @@ function CorrectAnswer(props) {
   let timeClassName = secondSpent <= 60 ? 'goodTime' : (secondSpent <= 65 ? 'okTime' : (secondSpent <= 75 ? 'warningTime' : 'badTime'))
   let className = "answer " + (question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")
   return <div className="QuestionText">
-      <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
-      <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
-      {!question.isAnsweredCorrect && <Solution questionAnswer={question.questionAnswer} answerId={question.answerId}/>}
-    </div>
+    <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
+    <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
+    {!question.isAnsweredCorrect && <Solution questionAnswer={question.questionAnswer} answerId={question.answerId} />}
+  </div>
 }
 
 function Question(props) {
   let q = props.question
   let key = q.id
 
-  var answer = props.isSubmitted ? <CorrectAnswer question={q}/> : <div />
+  var answer = props.isSubmitted ? <CorrectAnswer question={q} /> : <div />
   q.pos = props.position - 1
 
   return (
     <div id={key} className={"stl_05 " + (q.isFocus ? 'focusDiv' : 'blurDiv')} onClick={props.answerOnFocus}>
-      {PrintQuestion({question: q, n: 0})}
+      {PrintQuestion({ question: q, n: 0 })}
       <div className="stl_05">
         <span className="QuestionText"><label htmlFor={props.question.id}>Answer </label>
           <Field id={props.question.id} name={props.question.id}
@@ -108,7 +106,7 @@ function Question(props) {
             disabled={props.isSubmitted} autoComplete="off"
             onKeyUp={props.answerOnKeyUp}
             onFocus={props.answerOnFocus} />
-          <br/>
+          <br />
           {answer}
         </span>
       </div>
@@ -186,7 +184,7 @@ export class Quiz extends React.Component {
             if (result.questions.length === 0) {
               this.setState({
                 isLoaded: true,
-                error: {message: "No questions for review, please go back"},
+                error: { message: "No questions for review, please go back" },
               });
             } else {
               let totalTime = (this.state.subject in timeDict.OC ? timeDict.OC[this.state.subject] : 60) * result.questions.length
@@ -218,11 +216,11 @@ export class Quiz extends React.Component {
     let state = this.state
     return (
       <div>
-        {state.imageURLs.length > 0 && 
+        {state.imageURLs.length > 0 &&
           <div>
             <span>Images the questions refering to:</span>
             {state.imageURLs.map((item, index) => {
-              return <p><a target='_blank' rel="noreferrer" href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions</p>
+              return <p key={index}><a target='_blank' rel="noreferrer" href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions</p>
             })}
           </div>}
       </div>
@@ -233,22 +231,23 @@ export class Quiz extends React.Component {
     let state = this.state
     return (
       <>
-      {this.state.isViewMode ? '' : 
-        <span className='timer'>
-          <Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted}/>
+        {this.state.isViewMode ? '' :
+          <span className='timer'>
+            <Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted} />
+          </span>}
+        <div className="stl_ stl_02_online">
+          <div className="stl_view_online">
+            {state.questions.map((question, index) => {
+              return <Question key={question.id}
+                question={question}
+                isSubmitted={state.isSubmitted}
+                position={index + 1}
+                answerOnKeyUp={() => this.answerOnKeyUp(question)}
+                answerOnFocus={() => this.answerOnFocus(question, true)} />
+            })}
+          </div>
           {this.state.isSubmitted ? null : <button type="submit" className="formSubmit">Submit</button>}
-        </span>}
-      <div className="stl_ stl_02">
-        <div className="stl_view_online">
-        {state.questions.map((question, index) => {
-          return <Question key={question.id}
-            question={question}
-            isSubmitted={state.isSubmitted}
-            position={index + 1}
-            answerOnKeyUp={() => this.answerOnKeyUp(question)}
-            answerOnFocus={() => this.answerOnFocus(question, true)}/>
-        })}
-      </div></div>
+        </div>
       </>
     );
   }
@@ -279,7 +278,7 @@ export class Quiz extends React.Component {
   answerOnFocus(question, isFocus) {
     let newQuestions = this.state.questions.slice();
     for (let key in newQuestions) {
-        newQuestions[key].isFocus = question === newQuestions[key] ? isFocus : (! isFocus);
+      newQuestions[key].isFocus = question === newQuestions[key] ? isFocus : (!isFocus);
     }
     this.setState({
       questions: newQuestions
@@ -297,7 +296,8 @@ export class Quiz extends React.Component {
       var dict = newQuestions.reduce(
         (dict, el) => {
           dict[el.id] = ""
-          return dict}, {})
+          return dict
+        }, {})
       return (
         <>
           <h1>Quiz</h1>
@@ -324,7 +324,7 @@ export class Quiz extends React.Component {
                 }
               }
 
-              if (countAnswer < newQuestions.length * 3/4) {
+              if (countAnswer < newQuestions.length * 3 / 4) {
                 alert('Too many empty answers, please keep trying!');
                 return;
               }

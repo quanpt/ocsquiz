@@ -81,6 +81,17 @@
     page-break-inside: avoid;
 }
 
+
+.stl_02_online {
+    font-size: 1em;
+    line-height: 0.0em;
+    width: 49.58333em;
+    border-style: none;
+    display: block;
+    margin: 0em;
+    page-break-inside: avoid;
+}
+
 @supports(-ms-ime-align:auto) {
     .stl_02 {
         overflow: hidden;

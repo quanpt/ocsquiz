@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react'
 import { toJSON } from 'cssjson';
 import useScript from '../hooks/useScript';
-import { JSDOM } from 'jsdom'
-import createDOMPurify from 'dompurify'
-import { raw } from 'body-parser';
 
 // interfaces
 export interface QuizI {
@@ -118,16 +115,18 @@ export function PrintableQuiz(props: QuizI) {
             .then(res => res.json())
             .then(
                 (questions) => {
-                    var newQs = questions.map((q: any, i: number) => (q.pos = i, q))
+                    var newQs = questions.map((q: any, i: number) => {q.pos = i; return q})
                     var newQuestionSets = [];
                     for (var i = 0; i < newQs.length; i += 1) {
                         var size = 1;
                         if (i+size < newQs.length) {
                             var imageCount = 0
-                            "<img ,$image1$".split(',').forEach((pattern) => {
+                            var tags = "<img ,$image1$".split(',')
+                            for (let index = 0; index < tags.length; index++) {
+                                let pattern = tags[index]
                                 imageCount += newQs[i].question.split(pattern).length - 1
                                 imageCount += newQs[i+1].question.split(pattern).length - 1
-                            })
+                            }
                             size = imageCount < 2 ? 2 : 1
                         }
                         newQuestionSets.push(newQs.slice(i, size + i));
