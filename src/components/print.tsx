@@ -122,10 +122,12 @@ export function PrintableQuiz(props: QuizI) {
                         if (i+size < newQs.length) {
                             var imageCount = 0
                             var tags = "<img ,$image1$".split(',')
-                            for (let index = 0; index < tags.length; index++) {
-                                let pattern = tags[index]
-                                imageCount += newQs[i].question.split(pattern).length - 1
-                                imageCount += newQs[i+1].question.split(pattern).length - 1
+                            for (var j=0; j<2; j++) {
+                                for (let index = 0; index < tags.length; index++) {
+                                    let pattern = tags[index]
+                                    imageCount += newQs[i+j].question.split(pattern).length - 1
+                                }
+                                imageCount += newQs[i+j].imageId ? 1 : 0
                             }
                             size = imageCount < 2 ? 2 : 1
                         }
