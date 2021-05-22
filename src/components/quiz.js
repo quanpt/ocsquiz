@@ -3,6 +3,7 @@ import createDOMPurify from 'dompurify'
 import Cookies from 'js-cookie';
 import { JSDOM } from 'jsdom'
 import { Timer } from './timer'
+import {PrintQuestion} from './print'
 
 import { Formik, Field, Form } from 'formik';
 
@@ -83,8 +84,8 @@ function CorrectAnswer(props) {
   let secondSpent = Math.floor(question.timeSpent / 1000)
   let timeClassName = secondSpent <= 60 ? 'goodTime' : (secondSpent <= 65 ? 'okTime' : (secondSpent <= 75 ? 'warningTime' : 'badTime'))
   let className = "answer " + (question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")
-  return <div>
-      <span className={className}> {question.userAnswer.toUpperCase()}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
+  return <div className="QuestionText">
+      <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
       <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
       {!question.isAnsweredCorrect && <Solution questionAnswer={question.questionAnswer} answerId={question.answerId}/>}
     </div>
@@ -93,36 +94,25 @@ function CorrectAnswer(props) {
 function Question(props) {
   let q = props.question
   let key = q.id
-  var rawHtml = q.question
-  rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
-    .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
-    .replace('<br/> <br/> <br/></div>', '</div>')
-    .replace(/\ssrc="/g, ' src="/assets/')
-    .replace(reImage1, '<img src="/assets/figures/' + props.question.mmfid + '_1.jpg" />')
-    .replace('<a href="show_image.html?name=', '<a href="/assets/')
-    .replace('target="ReadingText"', 'target="_blank"')
-  if (q.imageId) {
-    rawHtml = '<img src="/assets/articles/bigfish/' + q.imageId + '.jpg" />' + rawHtml;
-  }
 
-  var answer = props.isSubmitted ? <CorrectAnswer question={q}/> : <span />
+  var answer = props.isSubmitted ? <CorrectAnswer question={q}/> : <div />
+  q.pos = props.position - 1
 
   return (
-    <div id={key} className={q.isFocus ? 'focusDiv' : 'blurDiv'} onClick={props.answerOnFocus}>
-      <h3>Question {props.position} <span className='invisible'>#{key}</span></h3>
-      <div>
-        {<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] }) }}/>}
-        {/* {<div dangerouslySetInnerHTML={{ __html: rawHtml}}/>} */}
+    <div id={key} className={"stl_05 " + (q.isFocus ? 'focusDiv' : 'blurDiv')} onClick={props.answerOnFocus}>
+      {PrintQuestion({question: q, n: 0})}
+      <div className="stl_05">
+        <span className="QuestionText"><label htmlFor={props.question.id}>Answer </label>
+          <Field id={props.question.id} name={props.question.id}
+            placeholder="A, B, C, D or other text"
+            disabled={props.isSubmitted} autoComplete="off"
+            onKeyUp={props.answerOnKeyUp}
+            onFocus={props.answerOnFocus} />
+          <br/>
+          {answer}
+        </span>
       </div>
-      <label htmlFor={props.question.id}>Answer </label>
-      <Field id={props.question.id} name={props.question.id}
-        placeholder="A, B, C, D or other text"
-        disabled={props.isSubmitted} autoComplete="off"
-        onKeyUp={props.answerOnKeyUp}
-        onFocus={props.answerOnFocus} />
-      <br/>
-      {answer}
-      <hr />
+      {/* <hr /> */}
     </div>
   );
 }
@@ -199,7 +189,7 @@ export class Quiz extends React.Component {
                 error: {message: "No questions for review, please go back"},
               });
             } else {
-              let totalTime = (this.state.subject in timeDict.OC ? timeDict.OC[this.state.subject] : 600) * result.questions.length
+              let totalTime = (this.state.subject in timeDict.OC ? timeDict.OC[this.state.subject] : 60) * result.questions.length
               this.setState({
                 isLoaded: true,
                 questions: result.questions,
@@ -242,11 +232,14 @@ export class Quiz extends React.Component {
   renderQuestions() {
     let state = this.state
     return (
-      <div>
+      <>
       {this.state.isViewMode ? '' : 
         <span className='timer'>
           <Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted}/>
+          {this.state.isSubmitted ? null : <button type="submit" className="formSubmit">Submit</button>}
         </span>}
+      <div className="stl_ stl_02">
+        <div className="stl_view_online">
         {state.questions.map((question, index) => {
           return <Question key={question.id}
             question={question}
@@ -255,7 +248,8 @@ export class Quiz extends React.Component {
             answerOnKeyUp={() => this.answerOnKeyUp(question)}
             answerOnFocus={() => this.answerOnFocus(question, true)}/>
         })}
-      </div>
+      </div></div>
+      </>
     );
   }
 
@@ -294,7 +288,6 @@ export class Quiz extends React.Component {
 
   render() {
     const { error, isLoaded } = this.state;
-    console.log('re-render')
     if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
@@ -306,7 +299,7 @@ export class Quiz extends React.Component {
           dict[el.id] = ""
           return dict}, {})
       return (
-        <div>
+        <>
           <h1>Quiz</h1>
           <h2>{this.state.title.replace(' result', '')}</h2>
           {this.state.isViewMode ? <div>Total: {this.state.questions.length} - Attempt: {this.state.countAnswer} - Correct: {this.state.countCorrect}</div> : ""}
@@ -378,11 +371,10 @@ export class Quiz extends React.Component {
               <Form onKeyDown={onKeyDown}>
                 {this.renderImageURLs()}
                 {this.renderQuestions()}
-                {this.state.isSubmitted ? null : <button type="submit" className="formSubmit">Submit</button>}
               </Form>
             )}
           </Formik>
-        </div>
+        </>
       );
     }
   }

@@ -71,18 +71,22 @@ class App extends React.Component {
 
 function QuizView() {
   let { id } = useParams<{ id: string }>();
-  return <div className="wrapper bg-white rounded">
+  return <>
+    {/* <div className="wrapper bg-white rounded"> */}
       <Navigator year='' subject='' link='results' />
       <Quiz isViewMode={true} id={id} />
-    </div>
+    {/* </div> */}
+    </>
 }
 
 function Quizes() {
   let { year, subject, title, questionState } = useParams<{ year: string, subject: string, title: string, questionState: string }>();
-  return <div className="wrapper bg-white rounded">
+  return <>
+    {/* <div className="wrapper bg-white rounded"> */}
       <Navigator year={year} subject={subject} />
       <Quiz year={year} subject={subject} title={title} questionState={questionState}/>
-    </div>
+    {/* </div> */}
+    </>
 }
 
 function Titles() {

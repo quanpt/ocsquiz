@@ -3,6 +3,7 @@ import { toJSON } from 'cssjson';
 import useScript from '../hooks/useScript';
 import { JSDOM } from 'jsdom'
 import createDOMPurify from 'dompurify'
+import { raw } from 'body-parser';
 
 // interfaces
 export interface QuizI {
@@ -60,33 +61,39 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
 }
 
 let reImage1 = new RegExp(/\$image1\$/g);
-// const window = (new JSDOM('')).window
-// const DOMPurify = createDOMPurify(window)
 
-function PrintQuestion(props: { question: any, n: number }) {
-
-    let q = props.question
-    let key = q.id
-    var rawHtml = q.question
+export function FormatQuestionText(text: string, mmfid: number, imageId: number) {
+    var rawHtml = text
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
         .replace('<br/> <br/> <br/></div>', '</div>')
         .replace(/<br\/> <br\/>/g, '@@@BR@@@')
         .replace(/ @@@BR@@@ A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">A </span> $1 <br/>')
-        .replace(/ <br\/> ([B-F])\.{0,1} (((?!<br\/>).)*) <br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/> ([B-F])\.{0,1} (((?!<br\/>).)*) <br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
         .replace(/@@@BR@@@/g, '<br/>')
         .replace(/\ssrc="/g, '  class="questionImage" src="/assets/')
-        .replace(reImage1, '<img src="/assets/figures/' + props.question.mmfid + '_1.jpg" class="questionImage" />')
+        .replace(reImage1, '<img src="/assets/figures/' + mmfid + '_1.jpg" class="questionImage" />')
         .replace('<a href="show_image.html?name=', '<a href="/assets/')
         .replace('target="ReadingText"', 'target="_blank"')
-    if (q.imageId) {
-        rawHtml = '<img src="/assets/articles/bigfish/' + q.imageId + '.jpg" />' + rawHtml;
+    if (imageId > 0) {
+        rawHtml = '<img src="/assets/articles/bigfish/' + imageId + '.jpg" />' + rawHtml;
     }
+
+    return rawHtml
+}
+
+export function PrintQuestion(props: { question: any, n: number }) {
+
+    let q = props.question
+    let key = q.id
     
     return <div className="stl_05" key={key}>
         <span className="QuestionNumber">{props.question.pos + 1}</span>
-        <span className="QuestionText" dangerouslySetInnerHTML={{ __html: rawHtml}} />
+        <span className="QuestionText" dangerouslySetInnerHTML={{ __html: FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)}} />
         {props.n === 0 && <span className="AnswerOption">&nbsp; </span>}
     </div>
 }

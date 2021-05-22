@@ -53,6 +53,11 @@
     }
 }
 
+.stl_view_online {
+    font-size: 1em;
+    transform: scale(1);
+}
+
 .stl_grlink {
     position: relative;
     width: 100%;
@@ -1330,7 +1335,6 @@
     letter-spacing: -0.0002em;
     font-size: 0.999833em;
     font-family: "Arial";
-    color: #221E1F;
     word-spacing: 0.0036em;
 }
 
