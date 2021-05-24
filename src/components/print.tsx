@@ -13,9 +13,9 @@ function CSStoJSON(css: string) {
     return toJSON(css).attributes
 }
 
-function PrintCoverPage() {
+function PrintCoverPage(props: {title: string}) {
     return <div className="stl_ stl_02" key="page01">
-        <div w3-include-html="/assets/html/page01.html" />
+        <div w3-include-html={"/assets/html/header" + getTestType(props.title) + ".html"} />
     </div>
 }
 
@@ -48,11 +48,13 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
         {props.pair[0].articleImageURL && 
         <div className="stl_ stl_02_online" key={"pagex_" + props.index}>
             <div className="stl_view">
-                <span className="HeadSpace">&nbsp;</span>
                 <div className="stl_05">
                     <span className="QuestionText">
                         <img src={props.pair[0].articleImageURL} className="fulltextImage"/>
                     </span>
+                </div>
+                <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
+                    <span className="stl_24 stl_08 stl_11">{props.index + 3}{props.pair[0].articleImageURL ? ' (image)' : ''}</span>
                 </div>
             </div>
         </div>}
@@ -65,7 +67,7 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
                     })
                 }
                 <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
-                    <span className="stl_24 stl_08 stl_11">{props.index + 3}</span>
+                    <span className="stl_24 stl_08 stl_11">{props.index + 3}{props.pair[0].articleImageURL ? ' (continued)' : ''}</span>
                 </div>
             </div>
         </div>
@@ -105,6 +107,16 @@ export function PrintQuestion(props: { question: any, n: number }) {
         <span className="QuestionText" dangerouslySetInnerHTML={{ __html: q.html}} />
         {props.n === 0 && <span className="AnswerOption">&nbsp; </span>}
     </div>
+}
+
+function getTestType(title: string) {
+    var lowerTitle = title.toLowerCase()
+    var types = 'english,thinking,math'.split(',')
+    for (var i=0; i < types.length; i++) {
+        if (lowerTitle.indexOf(types[i]) >= 0)
+            return types[i]
+    }        
+    return 'math'
 }
 
 export function PrintableQuiz(props: QuizI) {
@@ -201,7 +213,7 @@ export function PrintableQuiz(props: QuizI) {
 
     return (
         <>
-            <PrintCoverPage />
+            <PrintCoverPage title={title}/>
             <PrintBlankPage page={2} />
             <PrintQuestionSets questionSets={questionSets} />
             <PrintBlankPage page={questionSets.length + 3} />
