@@ -1,7 +1,7 @@
 import React from 'react';
 import Cookies from 'js-cookie';
 import { Timer } from './timer'
-import { PrintQuestion } from './print'
+import { FormatQuestionText } from './print'
 
 import { Formik, Field, Form } from 'formik';
 
@@ -89,6 +89,19 @@ function CorrectAnswer(props) {
   </div>
 }
 
+function OnlineQuestion(props) {
+
+  let q = props.question
+  let key = q.id
+  let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
+  
+  return <div className="stl_05" key={key}>
+      <span className="QuestionNumber">{props.question.pos + 1}</span>
+      <span className="QuestionText" dangerouslySetInnerHTML={{ __html: html}} />
+      <span className="AnswerOption">&nbsp; </span>
+  </div>
+}
+
 function Question(props) {
   let q = props.question
   let key = q.id
@@ -98,7 +111,7 @@ function Question(props) {
 
   return (
     <div id={key} className={"stl_05 " + (q.isFocus ? 'focusDiv' : 'blurDiv')} onClick={props.answerOnFocus}>
-      {PrintQuestion({ question: q, n: 0 })}
+      <OnlineQuestion question={q}/>
       <div className="stl_05">
         <span className="QuestionText"><label htmlFor={props.question.id}>Answer </label>
           <Field id={props.question.id} name={props.question.id}
@@ -111,6 +124,26 @@ function Question(props) {
         </span>
       </div>
       {/* <hr /> */}
+    </div>
+  );
+}
+
+function ImageURLs(props) {
+  let imageURLs = props.imageURLs
+  return (
+    <div className="stl_ stl_02_online" key="renderImageURLs">
+      {imageURLs.length > 0 &&
+        <div className="stl_view_online">
+          <div className="stl_05">
+            <span className="QuestionText">Images the questions refering to:</span>
+            {imageURLs.map((item, index) => {
+              return <p key={index}>
+                <span className="QuestionImageLink">
+                  <a target='_blank' rel="noreferrer" href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions
+                </span></p>
+            })}
+          </div>
+        </div>}
     </div>
   );
 }
@@ -210,27 +243,6 @@ export class Quiz extends React.Component {
 
   componentWillUnmount() {
     clearTimeout(this.intervalID);
-  }
-
-  renderImageURLs() {
-    let state = this.state
-    return (
-      <div className="stl_ stl_02_online">
-        {state.imageURLs.length > 0 &&
-          <div className="stl_view_online">
-            <div className="stl_05">
-              <span className="QuestionText">Images the questions refering to:</span>
-              {state.imageURLs.map((item, index) => {
-                return <>
-                  <span key={index} className="QuestionImageLink">
-                    <a target='_blank' rel="noreferrer" href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions
-                  </span><p />
-                </>
-              })}
-            </div>
-          </div>}
-      </div>
-    );
   }
 
   renderQuestions() {
@@ -376,13 +388,12 @@ export class Quiz extends React.Component {
           >
             {({ answers }) => (
               <Form onKeyDown={onKeyDown}>
-                {this.renderImageURLs()}
+                <ImageURLs imageURLs={this.state.imageURLs} />
                 {this.renderQuestions()}
               </Form>
             )}
           </Formik>
-        </>
-      );
+        </>);
     }
   }
 }
