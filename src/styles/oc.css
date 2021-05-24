@@ -1404,6 +1404,13 @@ span.QuestionText {
     height: auto;
 }
 
+.fulltextImage {
+    max-width: 730px;
+    max-height: 1090px;
+    width: auto;
+    height: auto;
+}
+
 th {
     background-color: ivory;
 }
@@ -1414,3 +1421,24 @@ th {
     display: unset;
     line-height: normal;
 }
+
+.outer {
+    display: table;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .middle {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  
+  .inner {
+    margin-left: auto;
+    margin-right: auto;
+    width: 45em;
+    /*whatever width you want*/
+  }

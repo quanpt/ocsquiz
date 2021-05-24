@@ -8,8 +8,9 @@
 }
 
 .incorrectAnswer {
-  color:red;
-  font-weight: bold;
+  color:darkgreen;
+  font-weight: bolder;
+  font-style: italic;
 }
 
 .correctAnswer {

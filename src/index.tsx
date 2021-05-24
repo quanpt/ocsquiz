@@ -39,31 +39,31 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-          <Switch>
-            <Route path="/year/:year/subject/:subject/title/:title/state/:questionState">
-              <Quizes/>
-            </Route>
-            <Route path="/year/:year/subject/:subject/title/:title/print">
-              <PrintableQuizes/>
-            </Route>
-            <Route path="/year/:year/subject/:subject">
-              <Titles />
-            </Route>
-            <Route path="/year/:year">
-              <Subjects />
-            </Route><Route path="/results/:id">
-              <QuizView />
-            </Route>
-            <Route path="/results">
-              <Results/>
-            </Route>
-            <Route path="/user">
-              <UserPage />
-            </Route>
-            <Route path="/">
-              <Years/>
-            </Route>
-          </Switch>
+        <Switch>
+          <Route path="/year/:year/subject/:subject/title/:title/state/:questionState">
+            <Quizes />
+          </Route>
+          <Route path="/year/:year/subject/:subject/title/:title/print">
+            <PrintableQuizes />
+          </Route>
+          <Route path="/year/:year/subject/:subject">
+            <Titles />
+          </Route>
+          <Route path="/year/:year">
+            <Subjects />
+          </Route><Route path="/results/:id">
+            <QuizView />
+          </Route>
+          <Route path="/results">
+            <Results />
+          </Route>
+          <Route path="/user">
+            <UserPage />
+          </Route>
+          <Route path="/">
+            <Years />
+          </Route>
+        </Switch>
       </Router>
     );
   }
@@ -73,36 +73,37 @@ function QuizView() {
   let { id } = useParams<{ id: string }>();
   return <>
     {/* <div className="wrapper bg-white rounded"> */}
-      <Navigator year='' subject='' link='results' />
-      <Quiz isViewMode={true} id={id} />
+    <Navigator year='' subject='' link='results' />
+    <Quiz isViewMode={true} id={id} />
     {/* </div> */}
-    </>
+  </>
 }
 
 function Quizes() {
   let { year, subject, title, questionState } = useParams<{ year: string, subject: string, title: string, questionState: string }>();
-  return <>
-    {/* <div className="wrapper bg-white rounded"> */}
-      <Navigator year={year} subject={subject} />
-      <Quiz year={year} subject={subject} title={title} questionState={questionState}/>
-    {/* </div> */}
-    </>
+  return <div className="outer">
+    <div className="middle">
+      <div className="inner">
+        <Navigator year={year} subject={subject} />
+        <Quiz year={year} subject={subject} title={title} questionState={questionState} />
+        {/* </div> */}
+      </div></div></div>
 }
 
 function Titles() {
   let { year, subject } = useParams<{ year: string, subject: string }>();
   return <div className="wrapper bg-white rounded">
-      <Navigator year={year} subject={subject} />
-      <TitleListPage year={year} subject={subject} />
-    </div>
+    <Navigator year={year} subject={subject} />
+    <TitleListPage year={year} subject={subject} />
+  </div>
 }
 
 function Subjects() {
   let { year } = useParams<{ year: string }>();
   return <div className="wrapper bg-white rounded">
-      <Navigator year={year} subject="" />
-      <SubjectListPage year={year} />
-    </div>
+    <Navigator year={year} subject="" />
+    <SubjectListPage year={year} />
+  </div>
 }
 
 function Years() {
@@ -114,9 +115,9 @@ function Years() {
 
 function Results() {
   return <div className="wrapper bg-white rounded">
-      <Navigator year='' subject='' link='results' />
-      <ResultListPage/>
-    </div>
+    <Navigator year='' subject='' link='results' />
+    <ResultListPage />
+  </div>
 }
 
 function UserPage() {
@@ -128,16 +129,16 @@ function UserPage() {
 
 function PrintableQuizes() {
   let { year, subject, title } = useParams<{ year: string, subject: string, title: string }>();
-  return <PrintableQuiz year={year} subject={subject} title={title}/>
+  return <PrintableQuiz year={year} subject={subject} title={title} />
 }
 
 function Navigator(props: any) {
   return <span>
-      <span><Link to='/'>Home</Link></span>&nbsp;&gt;&nbsp;
+    <span><Link to='/'>Home</Link></span>&nbsp;&gt;&nbsp;
       {props.year !== '' && <span><Link to={"/year/" + props.year}>{props.year}</Link>&nbsp;&gt;&nbsp;</span>}
-      {props.subject !=='' && <span><Link to={"/year/" + props.year + "/subject/" + props.subject}>{props.subject}</Link>&nbsp;&gt;&nbsp;</span>}
-      {props.link !== '' && <Link to={"/" + props.link}><span>{props.link}</span></Link>}
-    </span>
+    {props.subject !== '' && <span><Link to={"/year/" + props.year + "/subject/" + props.subject}>{props.subject}</Link>&nbsp;&gt;&nbsp;</span>}
+    {props.link !== '' && <Link to={"/" + props.link}><span>{props.link}</span></Link>}
+  </span>
 }
 
 ReactDOM.render(<App />, document.getElementById('root'))
