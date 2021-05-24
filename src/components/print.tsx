@@ -46,7 +46,7 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
         return null
     return <>
         {props.pair[0].articleImageURL && 
-        <div className="stl_ stl_02" key={"pagex_" + props.index}>
+        <div className="stl_ stl_02_online" key={"pagex_" + props.index}>
             <div className="stl_view">
                 <span className="HeadSpace">&nbsp;</span>
                 <div className="stl_05">
