@@ -160,22 +160,27 @@ export function PrintableQuiz(props: QuizI) {
                         if (i+size < newQs.length) {
                             var imageCount = 0
                             var tags = "<img ,$image1$".split(',')
-                            for (var j=0; j<3; j++) {
+                            var j
+                            for (j=0; j<3; j++) {
                                 if (i+j < newQs.length) {
                                     for (let index = 0; index < tags.length; index++) {
                                         let pattern = tags[index]
                                         imageCount += (newQs[i+j].html.split(pattern).length - 1) * 2
                                     }
                                     imageCount += newQs[i+j].imageId ? 2 : 0
+                                    imageCount += (j > 0 && newQs[i+j].articleImageURL) ? 20 : 0
+                                    console.log('__' + i + '_' + j + '_' + imageCount);
+                                    
+                                    if (imageCount + j > 3) break
                                 }
                             }
-                            size = imageCount === 0 ? 3 : (imageCount < 3 ? imageCount : 1)
+                            size = j > size ? j : size
                         }
                         newQuestionSets.push(newQs.slice(i, size + i));
+                        console.log(newQuestionSets);
                         i += size - 1
                     }
                     setQuestionSets(newQuestionSets)
-                    console.log(newQuestionSets);
                 }
             )
         // fetch("/data/quiz/images/get", {
