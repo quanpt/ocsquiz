@@ -50,7 +50,7 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
             <div className="stl_view">
                 <div className="stl_05">
                     <span className="QuestionText">
-                        <img src={props.pair[0].articleImageURL} className="fulltextImage"/>
+                        <img alt={props.pair[0].articleImageURL} src={props.pair[0].articleImageURL} className="fulltextImage"/>
                     </span>
                 </div>
                 <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
@@ -83,11 +83,11 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
         .replace('<br/> <br/> <br/></div>', '</div>')
         .replace(/<br\/> <br\/>/g, '@@@BR@@@')
         .replace(/ @@@BR@@@ A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">A </span> $1 <br/>')
+        .replace(/ <br\/>\s([A-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
         .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([C-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([E-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
         .replace(/@@@BR@@@/g, '<br/>')
         .replace(/\ssrc="/g, '  class="questionImage" src="/assets/')
         .replace(reImage1, '<img src="/assets/figures/' + mmfid + '_1.jpg" class="questionImage" />')
@@ -96,7 +96,7 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
     if (imageId > 0) {
         rawHtml = '<img src="/assets/articles/bigfish/' + imageId + '.jpg" />' + rawHtml;
     }
-
+    
     return rawHtml
 }
 
@@ -162,8 +162,6 @@ export function PrintableQuiz(props: QuizI) {
                         }
                         newQs[i].html = html
                     }
-                    console.log(newQs);
-                    
 
                     // grouping questions into sets for each pages
                     var newQuestionSets = [];
