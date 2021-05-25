@@ -58,6 +58,19 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
                 </div>
             </div>
         </div>}
+        {props.pair[0].imageURL && 
+        <div className="stl_ stl_02_online" key={"pagex_" + props.index}>
+            <div className="stl_view">
+                <div className="stl_05">
+                    <span className="QuestionText">
+                        <img alt={props.pair[0].imageURL} src={"/assets/articles/" + props.pair[0].imageURL} className="fulltextImage"/>
+                    </span>
+                </div>
+                <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
+                    <span className="stl_24 stl_08 stl_11">{props.index + 3}{props.pair[0].imageURL ? ' (image)' : ''}</span>
+                </div>
+            </div>
+        </div>}
         <div className="stl_ stl_02" key={"page_" + props.index}>
             <div className="stl_view">
                 <span className="HeadSpace">&nbsp;</span>
@@ -126,99 +139,103 @@ export function PrintableQuiz(props: QuizI) {
     const [title] = useState(props.title)
     const [questionSets, setQuestionSets] = useState([[]])
     const [images, setImages] = useState([])
+    // const [startQuestion, setStartQuestion] = useState([])
 
     useEffect(() => {
         document.title = title
         document.body.style.backgroundColor = "white"
 
-        fetch("/data/questions/get", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify({ title: title })
-        })
-            .then(res => res.json())
-            .then(
-                (questions) => {
-                    var newQs = questions.map((q: any, i: number) => {q.pos = i; return q})
-
-                    // grouping questions with the same full text
-                    var lastArticle = ""
-                    for (var i = 0; i < newQs.length; i++) {
-                        var q = newQs[i]
-                        let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
-                        if (html.match(/^\s*Refer to the (poem|article):* (<br\/> <img|<a) /))
-                            html = html.replace(/ class="questionImage"/g, '')
-                        
-                        var matches = html.match(/^\s*Refer to the article:* <a href="([^"]*)" /)
-                        if (matches) {
-                            if (matches[1] !== lastArticle) {
-                                // new article
-                                q.articleImageURL = matches[1]
-                                lastArticle = matches[1]
-                            } else {
-                                // existing article
-                            }
-                            html = html.replace(/^\s*Refer to the article:* <a href="([^"]*)" .* <img border="0" +src="\/assets\/images\/reading\.gif" width="48"\/> <\/a> <br\/>/, '')
-                        }
-                        newQs[i].html = html
-                        console.log(html);
-                        
-                    }
-
-                    // grouping questions into sets for each pages
-                    var newQuestionSets = [];
-                    for (i = 0; i < newQs.length; i += 1) {
-                        var size = 1;
-                        if (i+size < newQs.length) {
-                            var lineCount = 0
-                            var tags = "<img ,$image1$".split(',')
-                            var j
-                            for (j=0; j<7; j++) {
-                                if (i+j < newQs.length) {
-                                    for (let index = 0; index < tags.length; index++) {
-                                        let pattern = tags[index]
-                                        // each image adds 8 lines
-                                        lineCount += (newQs[i+j].html.split(pattern).length - 1) * 8
-                                    }
-                                    // each image adds 8 lines
-                                    lineCount += newQs[i+j].imageId ? 8 : 0
-
-                                    // full text image add 20
-                                    lineCount += (j > 0 && newQs[i+j].articleImageURL) ? 20 : 0
-
-                                    // each line length adds a bit
-                                    lineCount += newQs[i+j].html.split('<br/>').reduce(
-                                        (accumulator: number, currentValue: string) => 
-                                        accumulator + Math.ceil(
-                                            currentValue.replace('<span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">', '').length / 75)
-                                        , 0) + 1
-
-                                    console.log('__' + i + '_' + j + '_' + lineCount);
-                                    
-                                    if (lineCount >= 33) break
-                                }
-                            }
-                            size = j > size ? j : size
-                        }
-                        newQuestionSets.push(newQs.slice(i, size + i));
-                        i += size - 1
-                    }
-                    setQuestionSets(newQuestionSets)
-                }
-            )
-
         fetch("/data/quiz/images/get", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify(props)
+            body: JSON.stringify({title: title})
         })
             .then(res => res.json())
-            .then(
-                (result) => {
-                    setImages(result)
-                    // console.log(result)
-                }
-            )
+            .then((images) => {
+                setImages(images)
+
+                fetch("/data/questions/get", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                    body: JSON.stringify({ title: title })
+                })
+                    .then(res => res.json())
+                    .then(
+                        (questions) => {
+                            var newQs = questions.map((q: any, i: number) => {q.pos = i; return q})
+                            images.reduce((agg: number, img: any) => {
+                                img.questionStart = agg
+                                newQs[agg].imageURL = img.imageURL
+                                return agg + img.questionCount
+                                }, 0)
+
+                            // grouping questions with the same full text
+                            var lastArticle = ""
+                            for (var i = 0; i < newQs.length; i++) {
+                                var q = newQs[i]
+                                let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
+                                if (html.match(/^\s*Refer to the (poem|article):* (<br\/> <img|<a) /))
+                                    html = html.replace(/ class="questionImage"/g, '')
+                                
+                                var matches = html.match(/^\s*Refer to the article:* <a href="([^"]*)" /)
+                                if (matches) {
+                                    if (matches[1] !== lastArticle) {
+                                        // new article
+                                        q.articleImageURL = matches[1]
+                                        lastArticle = matches[1]
+                                    } else {
+                                        // existing article
+                                    }
+                                    html = html.replace(/^\s*Refer to the article:* <a href="([^"]*)" .* <img border="0" +src="\/assets\/images\/reading\.gif" width="48"\/> <\/a> <br\/>/, '')
+                                }
+                                newQs[i].html = html
+                            }
+
+                            // grouping questions into sets for each pages
+                            var newQuestionSets = [];
+                            for (i = 0; i < newQs.length; i += 1) {
+                                var size = 1;
+                                if (i+size < newQs.length) {
+                                    var lineCount = 0
+                                    var tags = "<img ,$image1$".split(',')
+                                    var j
+                                    for (j=0; j<7; j++) {
+                                        if (i+j < newQs.length) {
+                                            for (let index = 0; index < tags.length; index++) {
+                                                let pattern = tags[index]
+                                                // each image adds 8 lines
+                                                lineCount += (newQs[i+j].html.split(pattern).length - 1) * 8
+                                            }
+                                            // each image adds 8 lines
+                                            lineCount += newQs[i+j].imageId ? 8 : 0
+
+                                            // full text image add maximum
+                                            lineCount += (j > 0 && newQs[i+j].articleImageURL) ? 100 : 0
+
+                                            // starting question add maximum
+                                            lineCount += (j > 0 && newQs[i+j].imageURL) ? 100 : 0
+
+                                            // each line length adds a bit
+                                            lineCount += newQs[i+j].html.split('<br/>').reduce(
+                                                (accumulator: number, currentValue: string) => 
+                                                accumulator + Math.ceil(
+                                                    currentValue.replace('<span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">', '').length / 75)
+                                                , 0) + 1
+
+                                            console.log('__' + i + '_' + j + '_' + lineCount);
+                                            
+                                            if (lineCount >= 33) break
+                                        }
+                                    }
+                                    size = j > size ? j + (lineCount >= 33 ? 0 : 1) : size
+                                }
+                                newQuestionSets.push(newQs.slice(i, size + i));
+                                i += size - 1
+                            }
+                            setQuestionSets(newQuestionSets)
+                        }
+                    )
+            })
     }, [title])
 
     useScript('/assets/html/includeHTML.js');
