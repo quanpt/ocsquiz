@@ -106,8 +106,9 @@ exports.getQuizImages = async (req, res) => {
 // curl 'http://localhost:4001/data/quizes/put' -X PUT --data "title=18%20-%20English%20Comprehension%20Grade%203%20result%20%20"
 exports.createQuiz = async (req, res) => {
 
-  const dictQuestionLimit = {} // { 'General Ability': 3 }
-  const isFull = req.body.title.indexOf('cloze') >= 0 || req.body.isFull
+  const dictQuestionLimit = {} // { 'English': 25 }
+  const lowerTitle = req.body.title.toLowerCase()
+  const isFull = lowerTitle.indexOf('cloze') >= 0 || lowerTitle.indexOf('english') >= 0 || req.body.isFull
   const questionLimit = isFull ? 100 : (req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 10)
   const currTimestamp = new Date().getTime()
 
@@ -176,7 +177,6 @@ exports.createQuiz = async (req, res) => {
         .from('FullQuestions')
         .where('title', req.body.title)
         .where('id', 'not in', subqueryTriedSuccess)
-        //.orderByRaw('RANDOM()')
         .limit(questionLimit)
         .catch(err => {
           console.error(err);

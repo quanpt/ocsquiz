@@ -168,20 +168,29 @@ export function PrintableQuiz(props: QuizI) {
                     for (i = 0; i < newQs.length; i += 1) {
                         var size = 1;
                         if (i+size < newQs.length) {
-                            var imageCount = 0
+                            var weightCount = 0
                             var tags = "<img ,$image1$".split(',')
                             var j
                             for (j=0; j<3; j++) {
                                 if (i+j < newQs.length) {
                                     for (let index = 0; index < tags.length; index++) {
                                         let pattern = tags[index]
-                                        imageCount += (newQs[i+j].html.split(pattern).length - 1) * 2
+                                        // each image adds 2
+                                        weightCount += (newQs[i+j].html.split(pattern).length - 1) * 2
                                     }
-                                    imageCount += newQs[i+j].imageId ? 2 : 0
-                                    imageCount += (j > 0 && newQs[i+j].articleImageURL) ? 20 : 0
-                                    console.log('__' + i + '_' + j + '_' + imageCount);
+                                    // each image adds 2
+                                    weightCount += newQs[i+j].imageId ? 2 : 0
+
+                                    // full text image add 20
+                                    weightCount += (j > 0 && newQs[i+j].articleImageURL) ? 20 : 0
+
+                                    // <br/> tags adds a bit
+                                    weightCount += Math.floor(newQs[i+j].html.split('<br/>').length / 5)
+
+
+                                    console.log('__' + i + '_' + j + '_' + weightCount);
                                     
-                                    if (imageCount + j > 3) break
+                                    if (weightCount + j > 3) break
                                 }
                             }
                             size = j > size ? j : size
