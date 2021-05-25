@@ -125,7 +125,7 @@ export function PrintableQuiz(props: QuizI) {
     // const [subject, setSubject] = useState(props.subject)
     const [title] = useState(props.title)
     const [questionSets, setQuestionSets] = useState([[]])
-    // const [images, setImages] = useState([])
+    const [images, setImages] = useState([])
 
     useEffect(() => {
         document.title = title
@@ -161,6 +161,8 @@ export function PrintableQuiz(props: QuizI) {
                             html = html.replace(/^\s*Refer to the article:* <a href="([^"]*)" .* <img border="0" +src="\/assets\/images\/reading\.gif" width="48"\/> <\/a> <br\/>/, '')
                         }
                         newQs[i].html = html
+                        console.log(html);
+                        
                     }
 
                     // grouping questions into sets for each pages
@@ -168,52 +170,55 @@ export function PrintableQuiz(props: QuizI) {
                     for (i = 0; i < newQs.length; i += 1) {
                         var size = 1;
                         if (i+size < newQs.length) {
-                            var weightCount = 0
+                            var lineCount = 0
                             var tags = "<img ,$image1$".split(',')
                             var j
-                            for (j=0; j<3; j++) {
+                            for (j=0; j<7; j++) {
                                 if (i+j < newQs.length) {
                                     for (let index = 0; index < tags.length; index++) {
                                         let pattern = tags[index]
-                                        // each image adds 2
-                                        weightCount += (newQs[i+j].html.split(pattern).length - 1) * 2
+                                        // each image adds 8 lines
+                                        lineCount += (newQs[i+j].html.split(pattern).length - 1) * 8
                                     }
-                                    // each image adds 2
-                                    weightCount += newQs[i+j].imageId ? 2 : 0
+                                    // each image adds 8 lines
+                                    lineCount += newQs[i+j].imageId ? 8 : 0
 
                                     // full text image add 20
-                                    weightCount += (j > 0 && newQs[i+j].articleImageURL) ? 20 : 0
+                                    lineCount += (j > 0 && newQs[i+j].articleImageURL) ? 20 : 0
 
-                                    // <br/> tags adds a bit
-                                    weightCount += Math.floor(newQs[i+j].html.split('<br/>').length / 5)
+                                    // each line length adds a bit
+                                    lineCount += newQs[i+j].html.split('<br/>').reduce(
+                                        (accumulator: number, currentValue: string) => 
+                                        accumulator + Math.ceil(
+                                            currentValue.replace('<span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">', '').length / 75)
+                                        , 0) + 1
 
-
-                                    console.log('__' + i + '_' + j + '_' + weightCount);
+                                    console.log('__' + i + '_' + j + '_' + lineCount);
                                     
-                                    if (weightCount + j > 3) break
+                                    if (lineCount >= 33) break
                                 }
                             }
                             size = j > size ? j : size
                         }
                         newQuestionSets.push(newQs.slice(i, size + i));
-                        console.log(newQuestionSets);
                         i += size - 1
                     }
                     setQuestionSets(newQuestionSets)
                 }
             )
-        // fetch("/data/quiz/images/get", {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        //     body: JSON.stringify(props)
-        // })
-        //     .then(res => res.json())
-        //     .then(
-        //         (result) => {
-        //             setImages(result)
-        //             // console.log(result)
-        //         }
-        //     )
+
+        fetch("/data/quiz/images/get", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            body: JSON.stringify(props)
+        })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    setImages(result)
+                    // console.log(result)
+                }
+            )
     }, [title])
 
     useScript('/assets/html/includeHTML.js');
