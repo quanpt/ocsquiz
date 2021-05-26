@@ -238,7 +238,7 @@ export function PrintableQuiz(props: QuizI) {
             })
     }, [title])
 
-    useScript('/assets/html/includeHTML.js');
+    useScript('/html/includeHTML.js');
 
     return (
         <>
