@@ -15,7 +15,7 @@ function CSStoJSON(css: string) {
 
 function PrintCoverPage(props: {title: string}) {
     return <div className="stl_ stl_02" key="page01">
-        <div w3-include-html={"/assets/html/header" + getTestType(props.title) + ".html"} />
+        <div w3-include-html={"/html/header" + getTestType(props.title) + ".html"} />
     </div>
 }
 
