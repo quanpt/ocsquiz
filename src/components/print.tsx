@@ -82,7 +82,9 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
                     })
                 }
                 <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
-                    <span className="stl_24 stl_08 stl_11">{props.index + 3}{props.pair[0].articleImageURL ? ' (continued)' : ''}</span>
+                    <span className="stl_24 stl_08 stl_11">
+                        {props.index + 3}
+                        {props.pair[0].articleImageURL ? ' (continued)' : (' - ' + props.pair[0].title)}</span>
                 </div>
             </div>
         </div>}
