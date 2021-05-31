@@ -31,7 +31,8 @@ const TitleRow = (props: TitleUI) => (
       <span>{props.questionCount}</span>
     </td>
     <td className="table-item">
-      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/print'} className='smallText'>Print</Link>
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/print/full'} className='smallText'>Full</Link>|
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/print/partial'} className='smallText'>Partial</Link>
     </td>
   </tr>
 )

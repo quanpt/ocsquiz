@@ -7,6 +7,7 @@ export interface QuizI {
     year: string;
     subject: string;
     title: string;
+    print: string;
 }
 
 function CSStoJSON(css: string) {
@@ -71,6 +72,7 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
                 </div>
             </div>
         </div>}
+        {props.pair[0].html.indexOf('Which of the above sentences will go into location ') < 0 &&
         <div className="stl_ stl_02" key={"page_" + props.index}>
             <div className="stl_view">
                 <span className="HeadSpace">&nbsp;</span>
@@ -83,7 +85,7 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
                     <span className="stl_24 stl_08 stl_11">{props.index + 3}{props.pair[0].articleImageURL ? ' (continued)' : ''}</span>
                 </div>
             </div>
-        </div>
+        </div>}
     </>
 }
 
@@ -91,6 +93,7 @@ let reImage1 = new RegExp(/\$image1\$/g);
 
 export function FormatQuestionText(text: string, mmfid: number, imageId: number) {
     var rawHtml = text
+    
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
         .replace('<br/> <br/> <br/></div>', '</div>')
@@ -101,11 +104,19 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
         .replace(/ <br\/>\s([C-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
         .replace(/ <br\/>\s([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
         .replace(/ <br\/>\s([E-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/@@@BR@@@/g, '<br/>')
         .replace(/\ssrc="/g, '  class="questionImage" src="/assets/')
         .replace(reImage1, '<img src="/assets/figures/' + mmfid + '_1.jpg" class="questionImage" />')
         .replace('<a href="show_image.html?name=', '<a href="/assets/')
         .replace('target="ReadingText"', 'target="_blank"')
+
+    if (rawHtml.indexOf('Some sentences have been taken out of the reading text') >= 0)
+        rawHtml = rawHtml
+            .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 @@@BR@@@')
+            .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 @@@BR@@@')
+            .replace('Some sentences have been taken out of the reading text. Your task is to identify where these sentences will go back into the text.', 'Some sentences have been removed from the text. Choose from the sentences (A, B, C, …) the one which fits each gap. There is one extra sentence which you do not need to use.')
+
+    rawHtml = rawHtml.replace(/@@@BR@@@/g, '<br/>')
+
     if (imageId > 0) {
         rawHtml = '<img src="/assets/articles/bigfish/' + imageId + '.jpg" />' + rawHtml;
     }
@@ -115,9 +126,11 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
 
 export function PrintQuestion(props: { question: any, n: number }) {
     let q = props.question
+    let html = q.html.replace(/<br\/> This set has \d+ questions. <b>  It's best to work out all \d+ places where the sentences will go and then quickly answer all questions. <\/b> <br\/>  <br\/>/, '')
+    
     return <div className="stl_05" key={q.id}>
         <span className="QuestionNumber">{q.pos + 1}</span>
-        <span className="QuestionText" dangerouslySetInnerHTML={{ __html: q.html}} />
+        <span className="QuestionText" dangerouslySetInnerHTML={{ __html: html}} />
         {props.n === 0 && <span className="AnswerOption">&nbsp; </span>}
     </div>
 }
@@ -139,6 +152,7 @@ export function PrintableQuiz(props: QuizI) {
     const [title] = useState(props.title)
     const [questionSets, setQuestionSets] = useState([[]])
     const [images, setImages] = useState([])
+    const [printType] = useState(props.print)
     // const [startQuestion, setStartQuestion] = useState([])
 
     useEffect(() => {
@@ -174,6 +188,10 @@ export function PrintableQuiz(props: QuizI) {
                             for (var i = 0; i < newQs.length; i++) {
                                 var q = newQs[i]
                                 let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
+
+                                if (html.indexOf('Which of the above sentences will go into location 1?') >= 0)
+                                    html = html.replace('Which of the above sentences will go into location 1?', '')
+
                                 if (html.match(/^\s*Refer to the (poem|article):* (<br\/> <img|<a) /))
                                     html = html.replace(/ class="questionImage"/g, '')
                                 
@@ -182,6 +200,8 @@ export function PrintableQuiz(props: QuizI) {
                                     if (matches[1] !== lastArticle) {
                                         // new article
                                         q.articleImageURL = matches[1]
+                                        if (q.articleImageURL.indexOf(q.imageURL) >= 0)
+                                            q.imageURL = null
                                         lastArticle = matches[1]
                                     } else {
                                         // existing article
@@ -242,10 +262,12 @@ export function PrintableQuiz(props: QuizI) {
 
     return (
         <>
-            <PrintCoverPage title={title}/>
-            <PrintBlankPage page={2} />
+            {printType === 'full' && <>
+                <PrintCoverPage title={title}/>
+                <PrintBlankPage page={2} />
+            </>}
             <PrintQuestionSets questionSets={questionSets} />
-            <PrintBlankPage page={questionSets.length + 3} />
+            {printType === 'full' && <PrintBlankPage page={questionSets.length + 3} />}
         </>
     )
 }

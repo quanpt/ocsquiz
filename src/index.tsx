@@ -43,7 +43,7 @@ class App extends React.Component {
           <Route path="/year/:year/subject/:subject/title/:title/state/:questionState">
             <Quizes />
           </Route>
-          <Route path="/year/:year/subject/:subject/title/:title/print">
+          <Route path="/year/:year/subject/:subject/title/:title/print/:print">
             <PrintableQuizes />
           </Route>
           <Route path="/year/:year/subject/:subject">
@@ -128,8 +128,8 @@ function UserPage() {
 }
 
 function PrintableQuizes() {
-  let { year, subject, title } = useParams<{ year: string, subject: string, title: string }>();
-  return <PrintableQuiz year={year} subject={subject} title={title} />
+  let { year, subject, title, print } = useParams<{ year: string, subject: string, title: string, print: string }>();
+  return <PrintableQuiz year={year} subject={subject} title={title} print={print} />
 }
 
 function Navigator(props: any) {
