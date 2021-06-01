@@ -72,7 +72,7 @@ class App extends React.Component {
 function QuizView() {
   let { id } = useParams<{ id: string }>();
   return <>
-    <div className="online wrapper bg-white rounded">
+    <div className="PageCenter">
     <Navigator year='' subject='' link='results' />
     <Quiz isViewMode={true} id={id} />
     </div>
