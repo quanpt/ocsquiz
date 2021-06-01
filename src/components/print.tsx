@@ -94,7 +94,7 @@ function PrintQuestionPage(props: { pair: any, index: number }) {
 let reImage1 = new RegExp(/\$image1\$/g);
 
 export function FormatQuestionText(text: string, mmfid: number, imageId: number) {
-    var rawHtml = text
+    var rawHtml = text ? text : ''
     
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
