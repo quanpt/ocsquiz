@@ -3,12 +3,26 @@
     margin: 20px auto;
 }
 
+.ImageURLs {
+    padding: 10px;
+    padding-bottom: 20px;
+}
+
+.QuestionImageLink {
+    display: block;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.IntroText {}
+
 .QuestionList {
     font-family: "ArialMT";
 }
 
 .OneQuestion {
     page-break-inside: avoid;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .QuestionNumber {
@@ -36,7 +50,6 @@
 .AnswerLine {
     margin-left: 48px;
     padding-top: 12px;
-    padding-bottom: 48px;
 }
 
 @font-face {

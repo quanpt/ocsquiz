@@ -98,7 +98,7 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
     
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
-        .replace('<br/> <br/> <br/></div>', '</div>')
+        .replace(/(<br\/> *)*<\/div>$/g, '<br/></div>')
         .replace(/<br\/> <br\/>/g, '@@@BR@@@')
         .replace(/ @@@BR@@@ A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/><br/> <span class="AnswerOption" style="word-spacing:0.775em;">A </span> $1 <br/>')
         .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
@@ -119,6 +119,7 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
             .replace('Some sentences have been taken out of the reading text. Your task is to identify where these sentences will go back into the text.', 'Some sentences have been removed from the text. Choose from the sentences (A, B, C, …) the one which fits each gap. There is one extra sentence which you do not need to use.')
 
     rawHtml = rawHtml.replace(/@@@BR@@@/g, '<br/>')
+    
 
     if (imageId > 0) {
         rawHtml = '<img src="/assets/articles/bigfish/' + imageId + '.jpg" />' + rawHtml;

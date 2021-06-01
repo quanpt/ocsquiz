@@ -130,19 +130,16 @@ function Question(props) {
 function ImageURLs(props) {
   let imageURLs = props.imageURLs
   return (
-    <div className="stl_ stl_02_online" key="renderImageURLs">
-      {imageURLs.length > 0 &&
-        <div className="stl_view_online">
-          <div className="stl_05">
-            <span className="QuestionText">Images the questions refering to:</span>
-            {imageURLs.map((item, index) => {
-              return <p key={index}>
-                <span className="QuestionImageLink">
-                  <a target='_blank' rel="noreferrer" href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions
-                </span></p>
-            })}
-          </div>
-        </div>}
+    <div className="ImageURLs">
+      {imageURLs.length > 0 && <>
+        <span className="IntroText">Images the questions refering to:</span>
+        {imageURLs.map((item, index) => {
+          return <>
+            <span className="QuestionImageLink">
+              <a target='_blank' rel="noreferrer" href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions
+                </span></>
+        })}
+      </>}
     </div>
   );
 }
@@ -262,7 +259,7 @@ export class Quiz extends React.Component {
               answerOnFocus={() => this.answerOnFocus(question, true)} />
           })}
         </div>
-        {this.state.isSubmitted ? null : <button type="submit" className="formSubmit">Submit</button>}
+        {this.state.isSubmitted ? null : <div className="DivSubmit"><button type="submit" className="formSubmit">Submit</button></div>}
       </>
     );
   }
