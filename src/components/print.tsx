@@ -14,88 +14,58 @@ function CSStoJSON(css: string) {
     return toJSON(css).attributes
 }
 
-function PrintCoverPage(props: {title: string}) {
+function PrintCoverPage(props: { title: string }) {
     return <>
         <div w3-include-html={"/html/header" + getTestType(props.title) + ".html"} />
     </>
 }
 
-function PrintBlankPage(props: { page: number }) {
-    return <div className="stl_ stl_02" key="page02">
-        {/* blank page */}
-        <div className="stl_view">
-            <div className="stl_05 stl_06">
-                <div className="stl_01" style={CSStoJSON("left:21.5015em;top:21.0262em;")}><span className="stl_07 stl_08 stl_42" style={CSStoJSON("wordSpacing:0.0031em;")}>BLANK PAGE &nbsp;</span></div>
-                <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
-                    <span className="stl_24 stl_08 stl_11">{props.page}</span>
-                </div>
-            </div>
-        </div>
+function PrintBlankPage() {
+    return <div className="BlankPage">
+        <div>BLANK PAGE</div>
     </div>
 }
 
-function PrintQuestionSets(props: { questionSets: any }) {
+function PrintQuestionSets(props: { questions: any }) {
     return <>
-        {props.questionSets.map((pair: any, index: number) => {
-            return <PrintQuestionPage pair={pair} index={index} key={"set_" + index} />
+        {props.questions.map((q: any, index: number) => {
+            return <PrintQuestion question={q} n={index} key={"set_" + index} />
         })}
     </>
 }
 
-function PrintQuestionPage(props: { pair: any, index: number }) {
-    if (props.pair.length === 0)
-        return null
-    return <>
-        {props.pair[0].articleImageURL && 
-        <div className="stl_ stl_02_online" key={"pagex_" + props.index}>
-            <div className="stl_view">
-                <div className="stl_05">
-                    <span className="QuestionText">
-                        <img alt={props.pair[0].articleImageURL} src={props.pair[0].articleImageURL} className="fulltextImage"/>
-                    </span>
-                </div>
-                <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
-                    <span className="stl_24 stl_08 stl_11">{props.index + 3}{props.pair[0].articleImageURL ? ' (image)' : ''}</span>
-                </div>
-            </div>
-        </div>}
-        {props.pair[0].imageURL && 
-        <div className="stl_ stl_02_online" key={"pagex_" + props.index}>
-            <div className="stl_view">
-                <div className="stl_05">
-                    <span className="QuestionText">
-                        <img alt={props.pair[0].imageURL} src={"/assets/articles/" + props.pair[0].imageURL} className="fulltextImage"/>
-                    </span>
-                </div>
-                <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
-                    <span className="stl_24 stl_08 stl_11">{props.index + 3}{props.pair[0].imageURL ? ' (image)' : ''}</span>
-                </div>
-            </div>
-        </div>}
-        {props.pair[0].html.indexOf('Which of the above sentences will go into location ') < 0 &&
-        <div className="stl_ stl_02" key={"page_" + props.index}>
-            <div className="stl_view">
-                <span className="HeadSpace">&nbsp;</span>
-                {
-                    [...new Array(props.pair.length)].map((_, i) => i).map((i) => {
-                        return <PrintQuestion question={props.pair[i]} n={i} key={props.pair[i].id} />
-                    })
-                }
-                <div className="stl_01" style={CSStoJSON("left:24.5309em;top:66.0238em;")}>
-                    <span className="stl_24 stl_08 stl_11">
-                        {props.index + 3}
-                        {props.pair[0].articleImageURL ? ' (continued)' : (' - ' + props.pair[0].title)}</span>
-                </div>
-            </div>
-        </div>}
-    </>
-}
+// function PrintQuestionPage(props: { pair: any, index: number }) {
+//     if (props.pair.length === 0)
+//         return null
+//     return <>
+//         {props.pair[0].articleImageURL &&
+//             <div className="xxx" key={"pagex_" + props.index}>
+//                         <span className="QuestionText">
+//                             <img alt={props.pair[0].articleImageURL} src={props.pair[0].articleImageURL} className="fulltextImage" />
+//                         </span>
+//             </div>}
+//         {props.pair[0].imageURL &&
+//             <div className="xxx" key={"pagex_" + props.index}>
+//                         <span className="QuestionText">
+//                             <img alt={props.pair[0].imageURL} src={"/assets/articles/" + props.pair[0].imageURL} className="fulltextImage" />
+//                         </span>
+//             </div>}
+//         {props.pair[0].html.indexOf('Which of the above sentences will go into location ') < 0 &&
+//             <div className="xxx" key={"page_" + props.index}>
+//                     {
+//                         [...new Array(props.pair.length)].map((_, i) => i).map((i) => {
+//                             return <PrintQuestion question={props.pair[i]} n={i} key={props.pair[i].id} />
+//                         })
+//                     }
+//             </div>}
+//     </>
+// }
 
 let reImage1 = new RegExp(/\$image1\$/g);
 
 export function FormatQuestionText(text: string, mmfid: number, imageId: number) {
     var rawHtml = text ? text : ''
-    
+
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
         .replace(/(<br\/> *)*<\/div>$/g, '<br/></div>')
@@ -119,22 +89,22 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
             .replace('Some sentences have been taken out of the reading text. Your task is to identify where these sentences will go back into the text.', 'Some sentences have been removed from the text. Choose from the sentences (A, B, C, …) the one which fits each gap. There is one extra sentence which you do not need to use.')
 
     rawHtml = rawHtml.replace(/@@@BR@@@/g, '<br/>')
-    
+
 
     if (imageId > 0) {
         rawHtml = '<img src="/assets/articles/bigfish/' + imageId + '.jpg" />' + rawHtml;
     }
-    
+
     return rawHtml
 }
 
 export function PrintQuestion(props: { question: any, n: number }) {
     let q = props.question
     let html = q.html.replace(/<br\/> This set has \d+ questions. <b>  It's best to work out all \d+ places where the sentences will go and then quickly answer all questions. <\/b> <br\/>  <br\/>/, '')
-    
-    return <div className="stl_05" key={q.id}>
+
+    return <div className="OneQuestion" key={q.id}>
         <span className="QuestionNumber">{q.pos + 1}</span>
-        <span className="QuestionText" dangerouslySetInnerHTML={{ __html: html}} />
+        <span className="QuestionText" dangerouslySetInnerHTML={{ __html: html }} />
         {props.n === 0 && <span className="AnswerOption">&nbsp; </span>}
     </div>
 }
@@ -142,10 +112,10 @@ export function PrintQuestion(props: { question: any, n: number }) {
 function getTestType(title: string) {
     var lowerTitle = title.toLowerCase()
     var types = 'english,thinking,math'.split(',')
-    for (var i=0; i < types.length; i++) {
+    for (var i = 0; i < types.length; i++) {
         if (lowerTitle.indexOf(types[i]) >= 0)
             return types[i]
-    }        
+    }
     return 'math'
 }
 
@@ -154,7 +124,7 @@ export function PrintableQuiz(props: QuizI) {
     // const [year, setYear] = useState(props.year)
     // const [subject, setSubject] = useState(props.subject)
     const [title] = useState(props.title)
-    const [questionSets, setQuestionSets] = useState([[]])
+    const [questions, setQuestions] = useState([])
     const [images, setImages] = useState([])
     const [printType] = useState(props.print)
     // const [startQuestion, setStartQuestion] = useState([])
@@ -166,7 +136,7 @@ export function PrintableQuiz(props: QuizI) {
         fetch("/data/quiz/images/get", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify({title: title})
+            body: JSON.stringify({ title: title })
         })
             .then(res => res.json())
             .then((images) => {
@@ -180,12 +150,12 @@ export function PrintableQuiz(props: QuizI) {
                     .then(res => res.json())
                     .then(
                         (questions) => {
-                            var newQs = questions.map((q: any, i: number) => {q.pos = i; return q})
+                            var newQs = questions.map((q: any, i: number) => { q.pos = i; return q })
                             images.reduce((agg: number, img: any) => {
                                 img.questionStart = agg
                                 newQs[agg].imageURL = img.imageURL
                                 return agg + img.questionCount
-                                }, 0)
+                            }, 0)
 
                             // grouping questions with the same full text
                             var lastArticle = ""
@@ -198,7 +168,7 @@ export function PrintableQuiz(props: QuizI) {
 
                                 if (html.match(/^\s*Refer to the (poem|article):* (<br\/> <img|<a) /))
                                     html = html.replace(/ class="questionImage"/g, '')
-                                
+
                                 var matches = html.match(/^\s*Refer to the article:* <a href="([^"]*)" /)
                                 if (matches) {
                                     if (matches[1] !== lastArticle) {
@@ -215,48 +185,7 @@ export function PrintableQuiz(props: QuizI) {
                                 newQs[i].html = html
                             }
 
-                            // grouping questions into sets for each pages
-                            var newQuestionSets = [];
-                            for (i = 0; i < newQs.length; i += 1) {
-                                var size = 1;
-                                if (i+size < newQs.length) {
-                                    var lineCount = 0
-                                    var tags = "<img ,$image1$".split(',')
-                                    var j
-                                    for (j=0; j<7; j++) {
-                                        if (i+j < newQs.length) {
-                                            for (let index = 0; index < tags.length; index++) {
-                                                let pattern = tags[index]
-                                                // each image adds 8 lines
-                                                lineCount += (newQs[i+j].html.split(pattern).length - 1) * 8
-                                            }
-                                            // each image adds 8 lines
-                                            lineCount += newQs[i+j].imageId ? 8 : 0
-
-                                            // full text image add maximum
-                                            lineCount += (j > 0 && newQs[i+j].articleImageURL) ? 100 : 0
-
-                                            // starting question add maximum
-                                            lineCount += (j > 0 && newQs[i+j].imageURL) ? 100 : 0
-
-                                            // each line length adds a bit
-                                            lineCount += newQs[i+j].html.split('<br/>').reduce(
-                                                (accumulator: number, currentValue: string) => 
-                                                accumulator + Math.ceil(
-                                                    currentValue.replace('<span class="AnswerOption" style="word-spacing:0.775em;">', '').length / 75)
-                                                , 0) + 1
-
-                                            console.log('__' + i + '_' + j + '_' + lineCount);
-                                            
-                                            if (lineCount >= 33) break
-                                        }
-                                    }
-                                    size = j > size ? j + (lineCount >= 33 ? 0 : 1) : size
-                                }
-                                newQuestionSets.push(newQs.slice(i, size + i));
-                                i += size - 1
-                            }
-                            setQuestionSets(newQuestionSets)
+                            setQuestions(newQs)
                         }
                     )
             })
@@ -267,11 +196,13 @@ export function PrintableQuiz(props: QuizI) {
     return (
         <>
             {printType === 'full' && <>
-                <PrintCoverPage title={title}/>
-                <PrintBlankPage page={2} />
+                <PrintCoverPage title={title} />
+                <PrintBlankPage/>
             </>}
-            <PrintQuestionSets questionSets={questionSets} />
-            {printType === 'full' && <PrintBlankPage page={questionSets.length + 3} />}
+            <div className="PageCenter">
+            <PrintQuestionSets questions={questions} />
+            </div>
+            {printType === 'full' && <PrintBlankPage/>}
         </>
     )
 }
