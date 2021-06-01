@@ -72,10 +72,10 @@ class App extends React.Component {
 function QuizView() {
   let { id } = useParams<{ id: string }>();
   return <>
-    {/* <div className="wrapper bg-white rounded"> */}
+    <div className="online wrapper bg-white rounded">
     <Navigator year='' subject='' link='results' />
     <Quiz isViewMode={true} id={id} />
-    {/* </div> */}
+    </div>
   </>
 }
 
@@ -92,7 +92,7 @@ function Quizes() {
 
 function Titles() {
   let { year, subject } = useParams<{ year: string, subject: string }>();
-  return <div className="wrapper bg-white rounded">
+  return <div className="online wrapper bg-white rounded">
     <Navigator year={year} subject={subject} />
     <TitleListPage year={year} subject={subject} />
   </div>
@@ -100,21 +100,21 @@ function Titles() {
 
 function Subjects() {
   let { year } = useParams<{ year: string }>();
-  return <div className="wrapper bg-white rounded">
+  return <div className="online wrapper bg-white rounded">
     <Navigator year={year} subject="" />
     <SubjectListPage year={year} />
   </div>
 }
 
 function Years() {
-  return <div className="wrapper bg-white rounded">
+  return <div className="online wrapper bg-white rounded">
     <Navigator year="" subject="" />
     <YearListPage />
   </div>
 }
 
 function Results() {
-  return <div className="wrapper bg-white rounded">
+  return <div className="online wrapper bg-white rounded">
     <Navigator year='' subject='' link='results' />
     <ResultListPage />
   </div>

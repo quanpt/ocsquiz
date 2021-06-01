@@ -25,3 +25,4 @@ yarn-error.log*
 db
 .vscode
 public/assets
+**/backup_*
