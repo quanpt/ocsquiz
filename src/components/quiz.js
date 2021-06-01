@@ -312,9 +312,7 @@ export class Quiz extends React.Component {
         }, {})
       return (
         <>
-          <div className="stl_ stl_02_online stl_view_online stl_05">
-            <h1>Quiz - {this.state.title.replace(' result', '')}</h1>
-          </div>
+          <h1>Quiz - {this.state.title.replace(' result', '')}</h1>
           {this.state.isViewMode ? <div>Total: {this.state.questions.length} - Attempt: {this.state.countAnswer} - Correct: {this.state.countCorrect}</div> : ""}
           <Formik
             initialValues={dict}
