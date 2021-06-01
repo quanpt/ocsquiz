@@ -81,13 +81,10 @@ function QuizView() {
 
 function Quizes() {
   let { year, subject, title, questionState } = useParams<{ year: string, subject: string, title: string, questionState: string }>();
-  return <div className="outer">
-    <div className="middle">
-      <div className="inner">
-        <Navigator year={year} subject={subject} />
-        <Quiz year={year} subject={subject} title={title} questionState={questionState} />
-        {/* </div> */}
-      </div></div></div>
+  return <div className="PageCenter">
+      <Navigator year={year} subject={subject} />
+      <Quiz year={year} subject={subject} title={title} questionState={questionState} />
+    </div>
 }
 
 function Titles() {

@@ -96,12 +96,12 @@ function OnlineQuestion(props) {
   let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
   if (html.match(/^\s*Refer to the (poem|article):* (<br\/> <img|<a) /))
     html = html.replace(/ class="questionImage"/g, '')
-  
-  return <div className="stl_05" key={key}>
-      <span className="QuestionNumber">{props.question.pos + 1}</span>
-      <span className="QuestionText" dangerouslySetInnerHTML={{ __html: html}} />
-      <span className="AnswerOption">&nbsp; </span>
-  </div>
+  console.log(html);
+
+  return <>
+    <span className="QuestionNumber">{props.question.pos + 1}</span>
+    <span className="QuestionText" dangerouslySetInnerHTML={{ __html: html }} />
+  </>
 }
 
 function Question(props) {
@@ -112,20 +112,17 @@ function Question(props) {
   q.pos = props.position - 1
 
   return (
-    <div id={key} className={"stl_05 " + (q.isFocus ? 'focusDiv' : 'blurDiv')} onClick={props.answerOnFocus}>
-      <OnlineQuestion question={q}/>
-      <div className="stl_05">
-        <span className="QuestionText"><label htmlFor={props.question.id}>Answer </label>
-          <Field id={props.question.id} name={props.question.id}
-            placeholder="A, B, C, D or other text"
-            disabled={props.isSubmitted} autoComplete="off"
-            onKeyUp={props.answerOnKeyUp}
-            onFocus={props.answerOnFocus} />
-          <br />
-          {answer}
-        </span>
+    <div id={key} className={"OneQuestion " + (q.isFocus ? 'focusDiv' : 'blurDiv')} onClick={props.answerOnFocus}>
+      <OnlineQuestion question={q} />
+      <div className="AnswerLine"><label htmlFor={props.question.id}>Answer </label>
+        <Field id={props.question.id} name={props.question.id}
+          placeholder="A, B, C, D or other text"
+          disabled={props.isSubmitted} autoComplete="off"
+          onKeyUp={props.answerOnKeyUp}
+          onFocus={props.answerOnFocus} />
+        <br />
+        {answer}
       </div>
-      {/* <hr /> */}
     </div>
   );
 }
@@ -156,7 +153,7 @@ export class Quiz extends React.Component {
   constructor(props) {
     super(props);
     let state = {
-      isFull: props.questionState === 1,
+      isFull: props.questionState === "1",
       isSubmitted: false,
       error: null,
       isLoaded: false,
@@ -255,19 +252,17 @@ export class Quiz extends React.Component {
           <span className='timer'>
             <Timer minutes={state.minutes} seconds={state.seconds} isStopped={() => this.state.isSubmitted} />
           </span>}
-        <div className="stl_ stl_02_online">
-          <div className="stl_view_online">
-            {state.questions.map((question, index) => {
-              return <Question key={question.id}
-                question={question}
-                isSubmitted={state.isSubmitted}
-                position={index + 1}
-                answerOnKeyUp={() => this.answerOnKeyUp(question)}
-                answerOnFocus={() => this.answerOnFocus(question, true)} />
-            })}
-          </div>
-          {this.state.isSubmitted ? null : <button type="submit" className="formSubmit">Submit</button>}
+        <div className="QuestionList">
+          {state.questions.map((question, index) => {
+            return <Question key={question.id}
+              question={question}
+              isSubmitted={state.isSubmitted}
+              position={index + 1}
+              answerOnKeyUp={() => this.answerOnKeyUp(question)}
+              answerOnFocus={() => this.answerOnFocus(question, true)} />
+          })}
         </div>
+        {this.state.isSubmitted ? null : <button type="submit" className="formSubmit">Submit</button>}
       </>
     );
   }

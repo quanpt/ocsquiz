@@ -100,12 +100,13 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
         .replace('<br/> <br/> <br/></div>', '</div>')
         .replace(/<br\/> <br\/>/g, '@@@BR@@@')
-        .replace(/ @@@BR@@@ A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">A </span> $1 <br/>')
-        .replace(/ <br\/>\s([A-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([C-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([E-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ @@@BR@@@ A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/><br/> <span class="AnswerOption" style="word-spacing:0.775em;">A </span> $1 <br/>')
+        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([C-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([E-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/ <br\/>\s([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
         .replace(/\ssrc="/g, '  class="questionImage" src="/assets/')
         .replace(reImage1, '<img src="/assets/figures/' + mmfid + '_1.jpg" class="questionImage" />')
         .replace('<a href="show_image.html?name=', '<a href="/assets/')
@@ -113,8 +114,8 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
 
     if (rawHtml.indexOf('Some sentences have been taken out of the reading text') >= 0)
         rawHtml = rawHtml
-            .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 @@@BR@@@')
-            .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">$1 </span> $2 @@@BR@@@')
+            .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 @@@BR@@@')
+            .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 @@@BR@@@')
             .replace('Some sentences have been taken out of the reading text. Your task is to identify where these sentences will go back into the text.', 'Some sentences have been removed from the text. Choose from the sentences (A, B, C, …) the one which fits each gap. There is one extra sentence which you do not need to use.')
 
     rawHtml = rawHtml.replace(/@@@BR@@@/g, '<br/>')
@@ -241,7 +242,7 @@ export function PrintableQuiz(props: QuizI) {
                                             lineCount += newQs[i+j].html.split('<br/>').reduce(
                                                 (accumulator: number, currentValue: string) => 
                                                 accumulator + Math.ceil(
-                                                    currentValue.replace('<span class="stl_07 stl_08 stl_11" style="word-spacing:0.775em;">', '').length / 75)
+                                                    currentValue.replace('<span class="AnswerOption" style="word-spacing:0.775em;">', '').length / 75)
                                                 , 0) + 1
 
                                             console.log('__' + i + '_' + j + '_' + lineCount);
