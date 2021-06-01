@@ -104,18 +104,17 @@ export function PrintQuestion(props: { question: any, n: number }) {
 
     return <>
         {q.articleImageURL &&
-            <div className="xxx" key={"pagex_" + props.n}>
-                <span className="QuestionText">
+            <div className="QuestionText" key={"pagex_" + props.n}>
                     <img alt={q.articleImageURL} src={q.articleImageURL} className="fulltextImage" />
-                </span>
             </div>}
         {q.imageURL &&
-            <div className="xxx" key={"pagex_" + props.n}>
-                <span className="QuestionText">
+            <div className="QuestionText" key={"pagex_" + props.n}>
                     <img alt={q.imageURL} src={"/assets/articles/" + q.imageURL} className="fulltextImage" />
-                </span>
             </div>}
-        {q.html.indexOf('Which of the above sentences will go into location ') < 0 &&
+        {q.preText &&
+            <div className="QuestionPreText" key={"pagex_" + props.n} dangerouslySetInnerHTML={{ __html: q.preText }}>
+            </div>}
+        {q.html.indexOf('Which of the above sentences will go into location ') < 0 && q.html !== "" &&
             <div className="OneQuestion" key={q.id}>
                 <span className="QuestionNumber">{q.pos + 1}</span>
                 <span className="QuestionText" dangerouslySetInnerHTML={{ __html: html }} />

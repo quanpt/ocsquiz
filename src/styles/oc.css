@@ -31,13 +31,21 @@
     font-weight: bold;
 }
 
-.QuestionText {
+.QuestionText, .QuestionPreText {
     line-height: 1.44em;
     letter-spacing: 0.0004em;
     font-size: 0.914692em;
     word-spacing: 0.0012em;
-    display: inline-block;
     width: 570px;
+}
+
+.QuestionText {
+    display: inline-block;
+}
+
+.QuestionPreText {
+    page-break-before: always;
+    display: flow-root;
 }
 
 .questionImage {
@@ -55,6 +63,11 @@
     height: auto;
 }
 
+.BoxClozeSentences {
+    border: 2px;
+    padding: 5px;
+}
+
 .AnswerOption {
     float: left;
     width: 6em;
@@ -68,7 +81,7 @@
 }
 
 .BlankPage {
-    page-break-before: always;
+    /* page-break-before: always; */
     page-break-after: always;
     text-align: center;
     vertical-align: middle;

@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS "Questions" (
 	"qgroup"	TEXT,
 	"mmfgroup"	TEXT,
 	"title"	TEXT,
+	"preText"	TEXT,
+	"comment"	TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 DROP TABLE IF EXISTS "QuizImages";
