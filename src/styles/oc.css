@@ -40,6 +40,21 @@
     width: 570px;
 }
 
+.questionImage {
+    max-width: 600px;
+    min-width: 300px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+}
+
+.fulltextImage {
+    max-width: 630px;
+    max-height: 1090px;
+    width: auto;
+    height: auto;
+}
+
 .AnswerOption {
     float: left;
     width: 6em;

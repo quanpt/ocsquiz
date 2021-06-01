@@ -102,11 +102,26 @@ export function PrintQuestion(props: { question: any, n: number }) {
     let q = props.question
     let html = q.html.replace(/<br\/> This set has \d+ questions. <b>  It's best to work out all \d+ places where the sentences will go and then quickly answer all questions. <\/b> <br\/>  <br\/>/, '')
 
-    return <div className="OneQuestion" key={q.id}>
-        <span className="QuestionNumber">{q.pos + 1}</span>
-        <span className="QuestionText" dangerouslySetInnerHTML={{ __html: html }} />
-        {props.n === 0 && <span className="AnswerOption">&nbsp; </span>}
-    </div>
+    return <>
+        {q.articleImageURL &&
+            <div className="xxx" key={"pagex_" + props.n}>
+                <span className="QuestionText">
+                    <img alt={q.articleImageURL} src={q.articleImageURL} className="fulltextImage" />
+                </span>
+            </div>}
+        {q.imageURL &&
+            <div className="xxx" key={"pagex_" + props.n}>
+                <span className="QuestionText">
+                    <img alt={q.imageURL} src={"/assets/articles/" + q.imageURL} className="fulltextImage" />
+                </span>
+            </div>}
+        {q.html.indexOf('Which of the above sentences will go into location ') < 0 &&
+            <div className="OneQuestion" key={q.id}>
+                <span className="QuestionNumber">{q.pos + 1}</span>
+                <span className="QuestionText" dangerouslySetInnerHTML={{ __html: html }} />
+                {props.n === 0 && <span className="AnswerOption">&nbsp; </span>}
+            </div>}
+    </>
 }
 
 function getTestType(title: string) {
@@ -197,12 +212,12 @@ export function PrintableQuiz(props: QuizI) {
         <>
             {printType === 'full' && <>
                 <PrintCoverPage title={title} />
-                <PrintBlankPage/>
+                <PrintBlankPage />
             </>}
             <div className="PageCenter">
-            <PrintQuestionSets questions={questions} />
+                <PrintQuestionSets questions={questions} />
             </div>
-            {printType === 'full' && <PrintBlankPage/>}
+            {printType === 'full' && <PrintBlankPage />}
         </>
     )
 }
