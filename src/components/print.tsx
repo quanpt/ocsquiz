@@ -69,27 +69,33 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
         .replace(/(<br\/> *)*<\/div>$/g, '<br/></div>')
-        .replace(/<br\/> <br\/>/g, '@@@BR@@@')
-        .replace(/ @@@BR@@@ A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/><br/> <span class="AnswerOption" style="word-spacing:0.775em;">A </span> $1 <br/>')
-        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([C-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([E-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
-        .replace(/ <br\/>\s([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' <br/> <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 <br/>')
+        .replace(/<br\/>\s*<br\/>/g, '@@@BR@@@')
+        .replace(/ *@@@BR@@@ *A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/><br/> <span class="AnswerOption">A </span> $1 <br/>')
+        .replace(/ *<br\/>\s*([A-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
+        .replace(/ *<br\/>\s*([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
+        .replace(/ *<br\/>\s*([C-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
+        .replace(/ *<br\/>\s*([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
+        .replace(/ *<br\/>\s*([E-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
+        .replace(/ *<br\/>\s*([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*@@@BR@@@/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
+        .replace('BoxClozeSentences">A. ', 'BoxClozeSentences"><span class="AnswerOption">A </span>' )
         .replace(/\ssrc="/g, '  class="questionImage" src="/assets/')
         .replace(reImage1, '<img src="/assets/figures/' + mmfid + '_1.jpg" class="questionImage" />')
         .replace('<a href="show_image.html?name=', '<a href="/assets/')
         .replace('target="ReadingText"', 'target="_blank"')
+        .replace('style="color: blue"', '')
 
     if (rawHtml.indexOf('Some sentences have been taken out of the reading text') >= 0)
         rawHtml = rawHtml
-            .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 @@@BR@@@')
-            .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="AnswerOption" style="word-spacing:0.775em;">$1 </span> $2 @@@BR@@@')
+            .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="AnswerOption">$1 </span> $2 @@@BR@@@')
+            .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="AnswerOption">$1 </span> $2 @@@BR@@@')
             .replace('Some sentences have been taken out of the reading text. Your task is to identify where these sentences will go back into the text.', 'Some sentences have been removed from the text. Choose from the sentences (A, B, C, …) the one which fits each gap. There is one extra sentence which you do not need to use.')
+    
+    if (rawHtml.indexOf('sentences have been removed from the text.') >= 0)
+        rawHtml = rawHtml.split('</h2><hr/>')[1].split('<hr/><h3><em><strong>')[0]
+    if (rawHtml.indexOf('Read the following four extracts') >= 0)
+        rawHtml = rawHtml.split('</strong></span></h2><hr/>')[1]
 
     rawHtml = rawHtml.replace(/@@@BR@@@/g, '<br/>')
-
 
     if (imageId > 0) {
         rawHtml = '<img src="/assets/articles/bigfish/' + imageId + '.jpg" />' + rawHtml;
@@ -100,7 +106,21 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
 
 export function PrintQuestion(props: { question: any, n: number }) {
     let q = props.question
-    let html = q.html.replace(/<br\/> This set has \d+ questions. <b>  It's best to work out all \d+ places where the sentences will go and then quickly answer all questions. <\/b> <br\/>  <br\/>/, '')
+    let html = q.html.replace(/<br\/> This set has \d+ questions. <b>.*answer all questions. <\/b> <br\/> *<br\/>/, '')
+    if (q.preText) {
+        if (["101","2"].includes(q.mmfgroup)) {
+            q.preText = '<i>Read the text below then answer the questions.</i><p/>'
+                + FormatQuestionText(q.preText, 0, 0)
+                + '<p/>For questions below, choose the answer (<b>A</b>, <b>B</b>, <b>C</b> or <b>D</b>) which you think best answers the question.'
+        } else
+        if (["110"].includes(q.mmfgroup)) {
+            q.preText = '<i>Read the text below then answer the questions.</i><p/>Six sentences have been removed from the text. Choose from the sentences (A – G) the one which fits each gap. There is one extra sentence which you do not need to use.'
+                + FormatQuestionText(q.preText, 0, 0)
+        } else
+        if (["109"].includes(q.mmfgroup)) {
+            q.preText = FormatQuestionText(q.preText, 0, 0)
+        }
+    }
 
     return <>
         {q.articleImageURL &&
@@ -116,9 +136,11 @@ export function PrintQuestion(props: { question: any, n: number }) {
             </div>}
         {q.html.indexOf('Which of the above sentences will go into location ') < 0 && q.html !== "" &&
             <div className="OneQuestion" key={q.id}>
-                <span className="QuestionNumber">{q.pos + 1}</span>
+                {q.mmfgroup !== "110" && <span className="QuestionNumber">{q.pos + 1}</span>}
                 <span className="QuestionText" dangerouslySetInnerHTML={{ __html: html }} />
-                {props.n === 0 && <span className="AnswerOption">&nbsp; </span>}
+            </div>}
+        {q.postText  &&
+            <div className="Question109" key={"pagex_" + props.n} dangerouslySetInnerHTML={{ __html: q.postText }}>
             </div>}
     </>
 }
@@ -130,7 +152,7 @@ function getTestType(title: string) {
         if (lowerTitle.indexOf(types[i]) >= 0)
             return types[i]
     }
-    return 'math'
+    return 'english'
 }
 
 export function PrintableQuiz(props: QuizI) {
@@ -197,6 +219,15 @@ export function PrintableQuiz(props: QuizI) {
                                     html = html.replace(/^\s*Refer to the article:* <a href="([^"]*)" .* <img border="0" +src="\/assets\/images\/reading\.gif" width="48"\/> <\/a> <br\/>/, '')
                                 }
                                 newQs[i].html = html
+
+                                if (newQs[i].mmfgroup === "109" && i > 0 && newQs[i-1].mmfgroup !== "109") {
+                                    newQs[i].preText = "<i>Read the four extracts below.</i><p/>For below questions, choose the option (<b>A</b>, <b>B</b>, <b>C</b> or <b>D</b>) which you think best answers the question.<p/>Which extract…"
+                                }
+
+                                if (newQs[i].mmfgroup === "109" && (i === (newQs.length - 1) || newQs[i+1].mmfgroup !== "109")) {
+                                    newQs[i].postText = newQs[i].preText
+                                    newQs[i].preText = null
+                                }
                             }
 
                             setQuestions(newQs)

@@ -1,5 +1,5 @@
 .PageCenter, .BlankPage {
-    max-width: 630px;
+    max-width: 680px;
     margin: 20px auto;
 }
 
@@ -31,12 +31,12 @@
     font-weight: bold;
 }
 
-.QuestionText, .QuestionPreText {
+.QuestionText, .QuestionPreText, .Question109 {
     line-height: 1.44em;
     letter-spacing: 0.0004em;
     font-size: 0.914692em;
     word-spacing: 0.0012em;
-    width: 570px;
+    width: 630px;
 }
 
 .QuestionText {
@@ -45,6 +45,10 @@
 
 .QuestionPreText {
     page-break-before: always;
+    display: flow-root;
+}
+
+.Question109 {
     display: flow-root;
 }
 
@@ -57,15 +61,15 @@
 }
 
 .fulltextImage {
-    max-width: 630px;
+    max-width: 650px;
     max-height: 1090px;
     width: auto;
     height: auto;
 }
 
 .BoxClozeSentences {
-    border: 2px;
-    padding: 5px;
+    border: 2px solid black;
+    padding: 10px;
 }
 
 .AnswerOption {
@@ -73,6 +77,7 @@
     width: 6em;
     font-weight: bold;
     text-align: center;
+    word-spacing: 0.775em;
 }
 
 .AnswerLine {
@@ -81,7 +86,7 @@
 }
 
 .BlankPage {
-    /* page-break-before: always; */
+    page-break-before: always;
     page-break-after: always;
     text-align: center;
     vertical-align: middle;
