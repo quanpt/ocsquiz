@@ -60,6 +60,12 @@
     height: auto;
 }
 
+.AnswerImage {
+    max-width: 150px;
+    width: auto;
+    height: auto;
+}
+
 .fulltextImage {
     max-width: 650px;
     max-height: 1090px;

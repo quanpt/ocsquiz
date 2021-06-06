@@ -83,6 +83,7 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
         .replace('<a href="show_image.html?name=', '<a href="/assets/')
         .replace('target="ReadingText"', 'target="_blank"')
         .replace('style="color: blue"', '')
+        .replace('</p><br/>', '</p>')
 
     if (rawHtml.indexOf('Some sentences have been taken out of the reading text') >= 0)
         rawHtml = rawHtml
