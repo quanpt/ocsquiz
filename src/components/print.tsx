@@ -70,13 +70,13 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
         .replace(/(<br\/> *)*<\/div>$/g, '<br/></div>')
         .replace(/<br\/>\s*<br\/>/g, '@@@BR@@@')
-        .replace(/ *@@@BR@@@ *A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/><br/> <span class="AnswerOption">A </span> $1 <br/>')
-        .replace(/ *<br\/>\s*([A-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
-        .replace(/ *<br\/>\s*([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
-        .replace(/ *<br\/>\s*([C-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
-        .replace(/ *<br\/>\s*([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
-        .replace(/ *<br\/>\s*([E-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
-        .replace(/ *<br\/>\s*([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*@@@BR@@@/g, ' <br/> <span class="AnswerOption">$1 </span> $2 <br/>')
+        .replace(/ *@@@BR@@@ *A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/><br/> <span class="AnswerOption">A </span><span class="AnswerText"> $1 </span><br/>')
+        .replace(/ *<br\/>\s*([A-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([C-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([E-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*@@@BR@@@/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
         .replace('BoxClozeSentences">A. ', 'BoxClozeSentences"><span class="AnswerOption">A </span>' )
         .replace(/\ssrc="/g, '  class="questionImage" src="/assets/')
         .replace(reImage1, '<img src="/assets/figures/' + mmfid + '_1.jpg" class="questionImage" />')
@@ -91,10 +91,10 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
             .replace(/ @@@BR@@@ ([A-Z])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s@@@BR@@@/g, ' @@@BR@@@ <span class="AnswerOption">$1 </span> $2 @@@BR@@@')
             .replace('Some sentences have been taken out of the reading text. Your task is to identify where these sentences will go back into the text.', 'Some sentences have been removed from the text. Choose from the sentences (A, B, C, …) the one which fits each gap. There is one extra sentence which you do not need to use.')
     
-    if (rawHtml.indexOf('sentences have been removed from the text.') >= 0)
-        rawHtml = rawHtml.split('</h2><hr/>')[1].split('<hr/><h3><em><strong>')[0]
-    if (rawHtml.indexOf('Read the following four extracts') >= 0)
-        rawHtml = rawHtml.split('</strong></span></h2><hr/>')[1]
+    // if (rawHtml.indexOf('sentences have been removed from the text.') >= 0)
+    //     rawHtml = rawHtml.split('</h2><hr/>')[1].split('<hr/><h3><em><strong>')[0]
+    // if (rawHtml.indexOf('Read the following four extracts') >= 0)
+    //     rawHtml = rawHtml.split('</strong></span></h2><hr/>')[1]
 
     rawHtml = rawHtml.replace(/@@@BR@@@/g, '<br/>')
 
