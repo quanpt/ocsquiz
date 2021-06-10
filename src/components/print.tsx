@@ -116,8 +116,7 @@ export function PrintQuestion(props: { question: any, n: number }) {
                 + '<p/>For questions below, choose the answer (<b>A</b>, <b>B</b>, <b>C</b> or <b>D</b>) which you think best answers the question.'
         } else
         if (["110"].includes(q.mmfgroup)) {
-            q.preText = '<i>Read the text below then answer the questions.</i><p/>Six sentences have been removed from the text. Choose from the sentences (A – G) the one which fits each gap. There is one extra sentence which you do not need to use.'
-                + FormatQuestionText(q.preText, 0, 0)
+            q.preText = FormatQuestionText(q.preText, 0, 0)
         } else
         if (["109"].includes(q.mmfgroup)) {
             q.preText = FormatQuestionText(q.preText, 0, 0)
