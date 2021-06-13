@@ -21,6 +21,7 @@ router.post('/quizes/ping', routes.pingQuiz)
 router.post('/quiz/images/get', routes.getQuizImages)
 router.get('/quizes', routes.getQuizes)
 router.get('/quizes/:id', routes.getQuizes)
+router.post('/quiz/question/category/get', routes.getQuestionCategories)
 
 router.put('/answers/put', routes.createAnswers)
 router.post('/answers/update', routes.updateAnswer)

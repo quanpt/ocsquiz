@@ -1,46 +1,7 @@
 BEGIN TRANSACTION;
-DROP TABLE IF EXISTS "Answers";
-CREATE TABLE IF NOT EXISTS "Answers" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"quizId"	INTEGER NOT NULL,
-	"questionId"	INTEGER NOT NULL,
-	"userAnswer"	TEXT,
-	"timestamp"	INTEGER,
-	"isReviewed"	INTEGER,
-	FOREIGN KEY("quizId") REFERENCES "Quizes"("id") ON UPDATE CASCADE ON DELETE CASCADE,
-	FOREIGN KEY("questionId") REFERENCES "Questions"("id") ON UPDATE CASCADE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-);
 DROP TABLE IF EXISTS "Images";
 CREATE TABLE IF NOT EXISTS "Images" (
 	"id"	INTEGER
-);
-DROP TABLE IF EXISTS "Questions";
-CREATE TABLE IF NOT EXISTS "Questions" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"mmfid"	INTEGER,
-	"question"	TEXT,
-	"questionAnswer"	TEXT,
-	"qgroup"	TEXT,
-	"mmfgroup"	TEXT,
-	"title"	TEXT,
-	"preText"	TEXT,
-	"comment"	TEXT,
-	PRIMARY KEY("id" AUTOINCREMENT)
-);
-DROP TABLE IF EXISTS "QuizImages";
-CREATE TABLE IF NOT EXISTS "QuizImages" (
-	"title"	TEXT NOT NULL,
-	"imageURL"	TEXT NOT NULL,
-	"questionCount"	INTEGER
-);
-DROP TABLE IF EXISTS "Quizes";
-CREATE TABLE IF NOT EXISTS "Quizes" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"title"	TEXT NOT NULL,
-	"timestamp"	INTEGER NOT NULL,
-	"lastUpdate"	INTEGER,
-	PRIMARY KEY("id" AUTOINCREMENT)
 );
 DROP TABLE IF EXISTS "TitleCat";
 CREATE TABLE IF NOT EXISTS "TitleCat" (
@@ -62,6 +23,59 @@ CREATE TABLE IF NOT EXISTS "processedTitle" (
 	"topic"	TEXT,
 	"subTopic"	TEXT,
 	"subSubTopic"	TEXT
+);
+DROP TABLE IF EXISTS "Quizes";
+CREATE TABLE IF NOT EXISTS "Quizes" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"title"	TEXT NOT NULL,
+	"timestamp"	INTEGER NOT NULL,
+	"lastUpdate"	INTEGER,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+DROP TABLE IF EXISTS "Answers";
+CREATE TABLE IF NOT EXISTS "Answers" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"quizId"	INTEGER NOT NULL,
+	"questionId"	INTEGER NOT NULL,
+	"userAnswer"	TEXT,
+	"timestamp"	INTEGER,
+	"isReviewed"	INTEGER,
+	FOREIGN KEY("questionId") REFERENCES "Questions"("id") ON UPDATE CASCADE,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("quizId") REFERENCES "Quizes"("id") ON UPDATE CASCADE ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS "QuizImages";
+CREATE TABLE IF NOT EXISTS "QuizImages" (
+	"title"	TEXT NOT NULL,
+	"imageURL"	TEXT NOT NULL,
+	"questionCount"	INTEGER,
+	"questionStart"	INTEGER
+);
+DROP TABLE IF EXISTS "Questions";
+CREATE TABLE IF NOT EXISTS "Questions" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"mmfid"	INTEGER,
+	"question"	TEXT,
+	"questionAnswer"	TEXT,
+	"qgroup"	TEXT,
+	"mmfgroup"	TEXT,
+	"title"	TEXT,
+	"preText"	TEXT,
+	"comment"	TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+DROP INDEX IF EXISTS "idxTitleCat";
+CREATE UNIQUE INDEX IF NOT EXISTS "idxTitleCat" ON "TitleCat" (
+	"fullTitle"	ASC
+);
+DROP INDEX IF EXISTS "idxQuestionTitle";
+CREATE INDEX IF NOT EXISTS "idxQuestionTitle" ON "Questions" (
+	"title"	ASC
+);
+DROP INDEX IF EXISTS "idxQuestionsId";
+CREATE UNIQUE INDEX IF NOT EXISTS "idxQuestionsId" ON "Questions" (
+	"id",
+	"mmfid"
 );
 DROP VIEW IF EXISTS "FullAnswers";
 CREATE VIEW "FullAnswers" AS SELECT a.*, q.mmfid, q.question, q.questionAnswer, q.title, i.id AS imageId FROM Answers a LEFT JOIN Questions q ON a.questionId = q.id LEFT JOIN Images i ON q.mmfid = i.id;
@@ -94,17 +108,9 @@ FROM
 	ON tc.fullTitle = q.title
 	GROUP BY tc.fullTitle) t2 
 		ON t1.fullTitle = t2.fullTitle;
-DROP INDEX IF EXISTS "idxQuestionTitle";
-CREATE INDEX IF NOT EXISTS "idxQuestionTitle" ON "Questions" (
-	"title"	ASC
-);
-DROP INDEX IF EXISTS "idxQuestionsId";
-CREATE UNIQUE INDEX IF NOT EXISTS "idxQuestionsId" ON "Questions" (
-	"id",
-	"mmfid"
-);
-DROP INDEX IF EXISTS "idxTitleCat";
-CREATE UNIQUE INDEX IF NOT EXISTS "idxTitleCat" ON "TitleCat" (
-	"fullTitle"	ASC
-);
+DROP VIEW IF EXISTS "ErrorQuestionGroupView";
+CREATE VIEW "ErrorQuestionGroupView" AS SELECT quizId, qgroup, mmfgroup, COUNT(qgroup) AS groupCount
+FROM Answers a LEFT JOIN Questions q ON a.questionId = q.id
+WHERE UPPER(a.userAnswer) <> UPPER(q.questionAnswer)
+GROUP BY quizId, qgroup, mmfgroup;
 COMMIT;
