@@ -16,6 +16,7 @@ interface ResultUI {
 interface ResultListUI {
   results: ResultUI[]
   loading: boolean
+  filter: string
 }
 
 const ResultRow = (props: ResultUI) => (
@@ -45,7 +46,9 @@ export const ResultList = (props: ResultListUI) => {
         </thead>
         <tbody className="table-body">
           {props.results.length > 0 ? (
-            props.results.map((item, idx) => (
+            props.results  
+              .filter(d => props.filter === '' || d.title.toLowerCase().includes(props.filter.toLowerCase()))
+              .map((item, idx) => (
               <ResultRow
                 key={idx + 1}
                 {...item}
@@ -68,11 +71,16 @@ export function ResultListPage () {
 
   const [loading, setLoading] = useState(true)
   const [results, setResults] = useState([])
+  const [filter, setFilter] = useState('')
 
   useEffect(() => {
     document.title = "Quiz - Results"
     fetchResults()
   }, [])
+
+  function onChangeHandler(e: any){
+    setFilter(e.target.value)
+  }
 
   // Fetch all subject of given year
   const fetchResults = async () => {
@@ -89,7 +97,8 @@ export function ResultListPage () {
 
   return (
     <div className="quiz-list-wrapper">
-      <ResultList loading={loading} results={results} />
+      <input placeholder='filter value' value={filter} type="text" onChange={ onChangeHandler }/>
+      <ResultList loading={loading} results={results}  filter={filter}/>
     </div>
   )
 }
