@@ -1,6 +1,5 @@
 // Import deps
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 
 import { Link } from "react-router-dom";
 import { SubjectListRow } from './subject'
@@ -71,12 +70,14 @@ export const YearListPage = () => {
   }, [])
 
   const fetchYears = async () => {
-    axios
-      .get('/data/year/get')
+    fetch("/data/year/get", {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+    })
+      .then(res => res.json())
       .then(response => {
-        var resYears = response.data
-        resYears.sort((a: Year, b: Year) => (a.year < b.year ? -1 : 1))
-        setYears(resYears)
+        response.sort((a: Year, b: Year) => (a.year < b.year ? -1 : 1))
+        setYears(response)
         setLoading(false)
       })
       .catch(error => console.error(`There was an error retrieving the year list: ${error}`))

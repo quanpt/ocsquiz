@@ -92,7 +92,6 @@ function CorrectAnswer(props) {
 function OnlineQuestion(props) {
 
   let q = props.question
-  let key = q.id
   let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
   if (html.match(/^\s*Refer to the (poem|article):* (<br\/> <img|<a) /))
     html = html.replace(/ class="questionImage"/g, '')

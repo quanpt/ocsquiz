@@ -1,8 +1,6 @@
 // Import deps
 import { useEffect, useState } from 'react'
 import { Link } from "react-router-dom"
-import axios from 'axios'
-import { Checkbox } from '@material-ui/core'
 
 interface ResultUI {
   id: string
@@ -46,11 +44,8 @@ const ResultRow = (props: ResultUI) => (
 
 const QuestionTypeList = (props: { quizList: Array<any> }) => {
   const [results, setResults] = useState([])
-  useEffect(() => {
-    fetchErrorQuestionGroupView()
-  }, [props.quizList])
 
-  const fetchErrorQuestionGroupView = async () => {
+  useEffect(() => {
     var quizIds = props.quizList.filter((item: any) => (item.isSelected)).map((item: any) => {return item.id})
     if (quizIds.length > 0)
       fetch("/data/quiz/question/category/get", {
@@ -68,7 +63,7 @@ const QuestionTypeList = (props: { quizList: Array<any> }) => {
         })
     else
       setResults([])
-  }
+  }, [props.quizList])
 
   return <div>
     {results.length > 0 && <table className="table content">
@@ -164,11 +159,14 @@ export function ResultListPage() {
 
   // Fetch all subject of given year
   const fetchResults = async () => {
-    axios
-      .get('/data/quizes')
+    fetch("/data/quizes", {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+    })
+      .then(res => res.json())
       .then((response) => {
 
-        setResults(response.data.map((item: any) => {item.isSelected = false; return item}))
+        setResults(response.map((item: any) => {item.isSelected = false; return item}))
 
         // Update loading state
         setLoading(false)

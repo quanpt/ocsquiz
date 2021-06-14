@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { toJSON } from 'cssjson';
 import useScript from '../hooks/useScript';
 
 // interfaces
@@ -8,10 +7,6 @@ export interface QuizI {
     subject: string;
     title: string;
     print: string;
-}
-
-function CSStoJSON(css: string) {
-    return toJSON(css).attributes
 }
 
 function PrintCoverPage(props: { title: string }) {
