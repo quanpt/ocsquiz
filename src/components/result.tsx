@@ -45,6 +45,10 @@ const ResultRow = (props: ResultUI) => (
 const QuestionTypeList = (props: { quizList: Array<any> }) => {
   const [results, setResults] = useState([])
 
+  function weight(e: any) {
+    return e.errorCount + e.errorCount / (e.errorCount + e.correctCount)
+  }
+
   useEffect(() => {
     var quizIds = props.quizList.filter((item: any) => (item.isSelected)).map((item: any) => {return item.id})
     if (quizIds.length > 0)
@@ -58,7 +62,7 @@ const QuestionTypeList = (props: { quizList: Array<any> }) => {
           var newResults = response
             .filter((item: any) => item.errorCount > 0)
             .map((item: any) => { item.percent = Math.round(100 * item.errorCount / (item.errorCount + item.correctCount)); return item })
-          newResults.sort((e1: any, e2: any) => { return e2.percent - e1.percent + e2.errorCount - e1.errorCount })
+          newResults.sort((e1: any, e2: any) => { return weight(e2) - weight(e1)})
           setResults(newResults)
         })
     else
