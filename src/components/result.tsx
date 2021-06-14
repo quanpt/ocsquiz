@@ -21,6 +21,7 @@ interface ResultListUI {
   loading: boolean
   filter: string
   onQuizSelectionChangeHandler: any
+  onClickSelectAll: any
 }
 
 const ResultRow = (props: ResultUI) => (
@@ -43,30 +44,32 @@ const ResultRow = (props: ResultUI) => (
   </tr>
 )
 
-const QuestionTypeList = (props: { quizIds: Array<string> }) => {
+const QuestionTypeList = (props: { quizList: Array<any> }) => {
   const [results, setResults] = useState([])
   useEffect(() => {
     fetchErrorQuestionGroupView()
-  }, [props.quizIds])
+  }, [props.quizList])
 
   const fetchErrorQuestionGroupView = async () => {
-    fetch("/data/quiz/question/category/get", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-      body: JSON.stringify(props)
-    })
-      .then(res => res.json())
-      .then((response) => {
-        var newResults = response
-          .filter((item: any) => item.errorCount > 0)
-          .map((item: any) => {item.percent = Math.round(100 * item.errorCount / (item.errorCount + item.correctCount)); return item})
-        newResults.sort((e1:any, e2:any) => {return e2.percent - e1.percent + e2.errorCount - e1.errorCount})
-        setResults(newResults)
+    var quizIds = props.quizList.filter((item: any) => (item.isSelected)).map((item: any) => {return item.id})
+    if (quizIds.length > 0)
+      fetch("/data/quiz/question/category/get", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+        body: JSON.stringify({quizIds: quizIds})
       })
+        .then(res => res.json())
+        .then((response) => {
+          var newResults = response
+            .filter((item: any) => item.errorCount > 0)
+            .map((item: any) => { item.percent = Math.round(100 * item.errorCount / (item.errorCount + item.correctCount)); return item })
+          newResults.sort((e1: any, e2: any) => { return e2.percent - e1.percent + e2.errorCount - e1.errorCount })
+          setResults(newResults)
+        })
+    else
+      setResults([])
   }
 
-  console.log(results);
-  
   return <div>
     {results.length > 0 && <table className="table content">
       <thead>
@@ -96,7 +99,10 @@ const ResultList = (props: ResultListUI) => {
           <th className='titleTh'>Title</th>
           <th style={{ width: '200px' }}>Date Time</th>
           <th>Time (m)</th><th>Correct</th><th>Attempt</th><th>Question</th>
-          <th>Selected</th>
+          <th>Selected
+            <button onClick={() => props.onClickSelectAll(true)}>All</button>
+            <button onClick={() => props.onClickSelectAll(false)}>None</button>
+          </th>
         </tr>
       </thead>
       <tbody className="table-body">
@@ -126,9 +132,8 @@ const ResultList = (props: ResultListUI) => {
 export function ResultListPage() {
 
   const [loading, setLoading] = useState(true)
-  const [results, setResults] = useState([])
+  const [results, setResults] = useState<Array<any>>([])
   const [filter, setFilter] = useState('')
-  const [reviews, setReviews] = useState<Array<string>>([])
 
   useEffect(() => {
     document.title = "Quiz - Results"
@@ -140,14 +145,21 @@ export function ResultListPage() {
   }
 
   function onQuizSelectionChangeHandler(e: any) {
-    var newReviews
-    if (e.target.checked) {
-      newReviews = reviews.slice()
-      newReviews.push(e.target.value)
-    } else {
-      newReviews = reviews.filter(item => item !== e.target.value)
-    }
-    setReviews(newReviews)
+    let newResults = [...results];
+    setResults(newResults
+      .map((item: any) => {
+        if (item.id === parseInt(e.target.value)) {
+          item.isSelected = e.target.checked; 
+        }
+        return item
+      }))
+  }
+
+  function onClickSelectAll(isSelected: boolean) {
+    let newResults = [...results]
+    setResults(newResults
+      .filter(d => filter === '' || d.title.toLowerCase().includes(filter.toLowerCase()))
+      .map((item: any) => {item.isSelected = isSelected; return item}))
   }
 
   // Fetch all subject of given year
@@ -155,7 +167,8 @@ export function ResultListPage() {
     axios
       .get('/data/quizes')
       .then((response) => {
-        setResults(response.data)
+
+        setResults(response.data.map((item: any) => {item.isSelected = false; return item}))
 
         // Update loading state
         setLoading(false)
@@ -165,9 +178,11 @@ export function ResultListPage() {
 
   return (
     <div className="quiz-list-wrapper">
-      <QuestionTypeList quizIds={reviews} />
+      <QuestionTypeList quizList={results} />
       <input placeholder='filter value' value={filter} type="text" onChange={onFilterChangeHandler} />
-      <ResultList loading={loading} results={results} filter={filter} onQuizSelectionChangeHandler={onQuizSelectionChangeHandler} />
+      <ResultList loading={loading} results={results} filter={filter} 
+        onQuizSelectionChangeHandler={onQuizSelectionChangeHandler} 
+        onClickSelectAll={onClickSelectAll}/>
     </div>
   )
 }
