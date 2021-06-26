@@ -78,7 +78,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS "idxQuestionsId" ON "Questions" (
 	"mmfid"
 );
 DROP VIEW IF EXISTS "FullAnswers";
-CREATE VIEW "FullAnswers" AS SELECT a.*, q.mmfid, q.question, q.questionAnswer, q.title, i.id AS imageId FROM Answers a LEFT JOIN Questions q ON a.questionId = q.id LEFT JOIN Images i ON q.mmfid = i.id;
+CREATE VIEW "FullAnswers" AS SELECT a.*, q.mmfid, q.question, q.questionAnswer, q.title, q.comment, i.id AS imageId FROM Answers a LEFT JOIN Questions q ON a.questionId = q.id LEFT JOIN Images i ON q.mmfid = i.id;
 DROP VIEW IF EXISTS "FullQuestions";
 CREATE VIEW "FullQuestions" AS SELECT q.*, i.id AS imageId FROM Questions q LEFT JOIN TitleCat t ON q.title = t.fullTitle LEFT JOIN Images i ON q.mmfid = i.id;
 DROP VIEW IF EXISTS "FullQuizes";

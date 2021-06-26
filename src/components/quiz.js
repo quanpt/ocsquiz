@@ -40,6 +40,7 @@ class Solution extends React.Component {
       showMessage: false,
       questionAnswer: props.questionAnswer,
       answerId: props.answerId,
+      comment: props.comment,
       user: Cookies.get('user')
     }
     this.state = state;
@@ -68,11 +69,14 @@ class Solution extends React.Component {
   }
 
   render() {
-    return (<span>Solution:
-      <span className="questionAnswer">&nbsp;{this.state.showMessage && this.state.questionAnswer}&nbsp;</span>
-      <button className="smallButon" onClick={this.onButtonClickHandler}>{this.state.showMessage ? 'Hide' : 'Show'}</button>&nbsp;
-      {this.state.user === 'admin' && <button type="submit" className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
-    </span>);
+    return <>
+      <span>Solution:
+        <span className="questionAnswer">&nbsp;{this.state.showMessage && this.state.questionAnswer}&nbsp;</span>
+        <button className="smallButon" onClick={this.onButtonClickHandler}>{this.state.showMessage ? 'Hide' : 'Show'}</button>&nbsp;
+        {this.state.user === 'admin' && <button type="submit" className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
+      </span>
+      {this.state.showMessage && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: this.state.comment }} />}
+      </>;
 
   }
 }
@@ -85,7 +89,8 @@ function CorrectAnswer(props) {
   return <div className="QuestionText">
     <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
     <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
-    {!question.isAnsweredCorrect && <Solution questionAnswer={question.questionAnswer} answerId={question.answerId} />}
+    {!question.isAnsweredCorrect && <Solution {...question} />}
+    {question.isAnsweredCorrect && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: question.comment }} />}
   </div>
 }
 
@@ -95,7 +100,7 @@ function OnlineQuestion(props) {
   let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
   if (html.match(/^\s*Refer to the (poem|article):* (<br\/> <img|<a) /))
     html = html.replace(/ class="questionImage"/g, '')
-  console.log(html);
+  // console.log(html);
 
   return <>
     <span className="QuestionNumber">{props.question.pos + 1}</span>
