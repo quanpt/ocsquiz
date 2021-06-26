@@ -5,7 +5,7 @@
 
 .ImageURLs {
     padding: 10px;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
 }
 
 .QuestionImageLink {
@@ -21,8 +21,8 @@
 
 .OneQuestion {
     page-break-inside: avoid;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .QuestionNumber {
@@ -36,8 +36,11 @@
     letter-spacing: 0.0004em;
     font-size: 0.914692em;
     word-spacing: 0.0012em;
+    padding-bottom: 7px;
+}
+
+.QuestionText, .Question109 {
     width: 630px;
-    padding-bottom: 20px;
 }
 
 .QuestionText {
@@ -76,7 +79,7 @@
 
 .BoxClozeSentences {
     border: 2px solid black;
-    padding: 10px;
+    padding: 5px;
     page-break-inside: avoid;
 }
 
@@ -94,7 +97,7 @@
 
 .AnswerLine {
     margin-left: 48px;
-    padding-top: 12px;
+    padding-top: 5px;
 }
 
 .BlankPage {

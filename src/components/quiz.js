@@ -339,8 +339,8 @@ export class Quiz extends React.Component {
                 return;
               }
 
-              if (countCorrect * 3 < countAnswer) {
-                alert('Less than a third answers are correct, please think and change your answers!');
+              if (countCorrect * 4 < countAnswer) {
+                alert('Less than one forth answers are correct, please think and change your answers!');
                 return;
               }
 
