@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from "react-router-dom"
 
+import {stringLooseMatched} from "../common/string"
+
 interface ResultUI {
   id: string
   title: string
@@ -107,7 +109,7 @@ const ResultList = (props: ResultListUI) => {
       <tbody className="table-body">
         {props.results.length > 0 ? (
           props.results
-            .filter(d => props.filter === '' || d.title.toLowerCase().includes(props.filter.toLowerCase()))
+            .filter(d => stringLooseMatched(d.title, props.filter))
             .map((item, idx) => (
               <ResultRow
                 key={idx + 1}
@@ -157,7 +159,7 @@ export function ResultListPage() {
   function onClickSelectAll(isSelected: boolean) {
     let newResults = [...results]
     setResults(newResults
-      .filter(d => filter === '' || d.title.toLowerCase().includes(filter.toLowerCase()))
+      .filter(d => stringLooseMatched(d.title, filter))
       .map((item: any) => {item.isSelected = isSelected; return item}))
   }
 

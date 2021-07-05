@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from "react-router-dom";
 import { SubjectUI } from './subject'
 
+import {stringLooseMatched} from "../common/string"
+
 interface TitleUI extends SubjectUI {
   fullTitle: string;
   correctAnswerCount: number;
@@ -51,7 +53,7 @@ export const TitleList = (props: TitleListUI) => {
       <tbody className="table-body">
         {props.titles.length > 0 ? (
           props.titles
-            .filter(d => props.filter === '' || d.fullTitle.toLowerCase().includes(props.filter.toLowerCase()))
+            .filter(d => stringLooseMatched(d.fullTitle, props.filter))
             .map((item, idx) => (
             <TitleRow
               key={idx + 1}
