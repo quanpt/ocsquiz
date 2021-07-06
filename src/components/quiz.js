@@ -328,6 +328,7 @@ export class Quiz extends React.Component {
               // console.log(JSON.stringify(answers, null, 2));
               let countCorrect = 0
               let countAnswer = 0
+              let countSkip = 0
 
               for (let key in newQuestions) {
                 let question = newQuestions[key];
@@ -336,6 +337,7 @@ export class Quiz extends React.Component {
                   question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.questionAnswer.toUpperCase();
                   countCorrect += question.isAnsweredCorrect ? 1 : 0;
                   countAnswer++
+                  countSkip += question.userAnswer.toUpperCase() === 'X' ? 1 : 0;
                 }
               }
 
@@ -344,7 +346,7 @@ export class Quiz extends React.Component {
                 return;
               }
 
-              if (countCorrect * 4 < countAnswer) {
+              if (countCorrect * 4 < (countAnswer - countSkip)) {
                 alert('Less than one forth answers are correct, please think and change your answers!');
                 return;
               }
