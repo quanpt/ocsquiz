@@ -86,10 +86,11 @@ function CorrectAnswer(props) {
   let secondSpent = Math.floor(question.timeSpent / 1000)
   let timeClassName = secondSpent <= 60 ? 'goodTime' : (secondSpent <= 65 ? 'okTime' : (secondSpent <= 75 ? 'warningTime' : 'badTime'))
   let className = "answer " + (question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")
+  let isSkipped = question.userAnswer.toUpperCase() === 'X'
   return <div className="QuestionText">
-    <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : 'Incorrect'}</span>
+    <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : (isSkipped ? 'Skipped' : 'Incorrect')}</span>
     <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
-    {!question.isAnsweredCorrect && <Solution {...question} />}
+    {(!question.isAnsweredCorrect && !isSkipped) && <Solution {...question} />}
     {question.isAnsweredCorrect && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: question.comment }} />}
   </div>
 }

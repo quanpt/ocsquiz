@@ -84,18 +84,18 @@ CREATE VIEW "FullQuestions" AS SELECT q.*, i.id AS imageId FROM Questions q LEFT
 DROP VIEW IF EXISTS "FullQuizes";
 CREATE VIEW "FullQuizes" AS SELECT q.id, q.title, q.timestamp, q.lastUpdate,
 COUNT(questionId) AS questionCount,
-SUM(CASE WHEN userAnswer IS NULL THEN 0 ELSE 1 END) AS answerCount, 
+SUM(CASE WHEN userAnswer IS NULL or UPPER(userAnswer) == 'X' THEN 0 ELSE 1 END) AS answerCount, 
 SUM(CASE WHEN UPPER(userAnswer) == UPPER(questionAnswer) THEN 1 ELSE 0 END) AS correctAnswerCount 
 FROM FullAnswers a LEFT JOIN Quizes q ON a.quizId = q.id GROUP BY q.id
 UNION ALL
 SELECT * FROM (
 SELECT q.id, q.title, q.timestamp, q.lastUpdate,
 NULL AS questionCount,
-SUM(CASE WHEN userAnswer IS NULL THEN 0 ELSE 1 END) AS answerCount,
+SUM(CASE WHEN userAnswer IS NULL or UPPER(userAnswer) == 'X' THEN 0 ELSE 1 END) AS answerCount,
 NULL AS correctAnswerCount 
 FROM Quizes q LEFT JOIN FullAnswers a ON a.quizId = q.id
 GROUP BY q.id)
-WHERE AnswerCount = 0;
+WHERE AnswerCount = 0
 DROP VIEW IF EXISTS "TitleView";
 CREATE VIEW "TitleView" AS SELECT t1.*, t2.questionCount 
 FROM 
