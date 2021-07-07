@@ -58,7 +58,7 @@ exports.getQuestions = async (req, res) => {
   knex
     .select('*')
     .from('FullQuestions')
-    .where('title', decodeURIComponent(req.body.title))
+    .where('titleId', decodeURIComponent(req.body.title))
     //.orderByRaw('RANDOM()')
     //.limit(10)
     .then(items => {
