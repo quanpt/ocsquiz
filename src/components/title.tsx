@@ -5,6 +5,7 @@ import { SubjectUI } from './subject'
 import {stringLooseMatched} from "../common/string"
 
 interface TitleUI extends SubjectUI {
+  id: number;
   fullTitle: string;
   correctAnswerCount: number;
   questionCount: number;
@@ -21,10 +22,10 @@ interface TitleListUI {
 const TitleRow = (props: TitleUI) => (
   <tr className="table-row">
     <td className="table-item">
-      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/state/0'}>{props.fullTitle.replace(' result', '')}</Link>
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + props.id + '/state/0'}>{props.fullTitle.replace(' result', '')}</Link>
     </td>
     <td className="table-item">
-      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/state/1'} className='smallText'>Full Test</Link>
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + props.id + '/state/1'} className='smallText'>Full Test</Link>
     </td>
     <td className="table-item-number">
       <span className={props.correctAnswerCount === props.questionCount ? 'goodTime' : 'warningTime'}>{props.correctAnswerCount}</span>
@@ -33,8 +34,8 @@ const TitleRow = (props: TitleUI) => (
       <span>{props.questionCount}</span>
     </td>
     <td className="table-item">
-      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/print/full'} className='smallText'>Full</Link>|
-      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + encodeURIComponent(props.fullTitle) + '/print/partial'} className='smallText'>Partial</Link>
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + props.id + '/print/full'} className='smallText'>Full</Link>|
+      <Link to={"/year/" + props.year + "/subject/" + props.subject + "/title/" + props.id + '/print/partial'} className='smallText'>Partial</Link>
     </td>
   </tr>
 )
@@ -59,6 +60,7 @@ export const TitleList = (props: TitleListUI) => {
               key={idx + 1}
               subject={props.subject}
               year={props.year}
+              id={item.id}
               fullTitle={item.fullTitle}
               correctAnswerCount={item.correctAnswerCount}
               questionCount={item.questionCount}

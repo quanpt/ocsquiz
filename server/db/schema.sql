@@ -3,17 +3,6 @@ DROP TABLE IF EXISTS "Images";
 CREATE TABLE IF NOT EXISTS "Images" (
 	"id"	INTEGER
 );
-DROP TABLE IF EXISTS "TitleCat";
-CREATE TABLE IF NOT EXISTS "TitleCat" (
-	"fullTitle"	TEXT NOT NULL UNIQUE,
-	"index"	TEXT,
-	"subject"	TEXT NOT NULL,
-	"year"	TEXT,
-	"topic"	TEXT,
-	"subTopic"	TEXT,
-	"subSubTopic"	TEXT,
-	PRIMARY KEY("fullTitle")
-);
 DROP TABLE IF EXISTS "processedTitle";
 CREATE TABLE IF NOT EXISTS "processedTitle" (
 	"fullTitle"	TEXT,
@@ -24,14 +13,6 @@ CREATE TABLE IF NOT EXISTS "processedTitle" (
 	"subTopic"	TEXT,
 	"subSubTopic"	TEXT
 );
-DROP TABLE IF EXISTS "Quizes";
-CREATE TABLE IF NOT EXISTS "Quizes" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"title"	TEXT NOT NULL,
-	"timestamp"	INTEGER NOT NULL,
-	"lastUpdate"	INTEGER,
-	PRIMARY KEY("id" AUTOINCREMENT)
-);
 DROP TABLE IF EXISTS "Answers";
 CREATE TABLE IF NOT EXISTS "Answers" (
 	"id"	INTEGER NOT NULL UNIQUE,
@@ -40,16 +21,21 @@ CREATE TABLE IF NOT EXISTS "Answers" (
 	"userAnswer"	TEXT,
 	"timestamp"	INTEGER,
 	"isReviewed"	INTEGER,
-	FOREIGN KEY("questionId") REFERENCES "Questions"("id") ON UPDATE CASCADE,
 	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("quizId") REFERENCES "Quizes"("id") ON UPDATE CASCADE ON DELETE CASCADE
+	FOREIGN KEY("quizId") REFERENCES "Quizes"("id") ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY("questionId") REFERENCES "Questions"("id") ON UPDATE CASCADE
 );
-DROP TABLE IF EXISTS "QuizImages";
-CREATE TABLE IF NOT EXISTS "QuizImages" (
-	"title"	TEXT NOT NULL,
-	"imageURL"	TEXT NOT NULL,
-	"questionCount"	INTEGER,
-	"questionStart"	INTEGER
+DROP TABLE IF EXISTS "TitleCat";
+CREATE TABLE IF NOT EXISTS "TitleCat" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"title"	TEXT,
+	"index"	TEXT,
+	"subject"	TEXT NOT NULL,
+	"year"	TEXT,
+	"topic"	TEXT,
+	"subTopic"	TEXT,
+	"subSubTopic"	TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
 DROP TABLE IF EXISTS "Questions";
 CREATE TABLE IF NOT EXISTS "Questions" (
@@ -59,18 +45,31 @@ CREATE TABLE IF NOT EXISTS "Questions" (
 	"questionAnswer"	TEXT,
 	"qgroup"	TEXT,
 	"mmfgroup"	TEXT,
-	"title"	TEXT,
 	"preText"	TEXT,
 	"comment"	TEXT,
+	"rid"	INTEGER,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
-DROP INDEX IF EXISTS "idxTitleCat";
-CREATE UNIQUE INDEX IF NOT EXISTS "idxTitleCat" ON "TitleCat" (
-	"fullTitle"	ASC
+DROP TABLE IF EXISTS "Quizes";
+CREATE TABLE IF NOT EXISTS "Quizes" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"titleId"	INTEGER,
+	"timestamp"	INTEGER NOT NULL,
+	"lastUpdate"	INTEGER,
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
-DROP INDEX IF EXISTS "idxQuestionTitle";
-CREATE INDEX IF NOT EXISTS "idxQuestionTitle" ON "Questions" (
-	"title"	ASC
+DROP TABLE IF EXISTS "TitleQuestion";
+CREATE TABLE IF NOT EXISTS "TitleQuestion" (
+	"titleId"	INTEGER NOT NULL,
+	"questionId"	INTEGER NOT NULL,
+	PRIMARY KEY("questionId","titleId")
+);
+DROP TABLE IF EXISTS "QuizImages";
+CREATE TABLE IF NOT EXISTS "QuizImages" (
+	"titleId"	INTEGER NOT NULL,
+	"imageURL"	TEXT NOT NULL,
+	"questionCount"	INTEGER,
+	"questionStart"	INTEGER
 );
 DROP INDEX IF EXISTS "idxQuestionsId";
 CREATE UNIQUE INDEX IF NOT EXISTS "idxQuestionsId" ON "Questions" (
@@ -78,36 +77,49 @@ CREATE UNIQUE INDEX IF NOT EXISTS "idxQuestionsId" ON "Questions" (
 	"mmfid"
 );
 DROP VIEW IF EXISTS "FullAnswers";
-CREATE VIEW "FullAnswers" AS SELECT a.*, q.mmfid, q.question, q.questionAnswer, q.title, q.comment, i.id AS imageId FROM Answers a LEFT JOIN Questions q ON a.questionId = q.id LEFT JOIN Images i ON q.mmfid = i.id;
+CREATE VIEW "FullAnswers" AS 
+SELECT a.*, tq.titleId, q.mmfid, q.question, q.questionAnswer, q.comment, i.id AS imageId 
+FROM Answers a LEFT JOIN Questions q ON a.questionId = q.id
+     JOIN TitleQuestion tq ON q.id = tq.questionId 
+LEFT JOIN Images i ON q.mmfid = i.id;
 DROP VIEW IF EXISTS "FullQuestions";
-CREATE VIEW "FullQuestions" AS SELECT q.*, i.id AS imageId FROM Questions q LEFT JOIN TitleCat t ON q.title = t.fullTitle LEFT JOIN Images i ON q.mmfid = i.id;
+CREATE VIEW "FullQuestions" AS SELECT q.*, tc.title, i.id AS imageId , tc.id AS titleId
+FROM Questions q JOIN TitleQuestion tq ON q.id = tq.questionId 
+JOIN TitleCat tc ON tq.titleId = tc.id
+LEFT JOIN Images i ON q.mmfid = i.id;
 DROP VIEW IF EXISTS "FullQuizes";
-CREATE VIEW "FullQuizes" AS SELECT q.id, q.title, q.timestamp, q.lastUpdate,
+CREATE VIEW "FullQuizes" AS 
+SELECT q.id, tc.title, q.timestamp, q.lastUpdate,
 COUNT(questionId) AS questionCount,
 SUM(CASE WHEN userAnswer IS NULL or UPPER(userAnswer) == 'X' THEN 0 ELSE 1 END) AS answerCount, 
 SUM(CASE WHEN UPPER(userAnswer) == UPPER(questionAnswer) THEN 1 ELSE 0 END) AS correctAnswerCount 
-FROM FullAnswers a LEFT JOIN Quizes q ON a.quizId = q.id GROUP BY q.id
+FROM FullAnswers a LEFT JOIN Quizes q ON a.quizId = q.id 
+     JOIN TitleCat tc ON q.titleId = tc.id 
+GROUP BY q.id
 UNION ALL
 SELECT * FROM (
-SELECT q.id, q.title, q.timestamp, q.lastUpdate,
+SELECT q.id, tc.title, q.timestamp, q.lastUpdate,
 NULL AS questionCount,
 SUM(CASE WHEN userAnswer IS NULL or UPPER(userAnswer) == 'X' THEN 0 ELSE 1 END) AS answerCount,
 NULL AS correctAnswerCount 
 FROM Quizes q LEFT JOIN FullAnswers a ON a.quizId = q.id
+     JOIN TitleCat tc ON q.titleId = tc.id
 GROUP BY q.id)
-WHERE AnswerCount = 0
+WHERE AnswerCount = 0;
 DROP VIEW IF EXISTS "TitleView";
-CREATE VIEW "TitleView" AS SELECT t1.*, t2.questionCount 
+CREATE VIEW "TitleView" AS 
+SELECT t1.*, t2.questionCount 
 FROM 
-	(SELECT tc.fullTitle, tc.year, tc.subject, count(DISTINCT fa.questionId) AS correctAnswerCount 
-	FROM TitleCat tc LEFT JOIN FullAnswers fa
-	ON tc.fullTitle = fa.title AND upper(fa.userAnswer) = upper(fa.questionAnswer)
-	GROUP BY tc.fullTitle) t1 
-		JOIN
-	(SELECT DISTINCT tc.fullTitle, count(q.id) AS questionCount FROM TitleCat tc LEFT JOIN Questions q
-	ON tc.fullTitle = q.title
-	GROUP BY tc.fullTitle) t2 
-		ON t1.fullTitle = t2.fullTitle;
+    (SELECT tc.id, tc.title as fullTitle, tc.year, tc.subject, count(DISTINCT fa.questionId) AS correctAnswerCount 
+    FROM TitleCat tc LEFT JOIN FullAnswers fa
+    ON tc.id = fa.titleId AND upper(fa.userAnswer) = upper(fa.questionAnswer)
+    GROUP BY tc.title) t1 
+        JOIN
+    (SELECT DISTINCT tc.id, tc.title as fullTitle, count(q.id) AS questionCount 
+    FROM TitleCat tc JOIN TitleQuestion tq ON tc.id = tq.titleId
+        LEFT JOIN Questions q ON tq.questionId = q.id
+    GROUP BY tc.title) t2 
+        ON t1.fullTitle = t2.fullTitle;
 DROP VIEW IF EXISTS "ErrorQuestionGroupView";
 CREATE VIEW "ErrorQuestionGroupView" AS SELECT quizId, qgroup, mmfgroup, COUNT(qgroup) AS groupCount
 FROM Answers a LEFT JOIN Questions q ON a.questionId = q.id

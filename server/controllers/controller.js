@@ -1,23 +1,6 @@
 // Import database
 const knex = require('./../db')
 
-// Retrieve all questions
-exports.getQuestionsAll = async (req, res) => {
-  // Get all Questions from database
-  knex
-    .select('*') // select all records
-    .from('Questions') // from 'Questions' table
-    .limit(10)
-    .then(questions => {
-      // Send questions extracted from database in response
-      res.json(questions)
-    })
-    .catch(err => {
-      // Send a error message in response
-      res.json({ message: `There was an error retrieving data: ${err}` })
-    })
-}
-
 // Retrieve all years
 exports.getYears = async (req, res) => {
   knex
@@ -91,7 +74,7 @@ exports.getQuizImages = async (req, res) => {
   knex
     .select('*')
     .from('QuizImages')
-    .where('title', decodeURIComponent(req.body.title))
+    .where('titleId', decodeURIComponent(req.body.title))
     .then(items => {
       res.json(items)
     })
@@ -125,15 +108,15 @@ exports.getQuestionCategories = async(req, res) => {
 exports.createQuiz = async (req, res) => {
 
   const dictQuestionLimit = {} // { 'English': 25 }
-  const title = decodeURIComponent(req.body.title)
-  const lowerTitle = decodeURIComponent(title).toLowerCase()
+  const titleId = decodeURIComponent(req.body.title)
+  const lowerTitle = decodeURIComponent(titleId).toLowerCase()
   const isFull = lowerTitle.indexOf('cloze') >= 0 || lowerTitle.indexOf('english') >= 0 || req.body.isFull
   const questionLimit = isFull ? 100 : (req.body.subject in dictQuestionLimit ? dictQuestionLimit[req.body.subject] : 10)
   const currTimestamp = new Date().getTime()
 
   const ids = await knex
     .insert({
-      'title': title,
+      'titleId': titleId,
       'timestamp': currTimestamp,
       'lastUpdate': currTimestamp
     }, 'id')
@@ -142,19 +125,19 @@ exports.createQuiz = async (req, res) => {
 
   if (req.body.isRedoMode) {
     const subquerySubjectTitle = knex("TitleView")
-      .select("fullTitle")
+      .select("id")
       .where({year: req.body.year, subject: req.body.subject})
       .andWhere('correctAnswerCount' ,'>', 0)
       .andWhere('correctAnswerCount', '<', 'questionCount')
     
     const subqueryPassedQuestionId = knex("FullAnswers")
       .select("questionId")
-      .where('title', 'in', subquerySubjectTitle)
+      .where('titleId', 'in', subquerySubjectTitle)
       .andWhereRaw('upper(userAnswer) = upper(questionAnswer)')
 
     knex("Questions")
       .select('*')
-      .where('title', 'in', subquerySubjectTitle)
+      .where('titleId', 'in', subquerySubjectTitle)
       .andWhere('id', 'not in', subqueryPassedQuestionId)
       .limit(questionLimit)
       .then(questions => {
@@ -167,7 +150,7 @@ exports.createQuiz = async (req, res) => {
     const imageURLs = await knex
       .select('*')
       .from('QuizImages')
-      .where('title', title)
+      .where('titleId', titleId)
       .catch(err => {
         console.error(err);
         res.json({ message: `There was an error retrieving data: ${err}` })
@@ -176,7 +159,7 @@ exports.createQuiz = async (req, res) => {
     if (isFull) {
       knex.select('*')
         .from('FullQuestions')
-        .where('title', title)
+        .where('titleId', titleId)
         .limit(questionLimit)
         .then(questions => {
           res.json({ quizId: quizId, questions: questions, imageURLs: imageURLs })
@@ -188,13 +171,13 @@ exports.createQuiz = async (req, res) => {
 
       const subqueryTriedSuccess = knex("FullAnswers")
         .select("questionId")
-        .where('title', '=', title)
+        .where('titleId', '=', titleId)
         .andWhereRaw('upper(userAnswer) = upper(questionAnswer)')
 
       const questions = await knex
         .select('*')
         .from('FullQuestions')
-        .where('title', title)
+        .where('titleId', titleId)
         .where('id', 'not in', subqueryTriedSuccess)
         .limit(questionLimit)
         .catch(err => {
@@ -210,7 +193,7 @@ exports.createQuiz = async (req, res) => {
           .select('q.*')
           .from({ q: 'FullQuestions' })
           .join({ a: 'Answers' }, { 'q.id': 'a.questionId' })
-          .where('q.title', '=', title)
+          .where('q.titleId', '=', titleId)
           .andWhereRaw('upper(a.userAnswer) = upper(q.questionAnswer)')
           //.orderByRaw('RANDOM()')
           .limit(questionLimit - questions.length)
@@ -289,9 +272,9 @@ exports.getQuizes = async (req, res) => {
     
     const quiz = await knex
       .select('*')
-      .from('Quizes')
-      .join('TitleCat', { title: 'fullTitle' })
-      .where('id', '=', req.params.id)
+      .from({q: 'Quizes'})
+      .join({t: 'TitleCat'}, { 'q.titleId': 't.id' })
+      .where('q.id', '=', req.params.id)
       .first()
       .catch(err => {
         console.error(err);
@@ -303,7 +286,7 @@ exports.getQuizes = async (req, res) => {
     const imageURLs = await knex
       .select('*')
       .from('QuizImages')
-      .where('title', quiz.title)
+      .where('titleId', quiz.title)
       .catch(err => {
         console.error(err);
         res.json({ message: `There was an error retrieving data: ${err}` })
