@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS "Answers" (
 	"timestamp"	INTEGER,
 	"isReviewed"	INTEGER,
 	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("quizId") REFERENCES "Quizes"("id") ON UPDATE CASCADE ON DELETE CASCADE,
-	FOREIGN KEY("questionId") REFERENCES "Questions"("id") ON UPDATE CASCADE
+	FOREIGN KEY("questionId") REFERENCES "Questions"("id") ON UPDATE CASCADE,
+	FOREIGN KEY("quizId") REFERENCES "Quizes"("id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS "TitleCat";
 CREATE TABLE IF NOT EXISTS "TitleCat" (
@@ -70,6 +70,14 @@ CREATE TABLE IF NOT EXISTS "QuizImages" (
 	"imageURL"	TEXT NOT NULL,
 	"questionCount"	INTEGER,
 	"questionStart"	INTEGER
+);
+DROP INDEX IF EXISTS "idxTitleCat";
+CREATE UNIQUE INDEX IF NOT EXISTS "idxTitleCat" ON "TitleCat" (
+	"title"	ASC
+);
+DROP INDEX IF EXISTS "idxQuestionTitle";
+CREATE INDEX IF NOT EXISTS "idxQuestionTitle" ON "Questions" (
+	"titleId"	ASC
 );
 DROP INDEX IF EXISTS "idxQuestionsId";
 CREATE UNIQUE INDEX IF NOT EXISTS "idxQuestionsId" ON "Questions" (
