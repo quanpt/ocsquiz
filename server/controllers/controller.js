@@ -59,7 +59,7 @@ exports.getQuestions = async (req, res) => {
     .select('*')
     .from('FullQuestions')
     .where('titleId', decodeURIComponent(req.body.title))
-    //.orderByRaw('RANDOM()')
+    .orderByRaw('displayOrder')
     //.limit(10)
     .then(items => {
       res.json(items)

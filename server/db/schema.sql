@@ -37,6 +37,22 @@ CREATE TABLE IF NOT EXISTS "TitleCat" (
 	"subSubTopic"	TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
+DROP TABLE IF EXISTS "Quizes";
+CREATE TABLE IF NOT EXISTS "Quizes" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"titleId"	INTEGER,
+	"timestamp"	INTEGER NOT NULL,
+	"lastUpdate"	INTEGER,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+DROP TABLE IF EXISTS "QuizImages";
+CREATE TABLE IF NOT EXISTS "QuizImages" (
+	"titleId"	INTEGER NOT NULL,
+	"imageURL"	TEXT NOT NULL,
+	"questionCount"	INTEGER,
+	"questionStart"	INTEGER,
+	"position"	INTEGER DEFAULT 0
+);
 DROP TABLE IF EXISTS "Questions";
 CREATE TABLE IF NOT EXISTS "Questions" (
 	"id"	INTEGER NOT NULL UNIQUE,
@@ -48,28 +64,14 @@ CREATE TABLE IF NOT EXISTS "Questions" (
 	"preText"	TEXT,
 	"comment"	TEXT,
 	"rid"	INTEGER,
-	PRIMARY KEY("id" AUTOINCREMENT)
-);
-DROP TABLE IF EXISTS "Quizes";
-CREATE TABLE IF NOT EXISTS "Quizes" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"titleId"	INTEGER,
-	"timestamp"	INTEGER NOT NULL,
-	"lastUpdate"	INTEGER,
+	"displayOrder"	INTEGER,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 DROP TABLE IF EXISTS "TitleQuestion";
 CREATE TABLE IF NOT EXISTS "TitleQuestion" (
 	"titleId"	INTEGER NOT NULL,
 	"questionId"	INTEGER NOT NULL,
-	PRIMARY KEY("questionId","titleId")
-);
-DROP TABLE IF EXISTS "QuizImages";
-CREATE TABLE IF NOT EXISTS "QuizImages" (
-	"titleId"	INTEGER NOT NULL,
-	"imageURL"	TEXT NOT NULL,
-	"questionCount"	INTEGER,
-	"questionStart"	INTEGER
+	PRIMARY KEY("titleId","questionId")
 );
 DROP INDEX IF EXISTS "idxTitleCat";
 CREATE UNIQUE INDEX IF NOT EXISTS "idxTitleCat" ON "TitleCat" (
@@ -84,12 +86,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS "idxQuestionsId" ON "Questions" (
 	"id",
 	"mmfid"
 );
-DROP VIEW IF EXISTS "FullAnswers";
-CREATE VIEW "FullAnswers" AS 
-SELECT a.*, tq.titleId, q.mmfid, q.question, q.questionAnswer, q.comment, i.id AS imageId 
-FROM Answers a LEFT JOIN Questions q ON a.questionId = q.id
-     JOIN TitleQuestion tq ON q.id = tq.questionId 
-LEFT JOIN Images i ON q.mmfid = i.id;
 DROP VIEW IF EXISTS "FullQuestions";
 CREATE VIEW "FullQuestions" AS SELECT q.*, tc.title, i.id AS imageId , tc.id AS titleId
 FROM Questions q JOIN TitleQuestion tq ON q.id = tq.questionId 
@@ -133,4 +129,10 @@ CREATE VIEW "ErrorQuestionGroupView" AS SELECT quizId, qgroup, mmfgroup, COUNT(q
 FROM Answers a LEFT JOIN Questions q ON a.questionId = q.id
 WHERE UPPER(a.userAnswer) <> UPPER(q.questionAnswer)
 GROUP BY quizId, qgroup, mmfgroup;
+DROP VIEW IF EXISTS "FullAnswers";
+CREATE VIEW "FullAnswers" AS 
+SELECT a.*, qz.titleId, q.mmfid, q.question, q.questionAnswer, q.comment, i.id AS imageId 
+FROM Answers a LEFT JOIN Questions q ON a.questionId = q.id
+     JOIN Quizes qz ON qz.id = a.quizId
+LEFT JOIN Images i ON q.mmfid = i.id;
 COMMIT;

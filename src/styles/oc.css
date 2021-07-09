@@ -72,9 +72,10 @@
 
 .fulltextImage {
     max-width: 650px;
-    max-height: 1090px;
+    max-height: 1030px;
     width: auto;
     height: auto;
+    page-break-inside: avoid;
 }
 
 .BoxClozeSentences {
