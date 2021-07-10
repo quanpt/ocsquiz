@@ -316,9 +316,9 @@ exports.getQuizes = async (req, res) => {
       .select('*')
       .from('FullQuizes')
       .whereRaw('lastUpdate > timestamp + 30000')
-      .orWhere('answerCount', '>', 0)
+      .andWhereRaw("datetime(timestamp / 1000, 'unixepoch') > date('now', '-21 days')")
+      .andWhere('answerCount', '>', 0)
       .orderBy('id', 'desc')
-      .limit(25)
       .then(items => {
         res.json(items)
       })
