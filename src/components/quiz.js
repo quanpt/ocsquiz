@@ -75,7 +75,7 @@ class Solution extends React.Component {
         <button className="smallButon" onClick={this.onButtonClickHandler}>{this.state.showMessage ? 'Hide' : 'Show'}</button>&nbsp;
         {this.state.user === 'admin' && <button type="submit" className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
       </span>
-      {this.state.showMessage && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: this.state.comment }} />}
+      {this.state.showMessage && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: FormatQuestionText(this.state.comment) }} />}
       </>;
 
   }
@@ -91,7 +91,7 @@ function CorrectAnswer(props) {
     <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : (isSkipped ? 'Skipped' : 'Incorrect')}</span>
     <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
     {(!question.isAnsweredCorrect && !isSkipped) && <Solution {...question} />}
-    {question.isAnsweredCorrect && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: question.comment }} />}
+    {question.isAnsweredCorrect && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: FormatQuestionText(question.comment) }} />}
   </div>
 }
 
@@ -166,7 +166,8 @@ export class Quiz extends React.Component {
       subject: props.subject,
       title: decodeURIComponent(props.title),
       isRedoMode: props.questionState === 2,
-      isViewMode: props.isViewMode
+      isViewMode: props.isViewMode,
+      blankCount: -1
     };
     this.state = state;
   }
@@ -246,6 +247,11 @@ export class Quiz extends React.Component {
     clearTimeout(this.intervalID);
   }
 
+  onButtonSkipClickHandler = () => {
+    let state = this.state;
+    console.log(state);
+  }
+
   renderQuestions() {
     let state = this.state
     return (
@@ -264,7 +270,10 @@ export class Quiz extends React.Component {
               answerOnFocus={() => this.answerOnFocus(question, true)} />
           })}
         </div>
-        {this.state.isSubmitted ? null : <div className="DivSubmit"><button type="submit" className="formSubmit">Submit</button></div>}
+        {this.state.isSubmitted ? null : <>
+          {/* <div className="DivSubmit"><button type="button" className="formSubmit" onClick={this.onButtonSkipClickHandler}>Skip {this.state.blankCount}</button></div>&nbsp; */}
+          <div className="DivSubmit"><button type="submit" className="formSubmit">Submit</button></div>
+        </>}
       </>
     );
   }
