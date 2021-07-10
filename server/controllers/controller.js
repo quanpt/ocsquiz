@@ -59,7 +59,7 @@ exports.getQuestions = async (req, res) => {
     .select('*')
     .from('FullQuestions')
     .where('titleId', decodeURIComponent(req.body.title))
-    .orderByRaw('displayOrder')
+    .orderBy('displayOrder')
     //.limit(10)
     .then(items => {
       res.json(items)
@@ -160,6 +160,7 @@ exports.createQuiz = async (req, res) => {
       knex.select('*')
         .from('FullQuestions')
         .where('titleId', titleId)
+        .orderBy('displayOrder')
         .limit(questionLimit)
         .then(questions => {
           res.json({ quizId: quizId, questions: questions, imageURLs: imageURLs })
