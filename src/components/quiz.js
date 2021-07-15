@@ -86,7 +86,7 @@ function CorrectAnswer(props) {
   let secondSpent = Math.floor(question.timeSpent / 1000)
   let timeClassName = secondSpent <= 60 ? 'goodTime' : (secondSpent <= 65 ? 'okTime' : (secondSpent <= 75 ? 'warningTime' : 'badTime'))
   let className = "answer " + (question.isAnsweredCorrect ? "correctAnswer" : "incorrectAnswer")
-  let isSkipped = question.userAnswer.toUpperCase() === 'X'
+  let isSkipped = !(question.userAnswer) || question.userAnswer.toUpperCase() === 'X'
   return <div className="QuestionText">
     <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : (isSkipped ? 'Skipped' : 'Incorrect')}</span>
     <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
@@ -123,8 +123,9 @@ function Question(props) {
         <Field id={props.question.id} name={props.question.id}
           placeholder="A, B, C, D or other text"
           disabled={props.isSubmitted} autoComplete="off"
-          onKeyUp={props.answerOnKeyUp}
-          onFocus={props.answerOnFocus} />
+          onChange={props.answerOnChange}
+          onFocus={props.answerOnFocus}
+          value={q.currentAnswer}/>
         <br />
         {answer}
       </div>
@@ -181,6 +182,7 @@ export class Quiz extends React.Component {
           let countAnswer = 0
           let newQuestions = result.questions.slice();
           let prevTimestamp = result.timestamp;
+
           for (let key in newQuestions) {
             let question = newQuestions[key];
             question.answerId = question.id
@@ -199,7 +201,8 @@ export class Quiz extends React.Component {
             isSubmitted: true,
             questions: newQuestions,
             countCorrect: countCorrect,
-            countAnswer: countAnswer
+            countAnswer: countAnswer,
+            blankCount: newQuestions.length,
           });
         },
           (error) => {
@@ -223,13 +226,19 @@ export class Quiz extends React.Component {
               });
             } else {
               let totalTime = (this.state.subject in timeDict.OC ? timeDict.OC[this.state.subject] : 60) * result.questions.length
+              var newQuestions = result.questions.slice();
+              for (let key in newQuestions) {
+                let question = newQuestions[key];
+                question.currentAnswer = '';
+              }
               this.setState({
                 isLoaded: true,
-                questions: result.questions,
+                questions: newQuestions,
                 quizId: result.quizId,
                 imageURLs: result.imageURLs,
                 minutes: Math.floor(totalTime / 60),
                 seconds: totalTime % 60,
+                blankCount: result.questions.length,
               });
               lastAnsweredTime = new Date().getTime()
               this.pingQuiz()
@@ -249,7 +258,12 @@ export class Quiz extends React.Component {
 
   onButtonSkipClickHandler = () => {
     let state = this.state;
-    console.log(state);
+    var newQuestions = state.questions.slice();
+    for (let key in newQuestions) {
+      let question = newQuestions[key];
+      question.currentAnswer = question.currentAnswer === '' ? 'x' : question.currentAnswer;
+    }
+    this.setState({questions: newQuestions})
   }
 
   renderQuestions() {
@@ -266,12 +280,12 @@ export class Quiz extends React.Component {
               question={question}
               isSubmitted={state.isSubmitted}
               position={index + 1}
-              answerOnKeyUp={() => this.answerOnKeyUp(question)}
+              answerOnChange={(e) => this.answerOnChange(question, e)}
               answerOnFocus={() => this.answerOnFocus(question, true)} />
           })}
         </div>
         {this.state.isSubmitted ? null : <>
-          {/* <div className="DivSubmit"><button type="button" className="formSubmit" onClick={this.onButtonSkipClickHandler}>Skip {this.state.blankCount}</button></div>&nbsp; */}
+          <div className="DivSubmit"><button type="button" className="formSubmit" onClick={this.onButtonSkipClickHandler}>Skip {this.state.blankCount}</button></div>&nbsp;
           <div className="DivSubmit"><button type="submit" className="formSubmit">Submit</button></div>
         </>}
       </>
@@ -289,15 +303,17 @@ export class Quiz extends React.Component {
     this.intervalID = setTimeout(this.pingQuiz.bind(this), 10000);
   }
 
-  answerOnKeyUp(question) {
+  answerOnChange(question, event) {
     // update but no re-render
     let newQuestions = this.state.questions.slice();
-    let currQuestion = newQuestions.filter((element, index, array) => { return element === question })[0];
+    let currQuestion = newQuestions.filter((element) => { return element === question })[0];
     currQuestion.timestamp = Date.now();
     currQuestion.timeSpent = currQuestion.timestamp - lastAnsweredTime;
+    currQuestion.currentAnswer = event.target.value;
     lastAnsweredTime = currQuestion.timestamp;
     this.setState({
-      questions: newQuestions
+      questions: newQuestions,
+      blankCount: newQuestions.filter((element) => { return element.currentAnswer === ''}).length,
     });
   }
 
@@ -331,6 +347,7 @@ export class Quiz extends React.Component {
           <Formik
             initialValues={dict}
             onSubmit={async (answers) => {
+              console.log(this.state)
 
               if (this.state.isSubmitted || this.state.isViewMode)
                 return;
@@ -342,8 +359,8 @@ export class Quiz extends React.Component {
 
               for (let key in newQuestions) {
                 let question = newQuestions[key];
-                if (answers[question.id] !== '') {
-                  question.userAnswer = answers[question.id];
+                if (question.currentAnswer !== '') {
+                  question.userAnswer = question.currentAnswer;
                   question.isAnsweredCorrect = question.userAnswer.toUpperCase() === question.questionAnswer.toUpperCase();
                   countCorrect += question.isAnsweredCorrect ? 1 : 0;
                   countAnswer++
@@ -351,8 +368,8 @@ export class Quiz extends React.Component {
                 }
               }
 
-              if (countAnswer < newQuestions.length * 3 / 4) {
-                alert('Too many empty answers, please keep trying!');
+              if (countAnswer < (newQuestions.length - countSkip) * 3 / 4) {
+                alert('Too many empty answers, please keep trying!' + countSkip);
                 return;
               }
 

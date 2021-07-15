@@ -315,7 +315,7 @@ exports.getQuizes = async (req, res) => {
     knex
       .select('*')
       .from('FullQuizes')
-      .whereRaw('lastUpdate > timestamp + 30000')
+      .whereRaw('lastUpdate > timestamp + 10000')
       .andWhereRaw("datetime(timestamp / 1000, 'unixepoch') > date('now', '-21 days')")
       .andWhere('answerCount', '>', 0)
       .orderBy('id', 'desc')
