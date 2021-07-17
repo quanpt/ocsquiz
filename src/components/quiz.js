@@ -99,8 +99,8 @@ function OnlineQuestion(props) {
 
   let q = props.question
   let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
-  if (html.match(/^\s*Refer to the (poem|article):* (<br\/> <img|<a) /))
-    html = html.replace(/ class="questionImage"/g, '')
+  if (html.match(/^\s*Refer to (the )*(poem|article)s*:* (<br\/> <img|<a) /))
+    html = html.replace(/ class="questionImage"/g, '').replace()
   // console.log(html);
 
   return <>
@@ -140,10 +140,9 @@ function ImageURLs(props) {
       {imageURLs.length > 0 && <>
         <span className="IntroText">Images the questions refering to:</span>
         {imageURLs.map((item, index) => {
-          return <>
-            <span className="QuestionImageLink">
+          return <span className="QuestionImageLink" key={'QuestionImageLink' + index}>
               <a target='_blank' rel="noreferrer" href={'/assets/articles/' + item.imageURL}>{item.imageURL}</a> - {item.questionCount} questions
-                </span></>
+            </span>
         })}
       </>}
     </div>
@@ -263,7 +262,7 @@ export class Quiz extends React.Component {
       let question = newQuestions[key];
       question.currentAnswer = question.currentAnswer === '' ? 'x' : question.currentAnswer;
     }
-    this.setState({questions: newQuestions})
+    this.setState({questions: newQuestions, blankCount: 0})
   }
 
   renderQuestions() {
