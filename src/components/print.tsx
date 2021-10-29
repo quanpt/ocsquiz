@@ -58,7 +58,7 @@ function PrintQuestionSets(props: { questions: any }) {
 
 let reImage1 = new RegExp(/\$image1\$/g);
 
-export function FormatQuestionText(text: string, mmfid: number, imageId: number) {
+export function FormatQuestionText(text: string, mmfid: number, imageId: number, allowE: boolean = true) {
     var rawHtml = text ? text : ''
 
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
@@ -70,23 +70,33 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number)
         .replace(/<font color="#dddddd"[^>]+>[^>]+<\/font>/g, '')
         .replace(/the one which fits location 1/g, 'the one which fits above locations')
         .replace(/ *@@@BR@@@ *A\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s<br\/>/g, ' <br/><br/> <span class="AnswerOption">A </span><span class="AnswerText"> $1 </span><br/>')
-        .replace(/@@@BR@@@ ([A-G])\. (((?!(<br\/>|@@@BR@@@)).)*)@@@BR@@@/g, '<br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
-        .replace(/ *<br\/>\s*([A-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
-        .replace(/ *<br\/>\s*([B-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
-        .replace(/ *<br\/>\s*([C-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
-        .replace(/ *<br\/>\s*([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
-        .replace(/ *<br\/>\s*([E-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
-        .replace(/ *<br\/>\s*([D-G])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*@@@BR@@@/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/@@@BR@@@ ([ABCDFG])\. (((?!(<br\/>|@@@BR@@@)).)*)@@@BR@@@/g, '<br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([ABCDFG])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([BCDFG])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([CDFG])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([DFG])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([FG])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+        .replace(/ *<br\/>\s*([DFG])\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*@@@BR@@@/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+    if (allowE) {
+        rawHtml = rawHtml
+            .replace(/ *<br\/>\s*(E)\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, ' <br/> <span class="AnswerOption">$1 </span><span class="AnswerText"> $2 </span><br/>')
+    } else {
+        rawHtml = rawHtml
+            .replace(/ *<br\/>\s*(E)\.{0,1}\s(((?!(<br\/>|@@@BR@@@)).)*)\s*<br\/>/g, '')
+    }
+    rawHtml = rawHtml
         .replace('BoxClozeSentences">A. ', 'BoxClozeSentences"><span class="AnswerOption">A </span>')
         .replace(/\ssrc="/g, '  class="questionImage" src="/assets/')
         .replace(reImage1, '<img src="/assets/figures/' + mmfid + '_1.jpg" class="questionImage" />')
         .replace('<img src="figures/', '<img src="/assets/figures/')
+        .replace('<img src="/oztests/', '<img src="/assets/oztests/')
         .replace('<a href="show_image.html?name=', '<a href="/assets/')
         .replace('target="ReadingText"', 'target="_blank" tabindex=-1')
         .replace('style="color: blue"', '')
         .replace('</p><br/>', '</p>')
         .replace(/^ *<p>/, '')
         .replace(/<\/p>\s*<br\/>\s*/, '</p>')
+        .replace(/<\/p> *<\/span> *<br\/>/g, '</p></span>')
         .replace(/\x02/g, '')
 
     if (rawHtml.indexOf('Some sentences have been taken out of the reading text') >= 0)
@@ -113,17 +123,16 @@ export function PrintQuestion(props: { question: any, n: number }) {
     let q = props.question
     let html = q.html.replace(/<br\/> This set has \d+ questions. <b>.*answer all questions. <\/b> <br\/> *<br\/>/, '')
     if (q.preText) {
-        if (["101", "2"].includes(q.mmfgroup)) {
+        if (["101", "2", "83"].includes(q.mmfgroup)) {
             q.preText = '<i>Read the text below then answer the questions.</i><p/>'
                 + FormatQuestionText(q.preText, 0, 0)
                 + '<p/>For questions below, choose the answer (<b>A</b>, <b>B</b>, <b>C</b> or <b>D</b>) which you think best answers the question.'
-        } else
-            if (["110", 'e'].includes(q.mmfgroup)) {
-                q.preText = FormatQuestionText(q.preText, 0, 0)
-            } else
-                if (["109"].includes(q.mmfgroup)) {
-                    q.preText = FormatQuestionText(q.preText, 0, 0)
-                }
+        } else if (["110", 'e'].includes(q.mmfgroup)) {
+            q.preText = FormatQuestionText(q.preText, 0, 0)
+        } else if (["109"].includes(q.mmfgroup)) {
+            q.preText = FormatQuestionText(q.preText, 0, 0)
+        } else if (q.preText.indexOf('<img src="') > 0)
+            q.preText = FormatQuestionText(q.preText, 0, 0)
     }
 
     return <>
@@ -167,7 +176,7 @@ export function PrintableQuiz(props: QuizI) {
     // Prepare states
     // const [year, setYear] = useState(props.year)
     // const [subject, setSubject] = useState(props.subject)
-    const [title] = useState(props.title)
+    const [titleId] = useState(props.title)
     const [questions, setQuestions] = useState([])
     const [printType] = useState(props.print)
     // const [startQuestion, setStartQuestion] = useState([])
@@ -178,19 +187,21 @@ export function PrintableQuiz(props: QuizI) {
         fetch("/data/quiz/images/get", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify({ title: title })
+            body: JSON.stringify({ title: titleId })
         })
             .then(res => res.json())
             .then((images) => {
                 fetch("/data/questions/get", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                    body: JSON.stringify({ title: title })
+                    body: JSON.stringify({ title: titleId })
                 })
                     .then(res => res.json())
                     .then(
                         (questions) => {
-                            document.title = questions[0]['title'].replace(' result', '')
+                            var qTitle = questions[0]['title'].replace(' result', '')
+                            var isThinkingSkill = qTitle.match(/OC Thinking Skills Practice Test \d+ | OzTests/)
+                            document.title = qTitle
                             var newQs = questions.map((q: any, i: number) => { q.pos = i; return q })
                             images.reduce((agg: number, img: any) => {
                                 var index = img.position === 1 ? agg + img.questionCount - 1 : agg
@@ -203,7 +214,7 @@ export function PrintableQuiz(props: QuizI) {
                             var lastArticle = ""
                             for (var i = 0; i < newQs.length; i++) {
                                 var q = newQs[i]
-                                let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
+                                let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0, !isThinkingSkill)
 
                                 if (html.indexOf('Which of the above sentences will go into location 1?') >= 0)
                                     html = html.replace('Which of the above sentences will go into location 1?', '')
@@ -241,14 +252,14 @@ export function PrintableQuiz(props: QuizI) {
                         }
                     )
             })
-    }, [title])
+    }, [titleId])
 
     useScript('/html/includeHTML.js');
 
     return (
         <>
             {printType === 'full' && <>
-                <PrintCoverPage title={title} />
+                <PrintCoverPage title={titleId} />
                 <PrintBlankPage />
             </>}
             <div className="PageCenter">

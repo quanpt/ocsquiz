@@ -316,7 +316,7 @@ exports.getQuizes = async (req, res) => {
       .select('*')
       .from('FullQuizes')
       .whereRaw('lastUpdate > timestamp + 10000')
-      .andWhereRaw("datetime(timestamp / 1000, 'unixepoch') > date('now', '-21 days')")
+      .andWhereRaw("datetime(timestamp / 1000, 'unixepoch') > date('now', '-90 days')")
       .andWhere('answerCount', '>', 0)
       .orderBy('id', 'desc')
       .then(items => {
