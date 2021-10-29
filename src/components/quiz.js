@@ -21,6 +21,7 @@ let timeDict = {
     Science: 60,
     'Maths Olympiad': 60,
     'Non-verbal Reasoning': 60,
+    'Full Hour': 72,
     Other: 60
   }
 }
@@ -396,10 +397,10 @@ export class Quiz extends React.Component {
                 return;
               }
 
-              if (countCorrect * 4 < (countAnswer - countSkip)) {
-                alert('Less than one forth answers are correct, please think and change your answers!');
-                return;
-              }
+              // if (countCorrect * 4 < (countAnswer - countSkip)) {
+              //   alert('Less than one forth answers are correct, please think and change your answers!');
+              //   return;
+              // }
 
               clearTimeout(this.intervalID);
 
