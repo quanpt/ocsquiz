@@ -89,7 +89,7 @@ function CorrectAnswer(props) {
   let isSkipped = !(question.userAnswer) || question.userAnswer.toUpperCase() === 'X'
   return <div className="QuestionText">
     <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : (isSkipped ? 'Skipped' : 'Incorrect')}</span>
-    <span>Time spent: <span className={timeClassName}>{secondSpent}</span> </span>
+    <span>Time spent: <span className={timeClassName}>{secondSpent}</span> ({question.id})</span>
     {(!question.isAnsweredCorrect && !isSkipped) && <Solution {...question} />}
     {question.isAnsweredCorrect && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: FormatQuestionText(question.comment) }} />}
   </div>
@@ -99,6 +99,7 @@ function OnlineQuestion(props) {
 
   let q = props.question
   let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
+  html = html.replace(/<br\/> This set has \d+ questions. <b>.*answer all questions. <\/b> <br\/> *<br\/>/, '')
   if (html.match(/^\s*Refer to (the )*(poem|article)s*:* (<br\/> <img|<a) /))
     html = html.replace(/ class="questionImage"/g, '').replace()
   // console.log(html);
@@ -116,8 +117,25 @@ function Question(props) {
   var answer = props.isSubmitted ? <CorrectAnswer question={q} /> : <div />
   q.pos = props.position - 1
 
+  if (q.preText && ! q.preTextFormated) {
+      if (["101", "2", "83"].includes(q.mmfgroup)) {
+          q.preText = '<i>Read the text below then answer the questions.</i><p/>'
+              + FormatQuestionText(q.preText, 0, 0)
+              + '<p/>For questions below, choose the answer (<b>A</b>, <b>B</b>, <b>C</b> or <b>D</b>) which you think best answers the question.'
+      } else if (["110", 'e'].includes(q.mmfgroup)) {
+          q.preText = FormatQuestionText(q.preText, 0, 0)
+      } else if (["109"].includes(q.mmfgroup)) {
+          q.preText = FormatQuestionText(q.preText, 0, 0)
+      } else if (q.preText.indexOf('<img src="') > 0)
+          q.preText = FormatQuestionText(q.preText, 0, 0)
+    q.preTextFormated = true
+  }
+
   return (
     <div id={key} className={"OneQuestion " + (q.isFocus ? 'focusDiv' : 'blurDiv')} onClick={props.answerOnFocus}>
+      {q.preText &&
+            <div className="QuestionPreText" key={"pagex_" + props.n} dangerouslySetInnerHTML={{ __html: q.preText }}>
+            </div>}
       <OnlineQuestion question={q} />
       <div className="AnswerLine"><label htmlFor={props.question.id}>Answer </label>
         <Field id={props.question.id} name={props.question.id}
@@ -229,7 +247,13 @@ export class Quiz extends React.Component {
               for (let key in newQuestions) {
                 let question = newQuestions[key];
                 question.currentAnswer = '';
+                if (["101", "2", "110"].includes(question.mmfgroup)) {
+                  question.displayOrder -= 100000
+                  question.preTextFormated = false
+                }
               }
+              newQuestions.sort((q1, q2) => q1.displayOrder - q2.displayOrder)
+              console.log(newQuestions)
               this.setState({
                 isLoaded: true,
                 questions: newQuestions,
