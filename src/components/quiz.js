@@ -243,13 +243,13 @@ export class Quiz extends React.Component {
                 error: { message: "No questions for review, please go back" },
               });
             } else {
-              let totalTime = (this.state.subject in timeDict.OC ? timeDict.OC[this.state.subject] : 60) * result.questions.length
+              let totalTime = (this.state.subject in timeDict.OC ? timeDict.OC[this.state.subject] : 72) * result.questions.length
               var newQuestions = result.questions.slice();
               for (let key in newQuestions) {
                 let question = newQuestions[key];
                 question.currentAnswer = '';
-                if (["101", "2", "110"].includes(question.mmfgroup)) {
-                  question.displayOrder -= 100000
+                if (["101", "2", "110", "e", "nswoce"].includes(question.mmfgroup)) {
+                  question.displayOrder -= 900000
                   question.preTextFormated = false
                 }
               }

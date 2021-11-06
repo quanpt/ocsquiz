@@ -50,9 +50,10 @@ export class Timer extends Component {
             <span>
                 { minutes === 0 && seconds === 0
                     ? <span className='warningTime'>Enjoy the extra time!</span>
-                    : <span className='goodTime'>Remained Time: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}</span>
+                    : <span className='goodTime'>Remained Time: {Math.floor(minutes / 60)}:{minutes < 10 ? `0${minutes}` : minutes}</span>
                 }
             </span>
         )
+        // {seconds < 10 ? `0${seconds}` : seconds}
     }
 }
