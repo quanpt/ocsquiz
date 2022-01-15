@@ -120,7 +120,7 @@ const ResultList = (props: ResultListUI) => {
             )
         ) : (
           <tr className="table-row">
-            <td className="table-item" style={{ textAlign: 'center' }} colSpan={6}>There are no result to show. Create one!</td>
+            <td className="table-item" style={{ textAlign: 'center' }} colSpan={8}>There are no result to show. Create one!</td>
           </tr>
         )
         }
@@ -135,6 +135,8 @@ export function ResultListPage() {
   const [loading, setLoading] = useState(true)
   const [results, setResults] = useState<Array<any>>([])
   const [filter, setFilter] = useState('')
+  const [lastDate, setLastDate] = useState((new Date((new Date()).getTime() - ((new Date().getTimezoneOffset())*60*1000))).toISOString().split('T')[0])
+  
 
   useEffect(() => {
     document.title = "Quiz - Results"
@@ -143,6 +145,15 @@ export function ResultListPage() {
 
   function onFilterChangeHandler(e: any) {
     setFilter(e.target.value)
+  }
+
+  function onLastDateChangeHandler(e: any) {
+    setLastDate(e.target.value)
+  }
+
+  function onLastDatePressHandler(e: any) {
+    if (e.key == 'Enter')
+      fetchResults()
   }
 
   function onQuizSelectionChangeHandler(e: any) {
@@ -165,7 +176,7 @@ export function ResultListPage() {
 
   // Fetch all subject of given year
   const fetchResults = async () => {
-    fetch("/data/quizes", {
+    fetch("/data/quizes/date/" + encodeURIComponent(lastDate), {
       method: 'GET',
       headers: { 'Content-Type': 'application/json; charset=UTF-8' },
     })
@@ -183,7 +194,9 @@ export function ResultListPage() {
   return (
     <div className="quiz-list-wrapper">
       <QuestionTypeList quizList={results} />
-      <input placeholder='filter value' value={filter} type="text" onChange={onFilterChangeHandler} />
+      <div style={{textAlign: 'right'}}>
+      Filter: <input placeholder='filter value' value={filter} type="text" onChange={onFilterChangeHandler} /><br/>
+      Date: <input placeholder='date value' value={lastDate} type="text" onChange={onLastDateChangeHandler} onKeyPress={onLastDatePressHandler}/></div>
       <ResultList loading={loading} results={results} filter={filter} 
         onQuizSelectionChangeHandler={onQuizSelectionChangeHandler} 
         onClickSelectAll={onClickSelectAll}/>

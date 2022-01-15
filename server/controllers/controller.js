@@ -269,6 +269,8 @@ exports.updateAnswer = async (req, res) => {
 // Retrieve all quizes
 // curl 'http://localhost:4001/data/quizes' | jq .
 exports.getQuizes = async (req, res) => {
+
+  console.error(`Params: ${JSON.stringify(req.params)}`)
   if (req.params.id) {
     
     const quiz = await knex
@@ -311,18 +313,20 @@ exports.getQuizes = async (req, res) => {
         res.json({ message: `There was an error retrieving data: ${err}` })
         return
       })
-  } else
+  } else {
     knex
       .select('*')
       .from('FullQuizes')
       .whereRaw('lastUpdate > timestamp + 10000')
-      .andWhereRaw("datetime(timestamp / 1000, 'unixepoch') > date('now', '-90 days')")
+      .andWhereRaw("datetime(timestamp / 1000, 'unixepoch') <= date(?)", req.params.lastDate)
       .andWhere('answerCount', '>', 0)
       .orderBy('id', 'desc')
+      .limit(100)
       .then(items => {
         res.json(items)
       })
       .catch(err => {
         res.json({ message: `There was an error retrieving data: ${err}` })
       })
+  }
 }

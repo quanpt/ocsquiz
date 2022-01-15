@@ -45,12 +45,12 @@ export class Timer extends Component {
     }
 
     render() {
-        const { minutes, seconds } = this.state
+        var { minutes, seconds } = this.state
         return (
             <span>
                 { minutes === 0 && seconds === 0
                     ? <span className='warningTime'>Enjoy the extra time!</span>
-                    : <span className='goodTime'>Remained Time: {Math.floor(minutes / 60)}:{minutes < 10 ? `0${minutes}` : minutes}</span>
+                    : <span className='goodTime'>Time (hh:mm): {Math.floor(minutes / 60)}:{minutes < 10 ? `0${minutes+1}` : `${minutes+1}`}</span>
                 }
             </span>
         )
