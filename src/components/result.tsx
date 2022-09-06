@@ -152,7 +152,7 @@ export function ResultListPage() {
   }
 
   function onLastDatePressHandler(e: any) {
-    if (e.key == 'Enter')
+    if (e.key === 'Enter')
       fetchResults()
   }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import Cookies from 'js-cookie';
 import { Timer } from './timer'
-import { FormatQuestionText } from './print'
+import { FormatQuestionText, FormatQuestionText300SEL } from './print'
 
 import { Formik, Field, Form } from 'formik';
 
@@ -119,16 +119,17 @@ function Question(props) {
   q.pos = props.position - 1
 
   if (q.preText && ! q.preTextFormated) {
+    let preText = q.title.indexOf(' | 300SEL') < 0 ? FormatQuestionText(q.preText, 0, 0) : FormatQuestionText300SEL(q.preText);
       if (["101", "2", "83"].includes(q.mmfgroup)) {
           q.preText = '<i>Read the text below then answer the questions.</i><p/>'
-              + FormatQuestionText(q.preText, 0, 0)
+              + preText
               + '<p/>For questions below, choose the answer (<b>A</b>, <b>B</b>, <b>C</b> or <b>D</b>) which you think best answers the question.'
       } else if (["110", 'e'].includes(q.mmfgroup)) {
-          q.preText = FormatQuestionText(q.preText, 0, 0)
+          q.preText = preText
       } else if (["109"].includes(q.mmfgroup)) {
-          q.preText = FormatQuestionText(q.preText, 0, 0)
+          q.preText = preText
       } else if (q.preText.indexOf('<img src="') > 0)
-          q.preText = FormatQuestionText(q.preText, 0, 0)
+          q.preText = preText
     q.preTextFormated = true
   }
 

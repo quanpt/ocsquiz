@@ -59,11 +59,12 @@ function PrintQuestionSets(props: { questions: any }) {
 let reImage1 = new RegExp(/\$image1\$/g);
 
 export function FormatQuestionText(text: string, mmfid: number, imageId: number, allowE: boolean = true) {
-    var rawHtml = text ? text : ''
+    var rawHtml = (text ? text : '') + '<br/>'
 
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
         .replace(/^.*\s*<hr\s*size="1"\/>/gi, '')
         .replace(/(<br\/> *)*<\/div>$/g, '<br/></div>')
+        .replace(/<p>&nbsp;<\/p>/g, '')
         .replace(/<br\/>\s*<br\/>/g, '@@@BR@@@')
         .replace(/@@@BR@@@ Hint:/g, '<br/>Hint: ')
         .replace(/<font size="-1"><b>Question 18<\/b><\/font>@@@BR@@@/g, '')
@@ -98,6 +99,9 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number,
         .replace(/<\/p>\s*<br\/>\s*/, '</p>')
         .replace(/<\/p> *<\/span> *<br\/>/g, '</p></span>')
         .replace(/\x02/g, '')
+        .replace(/<p> <\/p>/g, '')
+        .replace(/@@@BR@@@ <br\/> /g, '')
+    console.log(rawHtml);
 
     if (rawHtml.indexOf('Some sentences have been taken out of the reading text') >= 0)
         rawHtml = rawHtml
@@ -119,20 +123,26 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number,
     return rawHtml
 }
 
+export function FormatQuestionText300SEL(text: string) {
+    return FormatQuestionText(text, 0, 0)
+        .replace(/ src="\/assets\//g,' src="/assets/300sel/')
+}
+
 export function PrintQuestion(props: { question: any, n: number }) {
     let q = props.question
     let html = q.html.replace(/<br\/> This set has \d+ questions. <b>.*answer all questions. <\/b> <br\/> *<br\/>/, '')
     if (q.preText) {
+        let preText = q.title.indexOf(' | 300SEL') < 0 ? FormatQuestionText(q.preText, 0, 0) : FormatQuestionText300SEL(q.preText);
         if (["101", "2", "83"].includes(q.mmfgroup)) {
             q.preText = '<i>Read the text below then answer the questions.</i><p/>'
-                + FormatQuestionText(q.preText, 0, 0)
+                + preText
                 + '<p/>For questions below, choose the answer (<b>A</b>, <b>B</b>, <b>C</b> or <b>D</b>) which you think best answers the question.'
         } else if (["110", 'e'].includes(q.mmfgroup)) {
-            q.preText = FormatQuestionText(q.preText, 0, 0)
+            q.preText = preText
         } else if (["109"].includes(q.mmfgroup)) {
-            q.preText = FormatQuestionText(q.preText, 0, 0)
-        } else if (q.preText.indexOf('<img src="') > 0)
-            q.preText = FormatQuestionText(q.preText, 0, 0)
+            q.preText = preText
+        } else if (q.preText.indexOf(' src="') > 0)
+            q.preText = preText
     }
 
     return <>
@@ -214,7 +224,7 @@ export function PrintableQuiz(props: QuizI) {
                             var lastArticle = ""
                             for (var i = 0; i < newQs.length; i++) {
                                 var q = newQs[i]
-                                let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0, !isThinkingSkill)
+                                let html = qTitle.indexOf(' | 300SEL') < 0 ? FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0, !isThinkingSkill) : FormatQuestionText300SEL(q.question)
 
                                 if (html.indexOf('Which of the above sentences will go into location 1?') >= 0)
                                     html = html.replace('Which of the above sentences will go into location 1?', '')
@@ -228,7 +238,7 @@ export function PrintableQuiz(props: QuizI) {
                                     if (matches[1] !== lastArticle) {
                                         // new article
                                         q.articleImageURL = matches[3]
-                                        if (q.articleImageURL.indexOf(q.imageURL.replace('default/', '')) >= 0)
+                                        if (q.imageURL && q.articleImageURL.indexOf(q.imageURL.replace('default/', '')) >= 0)
                                             q.imageURL = null
                                         lastArticle = matches[1]
                                     } else {
