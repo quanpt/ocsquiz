@@ -1,5 +1,6 @@
 import React from 'react';
 import Cookies from 'js-cookie';
+import { MathJax } from "better-react-mathjax";
 import { Timer } from './timer'
 import { FormatQuestionText, FormatQuestionText300SEL } from './print'
 
@@ -26,6 +27,11 @@ let timeDict = {
   }
 }
 
+function formatQuestion(text, title) {
+  console.log(title.indexOf(' | 300SEL') > 0)
+  return title.indexOf(' | 300SEL') > 0 ? FormatQuestionText300SEL(text) : FormatQuestionText(text)
+}
+
 function onKeyDown(keyEvent) {
   if ((keyEvent.charCode || keyEvent.keyCode) === 13 && keyEvent.target.nodeName === 'INPUT') {
     keyEvent.preventDefault();
@@ -42,7 +48,8 @@ class Solution extends React.Component {
       questionAnswer: props.questionAnswer,
       answerId: props.answerId,
       comment: props.comment,
-      user: Cookies.get('user')
+      user: Cookies.get('user'),
+      title: props.title
     }
     this.state = state;
   }
@@ -76,7 +83,8 @@ class Solution extends React.Component {
         <button className="smallButon" onClick={this.onButtonClickHandler}>{this.state.showMessage ? 'Hide' : 'Show'}</button>&nbsp;
         {this.state.user === 'admin' && <button type="submit" className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
       </span>
-      {this.state.showMessage && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: FormatQuestionText(this.state.comment) }} />}
+      {this.state.showMessage && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: 
+        formatQuestion(this.state.comment, this.state.title) }} />}
       </>;
 
   }
@@ -92,7 +100,7 @@ function CorrectAnswer(props) {
     <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : (isSkipped ? 'Skipped' : 'Incorrect')}</span>
     <span>Time spent: <span className={timeClassName}>{secondSpent}</span> ({question.id})</span>
     {(!question.isAnsweredCorrect && !isSkipped) && <Solution {...question} />}
-    {question.isAnsweredCorrect && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: FormatQuestionText(question.comment) }} />}
+    {question.isAnsweredCorrect && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: formatQuestion(question.comment, question.title) }} />}
   </div>
 }
 
@@ -119,7 +127,7 @@ function Question(props) {
   q.pos = props.position - 1
 
   if (q.preText && ! q.preTextFormated) {
-    let preText = q.title.indexOf(' | 300SEL') < 0 ? FormatQuestionText(q.preText, 0, 0) : FormatQuestionText300SEL(q.preText);
+    let preText = formatQuestion(q.preText, q.title)
       if (["101", "2", "83"].includes(q.mmfgroup)) {
           q.preText = '<i>Read the text below then answer the questions.</i><p/>'
               + preText
@@ -133,7 +141,7 @@ function Question(props) {
     q.preTextFormated = true
   }
 
-  return (
+  return (<MathJax>
     <div id={key} className={"OneQuestion " + (q.isFocus ? 'focusDiv' : 'blurDiv')} onClick={props.answerOnFocus}>
       {q.preText &&
             <div className="QuestionPreText" key={"pagex_" + props.n} dangerouslySetInnerHTML={{ __html: q.preText }}>
@@ -149,7 +157,7 @@ function Question(props) {
         <br />
         {answer}
       </div>
-    </div>
+    </div></MathJax>
   );
 }
 
@@ -206,6 +214,7 @@ export class Quiz extends React.Component {
             let question = newQuestions[key];
             question.answerId = question.id
             question.id = question.questionId
+            question.title = result.title
             question.timeSpent = question.timestamp - prevTimestamp;
             prevTimestamp = question.timestamp
             if (question.userAnswer) {

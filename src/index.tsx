@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Cookies from 'js-cookie';
+import { MathJaxContext } from "better-react-mathjax";
 import {
   BrowserRouter as Router,
   Switch,
@@ -18,8 +19,6 @@ import { TitleListPage } from './components/title'
 import { Quiz } from './components/quiz'
 import { PrintableQuiz } from './components/print'
 import { ResultListPage } from './components/result'
-
-import useScript from './hooks/useScript';
 
 // ========================================
 
@@ -40,6 +39,7 @@ class App extends React.Component {
 
   render() {
     return (
+      <MathJaxContext>
       <Router>
         <Switch>
           <Route path="/year/:year/subject/:subject/title/:title/state/:questionState">
@@ -67,6 +67,7 @@ class App extends React.Component {
           </Route>
         </Switch>
       </Router>
+      </MathJaxContext>
     );
   }
 }
@@ -83,8 +84,6 @@ function QuizView() {
 
 function Quizes() {
   let { year, subject, title, questionState } = useParams<{ year: string, subject: string, title: string, questionState: string }>();
-  useScript("https://polyfill.io/v3/polyfill.min.js?features=es6");
-  useScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js");
   return <div className="PageCenter">
       <Navigator year={year} subject={subject} />
       <Quiz year={year} subject={subject} title={title} questionState={questionState} />
@@ -115,8 +114,6 @@ function Years() {
 }
 
 function Results() {
-  useScript("https://polyfill.io/v3/polyfill.min.js?features=es6");
-  useScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js");
   return <div className="online wrapper bg-white rounded">
     <Navigator year='' subject='' link='results' />
     <ResultListPage />
@@ -131,8 +128,6 @@ function UserPage() {
 }
 
 function PrintableQuizes() {
-  useScript("https://polyfill.io/v3/polyfill.min.js?features=es6");
-  useScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js");
   let { year, subject, title, print } = useParams<{ year: string, subject: string, title: string, print: string }>();
   return <PrintableQuiz year={year} subject={subject} title={title} print={print} />
 }

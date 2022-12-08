@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { MathJax, MathJaxContext } from "better-react-mathjax";
 import useScript from '../hooks/useScript';
 
 // interfaces
@@ -145,7 +146,7 @@ export function PrintQuestion(props: { question: any, n: number }) {
             q.preText = preText
     }
 
-    return <>
+    return <MathJax>
         {q.articleImageURL &&
             <div className="QuestionText" key={"pagex_" + props.n}>
                 <img alt={q.articleImageURL} src={q.articleImageURL} className="fulltextImage" />
@@ -169,7 +170,7 @@ export function PrintQuestion(props: { question: any, n: number }) {
             <div className="QuestionText" key={"pagex_" + props.n}>
                 <img alt={q.imageURL} src={"/assets/articles/" + q.imageURL} className="fulltextImage" />
             </div>}
-    </>
+    </MathJax>
 }
 
 function getTestType(title: string) {
@@ -244,7 +245,7 @@ export function PrintableQuiz(props: QuizI) {
                                     } else {
                                         // existing article
                                     }
-                                    html = html.replace(/^\s*Refer to (the )*(poem|article)s*:* <a href="([^"]*)" .* *<img border="0" +src="\/assets\/images\/reading\.gif" width="48"\/> *<\/a> *<br\/>/, '')
+                                    html = html.replace(/^\s*Refer to (the )*(poem|article)s*:*\s*<a href="([^"]*)".*\s*<img border="0"\s+src="\/assets\/images\/reading\.gif" width="48"\/>\s*<\/a>\s*<br\/>/, '')
                                 }
                                 newQs[i].html = html
 
