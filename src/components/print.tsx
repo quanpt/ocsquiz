@@ -59,7 +59,14 @@ function PrintQuestionSets(props: { questions: any }) {
 
 let reImage1 = new RegExp(/\$image1\$/g);
 
-export function FormatQuestionText(text: string, mmfid: number, imageId: number, allowE: boolean = true) {
+
+export function FormatQuestion(text: string, title: string, mmfid: number = 0, imageId: number = 0, allowE: boolean = false) {
+    // console.log(title.indexOf(' | 300SEL') > 0, text)
+    return title.indexOf(' | 300SEL') > 0 ? FormatQuestionText300SEL(text) : FormatQuestionText(text, mmfid, imageId, allowE)
+}
+
+
+function FormatQuestionText(text: string, mmfid: number, imageId: number, allowE: boolean = true) {
     var rawHtml = (text ? text : '') + '<br/>'
 
     rawHtml = rawHtml.replace(/\r?\n|\r/g, '')
@@ -125,7 +132,7 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number,
     return rawHtml
 }
 
-export function FormatQuestionText300SEL(text: string) {
+function FormatQuestionText300SEL(text: string) {
     return FormatQuestionText(text, 0, 0)
         .replace(/ src="\/assets\//g,' src="/assets/300sel/')
 }

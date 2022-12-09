@@ -2,7 +2,7 @@ import React from 'react';
 import Cookies from 'js-cookie';
 import { MathJax } from "better-react-mathjax";
 import { Timer } from './timer'
-import { FormatQuestionText, FormatQuestionText300SEL } from './print'
+import { FormatQuestion } from './print'
 
 import { Formik, Field, Form } from 'formik';
 
@@ -25,11 +25,6 @@ let timeDict = {
     'Full Hour': 72,
     Other: 60
   }
-}
-
-function formatQuestion(text, title) {
-  // console.log(title.indexOf(' | 300SEL') > 0)
-  return title.indexOf(' | 300SEL') > 0 ? FormatQuestionText300SEL(text) : FormatQuestionText(text)
 }
 
 function onKeyDown(keyEvent) {
@@ -84,7 +79,7 @@ class Solution extends React.Component {
         {this.state.user === 'admin' && <button type="submit" className="smallButon" onClick={this.onButtonReviewClickHandler}>V</button>}
       </span>
       {this.state.showMessage && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: 
-        formatQuestion(this.state.comment, this.state.title) }} />}
+        FormatQuestion(this.state.comment, this.state.title) }} />}
       </>;
 
   }
@@ -100,14 +95,14 @@ function CorrectAnswer(props) {
     <span className={className}> {question.userAnswer ? question.userAnswer.toUpperCase() : "Not answered"}: {question.isAnsweredCorrect ? 'Correct' : (isSkipped ? 'Skipped' : 'Incorrect')}</span>
     <span>Time spent: <span className={timeClassName}>{secondSpent}</span> ({question.id})</span>
     {(!question.isAnsweredCorrect && !isSkipped) && <Solution {...question} />}
-    {question.isAnsweredCorrect && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: formatQuestion(question.comment, question.title) }} />}
+    {question.isAnsweredCorrect && <span className="QuestionText" dangerouslySetInnerHTML={{ __html: FormatQuestion(question.comment, question.title) }} />}
   </div>
 }
 
 function OnlineQuestion(props) {
 
   let q = props.question
-  let html = FormatQuestionText(q.question, q.mmfid, q.imageId ? q.imageId : 0)
+  let html = FormatQuestion(q.question, q.title, q.mmfid, q.imageId ? q.imageId : 0)
   html = html.replace(/<br\/> This set has \d+ questions. <b>.*answer all questions. <\/b> <br\/> *<br\/>/, '')
   if (html.match(/^\s*Refer to (the )*(poem|article)s*:* (<br\/> <img|<a) /))
     html = html.replace(/ class="questionImage"/g, '').replace()
@@ -127,7 +122,7 @@ function Question(props) {
   q.pos = props.position - 1
 
   if (q.preText && ! q.preTextFormated) {
-    let preText = formatQuestion(q.preText, q.title)
+    let preText = FormatQuestion(q.preText, q.title)
       if (["101", "2", "83"].includes(q.mmfgroup)) {
           q.preText = '<i>Read the text below then answer the questions.</i><p/>'
               + preText
