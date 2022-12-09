@@ -28,7 +28,7 @@ let timeDict = {
 }
 
 function formatQuestion(text, title) {
-  console.log(title.indexOf(' | 300SEL') > 0)
+  // console.log(title.indexOf(' | 300SEL') > 0)
   return title.indexOf(' | 300SEL') > 0 ? FormatQuestionText300SEL(text) : FormatQuestionText(text)
 }
 
@@ -264,7 +264,7 @@ export class Quiz extends React.Component {
                 }
               }
               newQuestions.sort((q1, q2) => q1.displayOrder - q2.displayOrder)
-              console.log(newQuestions)
+              // console.log(newQuestions)
               this.setState({
                 isLoaded: true,
                 questions: newQuestions,
@@ -381,7 +381,7 @@ export class Quiz extends React.Component {
           <Formik
             initialValues={dict}
             onSubmit={async (answers) => {
-              console.log(this.state)
+              // console.log(this.state)
 
               if (this.state.isSubmitted || this.state.isViewMode)
                 return;

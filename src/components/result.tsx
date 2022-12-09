@@ -141,7 +141,7 @@ export function ResultListPage() {
   useEffect(() => {
     document.title = "Quiz - Results"
     fetchResults()
-  }, [])
+  })
 
   function onFilterChangeHandler(e: any) {
     setFilter(e.target.value)

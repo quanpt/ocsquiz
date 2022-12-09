@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { MathJax, MathJaxContext } from "better-react-mathjax";
+import { MathJax } from "better-react-mathjax";
 import useScript from '../hooks/useScript';
 
 // interfaces
@@ -99,10 +99,11 @@ export function FormatQuestionText(text: string, mmfid: number, imageId: number,
         .replace(/^ *<p>/, '')
         .replace(/<\/p>\s*<br\/>\s*/, '</p>')
         .replace(/<\/p> *<\/span> *<br\/>/g, '</p></span>')
+        // eslint-disable-next-line
         .replace(/\x02/g, '')
         .replace(/<p> <\/p>/g, '')
         .replace(/@@@BR@@@ <br\/> /g, '')
-    console.log(rawHtml);
+    // console.log(rawHtml);
 
     if (rawHtml.indexOf('Some sentences have been taken out of the reading text') >= 0)
         rawHtml = rawHtml
@@ -232,7 +233,7 @@ export function PrintableQuiz(props: QuizI) {
 
                                 if (html.match(/^\s*Refer to (the )*(poem|article)s*:* (<br\/> <img|<a) /))
                                     html = html.replace(/ class="questionImage"/g, '')
-                                console.log(html);
+                                // console.log(html);
 
                                 var matches = html.match(/^\s*Refer to (the )*(poem|article)s*:*\s*<a href="([^"]*)" /)
                                 if (matches) {
